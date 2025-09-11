@@ -4,7 +4,8 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('frontend.welcome');
+    // return view('frontend.welcome');
+    return view('frontend.home');
 });
 
 Route::get('/dashboard', function () {
@@ -26,11 +27,11 @@ Route::middleware('auth')->group(function () {
 
 // Super Admin
 // Super Admin
-// Route::middleware(['auth', 'role:super_admin'])->group(function () {
-//     Route::get('/superadmin/dashboard', function () {
-//         return 'Super Admin Dashboard';
-//     })->name('superadmin.dashboard');
-// });
+Route::middleware(['auth', 'role:super_admin'])->group(function () {
+    Route::get('/superadmin/dashboard', function () {
+        return 'Super Admin Dashboard';
+    })->name('superadmin.dashboard');
+});
 
 // Admin
 Route::middleware(['auth', 'role:admin'])->group(function () {
