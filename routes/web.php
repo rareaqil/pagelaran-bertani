@@ -29,7 +29,7 @@ Route::prefix('cart')->group(function () {
     Route::post('/add', [CartController::class, 'addItem'])->name('cart.add');
     Route::post('/coupon', [CartController::class, 'applyCoupon'])->name('cart.coupon');
     Route::delete('/clear', [CartController::class, 'clear'])->name('cart.clear');
-    Route::delete('/item/{id}', [CartController::class, 'removeItem'])->name('cart.item.remove');
+    Route::delete('/item/remove/{id}', [CartController::class, 'removeItem'])->name('cart.item.remove');
 });
 });
 // Route::group(['middleware'=>'role:super admin,admin','prefix'=>'car', 'as'=>'car.'],function () {
