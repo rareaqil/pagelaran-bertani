@@ -18,16 +18,40 @@ return new class extends Migration
             $table->rememberToken();
             $table->string('phone')->nullable();
 
-            // Alamat lengkap Indonesia
-            $table->string('address1')->nullable();
-            $table->string('address2')->nullable();
-            $table->unsignedBigInteger('province_id')->nullable();
-            $table->unsignedBigInteger('city_id')->nullable();
-            $table->unsignedBigInteger('district_id')->nullable();
-            $table->unsignedBigInteger('subdistrict_id')->nullable();
-            $table->string('postcode', 10)->nullable();
+            // // Alamat lengkap Indonesia
+            // $table->string('address1')->nullable();
+            // $table->unsignedBigInteger('province_id')->nullable();
+            // $table->unsignedBigInteger('city_id')->nullable();
+            // $table->unsignedBigInteger('district_id')->nullable();
+            // $table->unsignedBigInteger('village_id')->nullable();
+            // $table->string('postcode', 10)->nullable();
 
             $table->enum('role', ['super_admin', 'admin', 'user'])->default('user');
+            $table->timestamps();
+        });
+
+
+        // Tabel Alamat user
+        Schema::create('user_addresses', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            
+            // ID dan nama wilayah
+            $table->unsignedBigInteger('province_id')->nullable();
+            $table->string('province_name')->nullable();
+            
+            $table->unsignedBigInteger('city_id')->nullable();
+            $table->string('city_name')->nullable();
+            
+            $table->unsignedBigInteger('district_id')->nullable();
+            $table->string('district_name')->nullable();
+            
+            $table->unsignedBigInteger('village_id')->nullable();
+            $table->string('village_name')->nullable();
+            
+            $table->string('address1')->nullable();
+            $table->string('postcode', 10)->nullable();
+            
             $table->timestamps();
         });
 
@@ -57,6 +81,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('users');
+        Schema::dropIfExists('user_addresses');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
         Schema::dropIfExists('password_resets');

@@ -12,7 +12,7 @@
         @csrf
         @method('patch')
 
-        {{-- ===== User Details ===== --}}
+        {{-- User Details --}}
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
                 <x-input-label for="first_name" :value="__('First Name')" />
@@ -26,7 +26,6 @@
                 />
                 <x-input-error class="mt-2" :messages="$errors->get('first_name')" />
             </div>
-
             <div>
                 <x-input-label for="last_name" :value="__('Last Name')" />
                 <x-text-input
@@ -41,95 +40,85 @@
             </div>
         </div>
 
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input
-                id="email"
-                name="email"
-                type="email"
-                class="mt-1 block w-full"
-                :value="old('email', $user->email)"
-                required
-            />
-            <x-input-error class="mt-2" :messages="$errors->get('email')" />
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+                <x-input-label for="email" :value="__('Email')" />
+                <x-text-input
+                    id="email"
+                    name="email"
+                    type="email"
+                    class="mt-1 block w-full"
+                    :value="old('email', $user->email)"
+                    required
+                />
+                <x-input-error class="mt-2" :messages="$errors->get('email')" />
+            </div>
+            <div>
+                <x-input-label for="phone" :value="__('Phone')" />
+                <x-text-input
+                    id="phone"
+                    name="phone"
+                    type="text"
+                    class="mt-1 block w-full"
+                    :value="old('phone', $user->phone)"
+                />
+                <x-input-error class="mt-2" :messages="$errors->get('phone')" />
+            </div>
         </div>
 
-        <div>
-            <x-input-label for="phone" :value="__('Phone')" />
-            <x-text-input
-                id="phone"
-                name="phone"
-                type="text"
-                class="mt-1 block w-full"
-                :value="old('phone', $user->phone)"
-            />
-            <x-input-error class="mt-2" :messages="$errors->get('phone')" />
-        </div>
-
-        {{-- ===== Address ===== --}}
-        <div>
-            <x-input-label for="address1" :value="__('Address Line 1')" />
-            <x-text-input
-                id="address1"
-                name="address1"
-                type="text"
-                class="mt-1 block w-full"
-                :value="old('address1', $user->address1)"
-            />
-            <x-input-error class="mt-2" :messages="$errors->get('address1')" />
-        </div>
-
-        <div>
-            <x-input-label for="address2" :value="__('Address Line 2')" />
-            <x-text-input
+        {{-- Address --}}
+        <div class="grid grid-cols-1 gap-4">
+            <div>
+                <x-input-label for="address1" :value="__('Address Line 1')" />
+                <x-text-input
+                    id="address1"
+                    name="address1"
+                    type="text"
+                    class="mt-1 block w-full"
+                    :value="old('address1', $user->address1)"
+                />
+                <x-input-error class="mt-2" :messages="$errors->get('address1')" />
+            </div>
+            {{--
+                <div>
+                <x-input-label for="address2" :value="__('Address Line 2')" />
+                <x-text-input
                 id="address2"
                 name="address2"
                 type="text"
                 class="mt-1 block w-full"
                 :value="old('address2', $user->address2)"
-            />
-            <x-input-error class="mt-2" :messages="$errors->get('address2')" />
+                />
+                <x-input-error class="mt-2" :messages="$errors->get('address2')" />
+                </div>
+            --}}
         </div>
 
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+        {{-- Select2 Cascading --}}
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
             <div>
                 <x-input-label for="province_id" :value="__('Province')" />
-                <x-text-input
-                    id="province_id"
-                    name="province_id"
-                    type="number"
-                    class="mt-1 block w-full"
-                    :value="old('province_id', $user->province_id)"
-                />
+                <select id="province_id" name="province_id" class="form-control js-select2"></select>
                 <x-input-error class="mt-2" :messages="$errors->get('province_id')" />
             </div>
-
             <div>
                 <x-input-label for="city_id" :value="__('City')" />
-                <x-text-input
-                    id="city_id"
-                    name="city_id"
-                    type="number"
-                    class="mt-1 block w-full"
-                    :value="old('city_id', $user->city_id)"
-                />
+                <select id="city_id" name="city_id" class="form-control js-select2"></select>
                 <x-input-error class="mt-2" :messages="$errors->get('city_id')" />
             </div>
-
             <div>
-                <x-input-label for="postcode" :value="__('Postcode')" />
-                <x-text-input
-                    id="postcode"
-                    name="postcode"
-                    type="number"
-                    class="mt-1 block w-full"
-                    :value="old('postcode', $user->postcode)"
-                />
-                <x-input-error class="mt-2" :messages="$errors->get('postcode')" />
+                <x-input-label for="district_id" :value="__('District')" />
+                <select id="district_id" name="district_id" class="form-control js-select2"></select>
+                <x-input-error class="mt-2" :messages="$errors->get('district_id')" />
+            </div>
+            <div>
+                <x-input-label for="village_id" :value="__('Village')" />
+                <select id="village_id" name="village_id" class="form-control js-select2"></select>
+                <x-input-error class="mt-2" :messages="$errors->get('village_id')" />
             </div>
         </div>
 
-        <div class="flex items-center gap-4">
+        <div class="mt-4 flex items-center gap-4">
             <x-primary-button>{{ __('Save All') }}</x-primary-button>
             @if (session('status') === 'profile-updated')
                 <p
@@ -139,9 +128,114 @@
                     x-init="setTimeout(() => (show = false), 2000)"
                     class="text-sm text-gray-600"
                 >
-                    {{ __('Saved.') }}
+                    Saved.
                 </p>
             @endif
         </div>
     </form>
+
+    @push('scripts')
+        <script type="module">
+            $(function () {
+                function initSelect2(selector, placeholder, ajaxUrl = null) {
+                    let config = {
+                        placeholder: placeholder,
+                        allowClear: true,
+                        width: '100%',
+                    };
+                    if (ajaxUrl) {
+                        config.ajax = {
+                            url: ajaxUrl,
+                            dataType: 'json',
+                            delay: 250,
+                            processResults: function (data) {
+                                return { results: data.map((item) => ({ id: item.id, text: item.name })) };
+                            },
+                        };
+                    }
+                    $(selector).select2(config);
+                }
+
+                // --- Fetch list dulu baru prefill ---
+                function fetchAndPrefill(selector, ajaxUrl, id, text, placeholder, callback = null) {
+                    initSelect2(selector, placeholder, ajaxUrl);
+
+                    if (id && text) {
+                        // pastikan value user ada di list, kalau tidak append saja
+                        $.get(ajaxUrl, function (data) {
+                            let exists = data.some((item) => item.id == id);
+                            if (!exists) {
+                                let option = new Option(text, id, true, true);
+                                $(selector).append(option);
+                            } else {
+                                let option = new Option(text, id, true, true);
+                                $(selector).append(option);
+                            }
+                            $(selector).val(id).trigger('change');
+
+                            if (callback) callback();
+                        });
+                    } else {
+                        if (callback) callback();
+                    }
+                }
+
+                // --- Prefill berurutan dengan fetch list dulu ---
+                fetchAndPrefill(
+                    '#province_id',
+                    '{{ url('/api/provinces') }}',
+                    '{{ $user->province_id }}',
+                    '{{ $user->province_name ?? '' }}',
+                    'Select Province',
+                    function () {
+                        fetchAndPrefill(
+                            '#city_id',
+                            '{{ $user->province_id ? url('/api/cities/' . $user->province_id) : '#' }}',
+                            '{{ $user->city_id }}',
+                            '{{ $user->city_name ?? '' }}',
+                            'Select City',
+                            function () {
+                                fetchAndPrefill(
+                                    '#district_id',
+                                    '{{ $user->city_id ? url('/api/districts/' . $user->city_id) : '#' }}',
+                                    '{{ $user->district_id }}',
+                                    '{{ $user->district_name ?? '' }}',
+                                    'Select District',
+                                    function () {
+                                        fetchAndPrefill(
+                                            '#village_id',
+                                            '{{ $user->district_id ? url('/api/villages/' . $user->district_id) : '#' }}',
+                                            '{{ $user->village_id }}',
+                                            '{{ $user->village_name ?? '' }}',
+                                            'Select Village',
+                                        );
+                                    },
+                                );
+                            },
+                        );
+                    },
+                );
+
+                // --- Cascading Change Events ---
+                $('#province_id').on('change', function () {
+                    let pid = $(this).val();
+                    $('#city_id,#district_id,#village_id').val(null).trigger('change');
+                    if (!pid) return initSelect2('#city_id', 'Select City', '{{ url('/api/cities') }}/' + pid);
+                });
+
+                $('#city_id').on('change', function () {
+                    let cid = $(this).val();
+                    $('#district_id,#village_id').val(null).trigger('change');
+                    if (!cid)
+                        return initSelect2('#district_id', 'Select District', '{{ url('/api/districts') }}/' + cid);
+                });
+
+                $('#district_id').on('change', function () {
+                    let did = $(this).val();
+                    $('#village_id').val(null).trigger('change');
+                    if (!did) return initSelect2('#village_id', 'Select Village', '{{ url('/api/villages') }}/' + did);
+                });
+            });
+        </script>
+    @endpush
 </section>
