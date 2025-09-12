@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\Admin\UserController;
 
 Route::get('/', function () {
     return view('frontend.welcome');
@@ -64,6 +65,10 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     })->name('user.dashboard');
 });
 
+
+Route::middleware(['auth', 'role:super_admin,admin'])->prefix('backend')->group(function() {
+    Route::resource('users', UserController::class);
+});
 
 
 
