@@ -32,26 +32,24 @@ return new class extends Migration
 
 
         // Tabel Alamat user
-        Schema::create('user_addresses', function (Blueprint $table) {
+      Schema::create('user_addresses', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            
-            // ID dan nama wilayah
+
             $table->unsignedBigInteger('province_id')->nullable();
             $table->string('province_name')->nullable();
-            
-            $table->unsignedBigInteger('city_id')->nullable();
-            $table->string('city_name')->nullable();
-            
+
+            $table->unsignedBigInteger('regency_id')->nullable();
+            $table->string('regency_name')->nullable();
+
             $table->unsignedBigInteger('district_id')->nullable();
             $table->string('district_name')->nullable();
-            
+
             $table->unsignedBigInteger('village_id')->nullable();
             $table->string('village_name')->nullable();
-            
+
             $table->string('address1')->nullable();
             $table->string('postcode', 10)->nullable();
-            
             $table->timestamps();
         });
 

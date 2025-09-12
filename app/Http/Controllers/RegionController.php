@@ -3,40 +3,42 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache; // ← tambah ini
-use Illuminate\Support\Facades\Http;  // ← tambah ini
+namespace App\Http\Controllers;
+
+use App\Models\Province;
+use App\Models\Regency;
+use App\Models\District;
+use App\Models\Village;
 
 class RegionController extends Controller
 {
     public function provinces()
     {
-        return Cache::remember('provinces', 60*60, function() {
-            $response = Http::get('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json');
-            return $response->json();
-        });
+        return Province::select('id','name')->orderBy('name')->get();
     }
 
-    public function cities($provinceId)
+    public function regencies($provinceId)
     {
-        return Cache::remember("cities_$provinceId", 60*60, function() use ($provinceId) {
-            $response = Http::get("https://www.emsifa.com/api-wilayah-indonesia/api/regencies/{$provinceId}.json");
-            return $response->json();
-        });
+        return Regency::where('province_id', $provinceId)
+            ->select('id','name')
+            ->orderBy('name')
+            ->get();
     }
 
-    public function districts($cityId)
+    public function districts($regencyId)
     {
-        return Cache::remember("districts_$cityId", 60*60, function() use ($cityId) {
-            $response = Http::get("https://www.emsifa.com/api-wilayah-indonesia/api/districts/{$cityId}.json");
-            return $response->json();
-        });
+        return District::where('regency_id', $regencyId)
+            ->select('id','name')
+            ->orderBy('name')
+            ->get();
     }
 
     public function villages($districtId)
     {
-        return Cache::remember("villages_$districtId", 60*60, function() use ($districtId) {
-            $response = Http::get("https://www.emsifa.com/api-wilayah-indonesia/api/villages/{$districtId}.json");
-            return $response->json();
-        });
+        return Village::where('district_id', $districtId)
+            ->select('id','name')
+            ->orderBy('name')
+            ->get();
     }
 }
+

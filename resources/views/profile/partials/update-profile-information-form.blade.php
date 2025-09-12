@@ -12,7 +12,7 @@
         @csrf
         @method('patch')
 
-        {{-- User Details --}}
+        {{-- ============= USER DETAILS ============= --}}
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
                 <x-input-label for="first_name" :value="__('First Name')" />
@@ -66,7 +66,11 @@
             </div>
         </div>
 
-        {{-- Address --}}
+        {{-- ============= ADDRESS ============= --}}
+        @php
+            $address = $user->primaryAddress; // Bisa null
+        @endphp
+
         <div class="grid grid-cols-1 gap-4">
             <div>
                 <x-input-label for="address1" :value="__('Address Line 1')" />
@@ -75,26 +79,12 @@
                     name="address1"
                     type="text"
                     class="mt-1 block w-full"
-                    :value="old('address1', $user->address1)"
+                    :value="old('address1', optional($address)->address1)"
                 />
                 <x-input-error class="mt-2" :messages="$errors->get('address1')" />
             </div>
-            {{--
-                <div>
-                <x-input-label for="address2" :value="__('Address Line 2')" />
-                <x-text-input
-                id="address2"
-                name="address2"
-                type="text"
-                class="mt-1 block w-full"
-                :value="old('address2', $user->address2)"
-                />
-                <x-input-error class="mt-2" :messages="$errors->get('address2')" />
-                </div>
-            --}}
         </div>
 
-        {{-- Select2 Cascading --}}
         <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
             <div>
                 <x-input-label for="province_id" :value="__('Province')" />
@@ -102,9 +92,9 @@
                 <x-input-error class="mt-2" :messages="$errors->get('province_id')" />
             </div>
             <div>
-                <x-input-label for="city_id" :value="__('City')" />
-                <select id="city_id" name="city_id" class="form-control js-select2"></select>
-                <x-input-error class="mt-2" :messages="$errors->get('city_id')" />
+                <x-input-label for="regency_id" :value="__('Regency')" />
+                <select id="regency_id" name="regency_id" class="form-control js-select2"></select>
+                <x-input-error class="mt-2" :messages="$errors->get('regency_id')" />
             </div>
             <div>
                 <x-input-label for="district_id" :value="__('District')" />
@@ -115,6 +105,20 @@
                 <x-input-label for="village_id" :value="__('Village')" />
                 <select id="village_id" name="village_id" class="form-control js-select2"></select>
                 <x-input-error class="mt-2" :messages="$errors->get('village_id')" />
+            </div>
+        </div>
+
+        <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+                <x-input-label for="postcode" :value="__('Postcode')" />
+                <x-text-input
+                    id="postcode"
+                    name="postcode"
+                    type="text"
+                    class="mt-1 block w-full"
+                    :value="old('postcode', optional($address)->postcode)"
+                />
+                <x-input-error class="mt-2" :messages="$errors->get('postcode')" />
             </div>
         </div>
 
@@ -134,79 +138,64 @@
         </div>
     </form>
 
+    {{-- ============= SCRIPTS ============= --}}
     @push('scripts')
         <script type="module">
             $(function () {
                 function initSelect2(selector, placeholder, ajaxUrl = null) {
-                    let config = {
-                        placeholder: placeholder,
-                        allowClear: true,
-                        width: '100%',
-                    };
-                    if (ajaxUrl) {
+                    let config = { placeholder, allowClear: true, width: '100%' };
+                    if (ajaxUrl && ajaxUrl !== '#') {
                         config.ajax = {
                             url: ajaxUrl,
                             dataType: 'json',
                             delay: 250,
-                            processResults: function (data) {
-                                return { results: data.map((item) => ({ id: item.id, text: item.name })) };
-                            },
+                            processResults: (data) => ({
+                                results: data.map((i) => ({ id: i.id, text: i.name })),
+                            }),
                         };
                     }
                     $(selector).select2(config);
                 }
 
-                // --- Fetch list dulu baru prefill ---
-                function fetchAndPrefill(selector, ajaxUrl, id, text, placeholder, callback = null) {
+                function fetchAndPrefill(selector, ajaxUrl, id, text, placeholder, next = null) {
                     initSelect2(selector, placeholder, ajaxUrl);
-
-                    if (id && text) {
-                        // pastikan value user ada di list, kalau tidak append saja
-                        $.get(ajaxUrl, function (data) {
-                            let exists = data.some((item) => item.id == id);
-                            if (!exists) {
-                                let option = new Option(text, id, true, true);
-                                $(selector).append(option);
-                            } else {
-                                let option = new Option(text, id, true, true);
-                                $(selector).append(option);
-                            }
-                            $(selector).val(id).trigger('change');
-
-                            if (callback) callback();
+                    if (id && text && ajaxUrl !== '#') {
+                        $.get(ajaxUrl, function () {
+                            const option = new Option(text, id, true, true);
+                            $(selector).append(option).trigger('change');
+                            if (next) next();
                         });
-                    } else {
-                        if (callback) callback();
+                    } else if (next) {
+                        next();
                     }
                 }
 
-                // --- Prefill berurutan dengan fetch list dulu ---
                 fetchAndPrefill(
                     '#province_id',
                     '{{ url('/api/provinces') }}',
-                    '{{ $user->province_id }}',
-                    '{{ $user->province_name ?? '' }}',
+                    '{{ optional($address)->province_id ?? '' }}',
+                    '{{ optional($address)->province_name ?? '' }}',
                     'Select Province',
                     function () {
                         fetchAndPrefill(
-                            '#city_id',
-                            '{{ $user->province_id ? url('/api/cities/' . $user->province_id) : '#' }}',
-                            '{{ $user->city_id }}',
-                            '{{ $user->city_name ?? '' }}',
-                            'Select City',
+                            '#regency_id',
+                            '{{ optional($address)->province_id ? url('/api/regencies/' . optional($address)->province_id) : '#' }}',
+                            '{{ optional($address)->regency_id ?? '' }}',
+                            '{{ optional($address)->regency_name ?? '' }}',
+                            'Select Regency',
                             function () {
                                 fetchAndPrefill(
                                     '#district_id',
-                                    '{{ $user->city_id ? url('/api/districts/' . $user->city_id) : '#' }}',
-                                    '{{ $user->district_id }}',
-                                    '{{ $user->district_name ?? '' }}',
+                                    '{{ optional($address)->regency_id ? url('/api/districts/' . optional($address)->regency_id) : '#' }}',
+                                    '{{ optional($address)->district_id ?? '' }}',
+                                    '{{ optional($address)->district_name ?? '' }}',
                                     'Select District',
                                     function () {
                                         fetchAndPrefill(
                                             '#village_id',
-                                            '{{ $user->district_id ? url('/api/villages/' . $user->district_id) : '#' }}',
-                                            '{{ $user->village_id }}',
-                                            '{{ $user->village_name ?? '' }}',
+                                            '{{ optional($address)->district_id ? url('/api/villages/' . optional($address)->district_id) : '#' }}',
+                                            '{{ optional($address)->village_id ?? '' }}',
+                                            '{{ optional($address)->village_name ?? '' }}',
                                             'Select Village',
                                         );
                                     },
@@ -216,24 +205,23 @@
                     },
                 );
 
-                // --- Cascading Change Events ---
+                // Cascading select
                 $('#province_id').on('change', function () {
-                    let pid = $(this).val();
-                    $('#city_id,#district_id,#village_id').val(null).trigger('change');
-                    if (!pid) return initSelect2('#city_id', 'Select City', '{{ url('/api/cities') }}/' + pid);
+                    const pid = $(this).val();
+                    $('#regency_id,#district_id,#village_id').val(null).trigger('change');
+                    if (pid) initSelect2('#regency_id', 'Select Regency', '{{ url('/api/regencies') }}/' + pid);
                 });
 
-                $('#city_id').on('change', function () {
-                    let cid = $(this).val();
+                $('#regency_id').on('change', function () {
+                    const rid = $(this).val();
                     $('#district_id,#village_id').val(null).trigger('change');
-                    if (!cid)
-                        return initSelect2('#district_id', 'Select District', '{{ url('/api/districts') }}/' + cid);
+                    if (rid) initSelect2('#district_id', 'Select District', '{{ url('/api/districts') }}/' + rid);
                 });
 
                 $('#district_id').on('change', function () {
-                    let did = $(this).val();
+                    const did = $(this).val();
                     $('#village_id').val(null).trigger('change');
-                    if (!did) return initSelect2('#village_id', 'Select Village', '{{ url('/api/villages') }}/' + did);
+                    if (did) initSelect2('#village_id', 'Select Village', '{{ url('/api/villages') }}/' + did);
                 });
             });
         </script>
