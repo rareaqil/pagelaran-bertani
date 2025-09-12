@@ -124,4 +124,25 @@ class CartController extends Controller
         });
         return ['items' => $items];
     }
+
+    // Update quantity item
+    public function updateItemQty(Request $request, $id)
+    {
+        $cart = Cart::firstOrCreate(['user_id' => Auth::id() ?? 1]);
+        $item = $cart->items()->where('id', $id)->first();
+        if (!$item) {
+            return response()->json(['success' => false, 'message' => 'Item not found']);
+        }
+
+        $quantity = intval($request->quantity);
+        if ($quantity < 1) $quantity = 1;
+
+        $item->quantity = $quantity;
+        $item->save();
+
+        return response()->json([
+            'success' => true,
+            'cart' => $this->formatCart($cart)
+        ]);
+}
 }

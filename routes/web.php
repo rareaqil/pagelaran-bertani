@@ -30,6 +30,8 @@ Route::prefix('cart')->group(function () {
     Route::post('/coupon', [CartController::class, 'applyCoupon'])->name('cart.coupon');
     Route::delete('/clear', [CartController::class, 'clear'])->name('cart.clear');
     Route::delete('/item/remove/{id}', [CartController::class, 'removeItem'])->name('cart.item.remove');
+
+    Route::patch('/item/{id}', [CartController::class, 'updateItemQty'])->name('cart.item.update');
 });
 });
 // Route::group(['middleware'=>'role:super admin,admin','prefix'=>'car', 'as'=>'car.'],function () {
