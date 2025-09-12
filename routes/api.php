@@ -1,8 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\CartController;
+use App\Models\Product;
 use App\Http\Controllers\RegionController;
+
+use Illuminate\Http\Request;
 
 // Route::get('/api/provinces', [RegionController::class, 'provinces']);
 // Route::get('/api/provinces/{id}', function($id, RegionController $region){
@@ -42,4 +45,14 @@ Route::prefix('api')->group(function () {
     Route::get('/regencies/{provinceId}', [RegionController::class, 'regencies']);
     Route::get('/districts/{regencyId}', [RegionController::class, 'districts']);
     Route::get('/villages/{districtId}', [RegionController::class, 'villages']);
+
+
+
+
+Route::get('/products', function(Request $request) {
+    $query = $request->get('q', '');
+    $products = Product::where('name', 'like', "%$query%")->get();
+    return $products;
+});
+
 });

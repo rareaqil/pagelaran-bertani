@@ -18,18 +18,17 @@
                     </x-nav-link>
 
                     {{-- Dropdown dengan gaya nav-link, tapi trigger bukan <a> --}}
-                    <x-nav-dropdown :active="request()->routeIs('dashboard')" align="left" width="w-30" top="36">
+                    <x-nav-dropdown :active="request()->routeIs('users.*')" align="left" width="w-30" top="36">
                         <x-slot name="trigger">
                             <span class="flex items-center">
                                 {{ __('Management User') }}
                             </span>
                         </x-slot>
-
                         <x-slot name="content">
-                            <x-dropdown-link :href="route('dashboard')">
+                            <x-dropdown-link :href="route('users.index')">
                                 {{ __('List User') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="route('dashboard')">
+                            <x-dropdown-link :href="route('users.create')">
                                 {{ __('Tambah User') }}
                             </x-dropdown-link>
                         </x-slot>
