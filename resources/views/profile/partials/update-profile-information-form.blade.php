@@ -64,6 +64,17 @@
                 />
                 <x-input-error class="mt-2" :messages="$errors->get('phone')" />
             </div>
+            <div>
+                <x-input-label for="age" :value="__('Age')" />
+                <x-text-input
+                    id="age"
+                    name="age"
+                    type="text"
+                    class="mt-1 block w-full"
+                    :value="old('age', $user->age)"
+                />
+                <x-input-error class="mt-2" :messages="$errors->get('age')" />
+            </div>
         </div>
 
         {{-- ============= ADDRESS ============= --}}

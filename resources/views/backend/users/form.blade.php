@@ -26,24 +26,53 @@
                     @endif
 
                     {{-- Nama --}}
-                    <div class="mb-4">
-                        <label class="block text-gray-700">First Name</label>
-                        <input
-                            type="text"
-                            name="first_name"
-                            value="{{ old('first_name', $user->first_name ?? '') }}"
-                            class="w-full rounded border px-3 py-2"
-                        />
+                    <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div class="mb-4">
+                            <label class="block text-gray-700">First Name</label>
+                            <input
+                                type="text"
+                                name="first_name"
+                                value="{{ old('first_name', $user->first_name ?? '') }}"
+                                class="w-full rounded border px-3 py-2"
+                            />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-gray-700">Last Name</label>
+                            <input
+                                type="text"
+                                name="last_name"
+                                value="{{ old('last_name', $user->last_name ?? '') }}"
+                                class="w-full rounded border px-3 py-2"
+                            />
+                        </div>
                     </div>
 
-                    <div class="mb-4">
-                        <label class="block text-gray-700">Last Name</label>
-                        <input
-                            type="text"
-                            name="last_name"
-                            value="{{ old('last_name', $user->last_name ?? '') }}"
-                            class="w-full rounded border px-3 py-2"
-                        />
+                    {{-- User Info --}}
+                    <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        {{-- Age --}}
+                        <div>
+                            <label for="age" class="block font-medium text-gray-700">Age</label>
+                            <input
+                                type="number"
+                                id="age"
+                                name="age"
+                                value="{{ old('age', $user->age ?? '') }}"
+                                class="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+
+                        {{-- Phone Number --}}
+                        <div>
+                            <label for="phone" class="block font-medium text-gray-700">Phone Number</label>
+                            <input
+                                type="text"
+                                id="phone"
+                                name="phone"
+                                value="{{ old('phone', $user->phone ?? '') }}"
+                                class="w-full rounded border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
                     </div>
 
                     {{-- Email --}}
@@ -83,25 +112,27 @@
                         </select>
                     </div>
 
-                    {{-- Alamat --}}
-                    <div class="mb-4">
-                        <label class="block text-gray-700">Address</label>
-                        <input
-                            type="text"
-                            name="address1"
-                            value="{{ old('address1', $user->primaryAddress->address1 ?? '') }}"
-                            class="w-full rounded border px-3 py-2"
-                        />
-                    </div>
+                    <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        {{-- Alamat --}}
+                        <div class="mb-4">
+                            <label class="block text-gray-700">Address</label>
+                            <input
+                                type="text"
+                                name="address1"
+                                value="{{ old('address1', $user->primaryAddress->address1 ?? '') }}"
+                                class="w-full rounded border px-3 py-2"
+                            />
+                        </div>
 
-                    <div class="mb-4">
-                        <label class="block text-gray-700">Postcode</label>
-                        <input
-                            type="text"
-                            name="postcode"
-                            value="{{ old('postcode', $user->primaryAddress->postcode ?? '') }}"
-                            class="w-full rounded border px-3 py-2"
-                        />
+                        <div class="mb-4">
+                            <label class="block text-gray-700">Postcode</label>
+                            <input
+                                type="text"
+                                name="postcode"
+                                value="{{ old('postcode', $user->primaryAddress->postcode ?? '') }}"
+                                class="w-full rounded border px-3 py-2"
+                            />
+                        </div>
                     </div>
 
                     {{-- Provinsi, Kabupaten, Kecamatan, Desa --}}

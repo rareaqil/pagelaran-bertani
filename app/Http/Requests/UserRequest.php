@@ -26,6 +26,8 @@ class UserRequest extends FormRequest
                 'max:255',
                 Rule::unique('users')->ignore($userId),
             ],
+            'phone'       => ['nullable','string','max:20'],
+            'age'       => ['nullable','string','max:2'], 
             'password'   => $userId ? ['nullable', 'string', 'min:6'] : ['required', 'string', 'min:6'],
             'role'       => ['required', Rule::in(['super_admin','admin','user'])],
 

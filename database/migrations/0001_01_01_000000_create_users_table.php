@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->string('phone')->nullable();
+            $table->string('age')->nullable();
 
             // // Alamat lengkap Indonesia
             // $table->string('address1')->nullable();

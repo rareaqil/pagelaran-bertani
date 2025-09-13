@@ -28,7 +28,8 @@
         id="tableSearch"
     />
 
-    <div class="overflow-x-auto bg-white shadow sm:rounded-lg">
+    {{-- Desktop Table --}}
+    <div class="hidden overflow-x-auto bg-white shadow sm:block sm:rounded-lg">
         <table class="w-full table-fixed divide-y divide-gray-200" id="flexibleTable">
             <thead class="bg-gray-50">
                 <tr>
@@ -51,7 +52,7 @@
             <tbody class="divide-y divide-gray-200 bg-white">
                 @forelse ($data as $item)
                     <tr class="hover:bg-gray-50">
-                        {{-- Tampilkan kolom utama --}}
+                        {{-- Main columns --}}
                         @foreach ($mainColumns as $field => $label)
                             <td class="max-w-[150px] truncate px-4 py-2">
                                 @php
@@ -65,7 +66,7 @@
                             </td>
                         @endforeach
 
-                        {{-- Aksi --}}
+                        {{-- Actions --}}
                         @if ($actions)
                             <td class="flex items-center justify-center gap-2 px-4 py-2 text-center">
                                 @if (! empty($detailColumns) || isset($actions['detail']))
@@ -145,7 +146,7 @@
                     </tr>
 
                     {{-- Detail row --}}
-                    @if (isset($actions['detail']))
+                    @if (! empty($detailColumns) || isset($actions['detail']))
                         <tr class="detail-row hidden bg-gray-50">
                             <td
                                 colspan="{{ count($mainColumns) + ($actions ? 1 : 0) }}"
@@ -185,59 +186,193 @@
                 @endforelse
             </tbody>
         </table>
-
-        {{-- Pagination --}}
-        @if ($data instanceof \Illuminate\Pagination\LengthAwarePaginator)
-            <div class="p-4">
-                {{ $data->links() }}
-            </div>
-        @endif
     </div>
+
+    {{-- Mobile Cards --}}
+    <div class="space-y-4 sm:hidden">
+        @forelse ($data as $item)
+            <div class="rounded-lg border bg-white p-4 shadow">
+                @foreach ($mainColumns as $field => $label)
+                    @php
+                        $value = $item;
+                        foreach (explode('.', $field) as $f) {
+                            $value = $value->{$f} ?? null;
+                        }
+                    @endphp
+
+                    <p>
+                        <strong>{{ $label }}:</strong>
+                        {{ $value ?? '-' }}
+                    </p>
+                @endforeach
+
+                @if ($actions)
+                    <div class="mt-2 flex items-center gap-2">
+                        @if (! empty($detailColumns) || isset($actions['detail']))
+                            <button
+                                type="button"
+                                class="toggle-detail text-blue-600 hover:text-blue-900"
+                                title="Lihat Detail"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="h-5 w-5"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M15 12H9m0 0l3-3m-3 3l3 3"
+                                    />
+                                </svg>
+                            </button>
+                        @endif
+
+                        @if (isset($actions['edit']))
+                            <a
+                                href="{{ route($actions['edit'], $item) }}"
+                                class="text-indigo-600 hover:text-indigo-900"
+                                title="Edit"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="h-5 w-5"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M15.232 5.232l3.536 3.536M9 11l6-6 3 3-6 6H9v-3z"
+                                    />
+                                </svg>
+                            </a>
+                        @endif
+
+                        @if (isset($actions['delete']))
+                            <form
+                                action="{{ route($actions['delete'], $item) }}"
+                                method="POST"
+                                onsubmit="return confirm('Yakin ingin menghapus?');"
+                            >
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-600 hover:text-red-900" title="Hapus">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="h-5 w-5"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 0a1 1 0 00-1 1v0a1 1 0 001 1h4a1 1 0 001-1v0a1 1 0 00-1-1m-4 0V3m0 0h4"
+                                        />
+                                    </svg>
+                                </button>
+                            </form>
+                        @endif
+                    </div>
+                @endif
+
+                {{-- Detail --}}
+                @if (! empty($detailColumns) || isset($actions['detail']))
+                    <div class="detail-row mt-2 hidden border-t pt-2 text-sm text-gray-700">
+                        @php
+                            $cols = ! empty($detailColumns) ? $detailColumns : $columns;
+                        @endphp
+
+                        @foreach ($cols as $field => $label)
+                            @php
+                                $value = $item;
+                                foreach (explode('.', $field) as $f) {
+                                    $value = $value->{$f} ?? '-';
+                                }
+                            @endphp
+
+                            <p>
+                                <strong>{{ $label }}:</strong>
+                                {{ $value }}
+                            </p>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+        @empty
+            <p class="text-center text-gray-400">Tidak ada data</p>
+        @endforelse
+    </div>
+
+    {{-- Pagination --}}
+    @if ($data instanceof \Illuminate\Pagination\LengthAwarePaginator)
+        <div class="p-4">
+            {{ $data->links() }}
+        </div>
+    @endif
 </div>
 
 @push('scripts')
-    <script>
-        // Toggle detail row
+    <script type="module">
+        // Toggle detail row (desktop & mobile)
         document.querySelectorAll('.toggle-detail').forEach((btn) => {
             btn.addEventListener('click', function () {
-                const detailRow = this.closest('tr').nextElementSibling;
-                detailRow.classList.toggle('hidden');
+                const parentRow = this.closest('tr');
+                const parentCard = this.closest('div.border');
+                const detailRow = parentRow ? parentRow.nextElementSibling : parentCard?.querySelector('.detail-row');
+                if (detailRow) {
+                    detailRow.classList.toggle('hidden');
+                }
             });
         });
 
-        // Search
+        // Search universal
         const searchInput = document.getElementById('tableSearch');
-        const tableRows = document.querySelectorAll('#flexibleTable tbody tr:not(.detail-row)');
 
         searchInput.addEventListener('keyup', function () {
             const searchValue = this.value.toLowerCase();
 
-            tableRows.forEach((row) => {
+            // Desktop table
+            const desktopRows = document.querySelectorAll('#flexibleTable tbody tr:not(.detail-row)');
+            desktopRows.forEach((row) => {
                 const detailRow = row.nextElementSibling;
                 let combinedText = row.textContent.toLowerCase();
-
-                if (detailRow && detailRow.classList.contains('detail-row')) {
-                    combinedText += ' ' + detailRow.textContent.toLowerCase();
-                }
+                if (detailRow) combinedText += ' ' + detailRow.textContent.toLowerCase();
 
                 if (!searchValue) {
-                    // Jika search kosong → tampil row, tutup semua detail
                     row.style.display = '';
-                    if (detailRow && detailRow.classList.contains('detail-row')) {
-                        detailRow.classList.add('hidden');
-                    }
+                    if (detailRow) detailRow.classList.add('hidden');
                 } else if (combinedText.includes(searchValue)) {
-                    // Row match → tampil dan buka detail row
                     row.style.display = '';
-                    if (detailRow && detailRow.classList.contains('detail-row')) {
-                        detailRow.classList.remove('hidden');
-                    }
+                    if (detailRow) detailRow.classList.remove('hidden');
                 } else {
-                    // Row tidak match → sembunyikan row dan tutup detail row
                     row.style.display = 'none';
-                    if (detailRow && detailRow.classList.contains('detail-row')) {
-                        detailRow.classList.add('hidden');
-                    }
+                    if (detailRow) detailRow.classList.add('hidden');
+                }
+            });
+
+            // Mobile cards
+            const mobileCards = document.querySelectorAll('.sm\\:hidden > div');
+            mobileCards.forEach((card) => {
+                const detailRow = card.querySelector('.detail-row');
+                let combinedText = card.textContent.toLowerCase();
+
+                if (!searchValue) {
+                    card.style.display = '';
+                    if (detailRow) detailRow.classList.add('hidden');
+                } else if (combinedText.includes(searchValue)) {
+                    card.style.display = '';
+                    if (detailRow) detailRow.classList.remove('hidden');
+                } else {
+                    card.style.display = 'none';
+                    if (detailRow) detailRow.classList.add('hidden');
                 }
             });
         });

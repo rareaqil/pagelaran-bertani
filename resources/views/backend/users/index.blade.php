@@ -11,7 +11,7 @@
                 </div>
             @endif
 
-            <div class="mb-4 flex items-center justify-between">
+            <div class="mb-4 flex items-center justify-between p-4">
                 <a
                     href="{{ route('users.create') }}"
                     class="rounded bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
@@ -91,13 +91,15 @@
                 </div>
             --}}
             {{-- Panggil component table --}}
-            <div class="p-4 shadow sm:rounded-lg sm:p-8">
+            <div class="bg-white p-4 shadow sm:rounded-lg sm:p-8">
                 <x-table-flexible
                     :data="$users"
                     :columns="[
                         'first_name' => 'Nama Depan',
                         'last_name' => 'Nama Belakang',
                         'email' => 'Email',
+                        'phone' => 'Nomor Telepon',
+                        'age' => 'Umur',
                         'role' => 'Role',
                         'primaryAddress.address1' => 'Alamat',
                         'primaryAddress.district_name' => 'Kecamatan',
@@ -106,7 +108,7 @@
                         'primaryAddress.postcode' => 'Kode Pos'
                     ]"
                     :actions="['edit' => 'users.edit', 'delete' => 'users.destroy','detail' => true]"
-                    :maxVisibleColumns="4"
+                    :maxVisibleColumns="6"
                 />
             </div>
         </div>
