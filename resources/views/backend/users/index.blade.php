@@ -18,82 +18,96 @@
                 >
                     Tambah User
                 </a>
-
-                <input
-                    type="text"
-                    id="searchInput"
-                    placeholder="Search..."
-                    class="rounded border border-gray-300 px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
             </div>
 
-            <div class="overflow-x-auto bg-white shadow sm:rounded-lg">
+            {{--
+                <div class="overflow-x-auto bg-white shadow sm:rounded-lg">
                 <table class="min-w-full divide-y divide-gray-200" id="usersTable">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                                Nama
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                                Email
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                                Role
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                                Alamat
-                            </th>
-                            <th
-                                class="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500"
-                            >
-                                Aksi
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200 bg-white" id="usersTbody">
-                        @foreach ($users as $user)
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4">{{ $user->first_name }} {{ $user->last_name }}</td>
-                                <td class="px-6 py-4">{{ $user->email }}</td>
-                                <td class="px-6 py-4">{{ ucfirst($user->role) }}</td>
-                                <td class="px-6 py-4">
-                                    @if ($user->primaryAddress)
-                                        {{ $user->primaryAddress->address1 }},
-                                        {{ $user->primaryAddress->district_name }},
-                                        {{ $user->primaryAddress->regency_name }},
-                                        {{ $user->primaryAddress->province_name }},
-                                        {{ $user->primaryAddress->postcode }}
-                                    @else
-                                        -
-                                    @endif
-                                </td>
-                                <td class="space-x-2 px-6 py-4 text-center">
-                                    <a
-                                        href="{{ route('users.edit', $user) }}"
-                                        class="text-indigo-600 hover:text-indigo-900"
-                                    >
-                                        Edit
-                                    </a>
-                                    <form
-                                        action="{{ route('users.destroy', $user) }}"
-                                        method="POST"
-                                        class="inline-block"
-                                        onsubmit="return confirm('Yakin ingin menghapus user ini?');"
-                                    >
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
+                <thead class="bg-gray-50">
+                <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                Nama
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                Email
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                Role
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                Alamat
+                </th>
+                <th
+                class="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500"
+                >
+                Aksi
+                </th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 bg-white" id="usersTbody">
+                @foreach ($users as $user)
+                <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4">{{ $user->first_name }} {{ $user->last_name }}</td>
+                <td class="px-6 py-4">{{ $user->email }}</td>
+                <td class="px-6 py-4">{{ ucfirst($user->role) }}</td>
+                <td class="px-6 py-4">
+                @if ($user->primaryAddress)
+                {{ $user->primaryAddress->address1 }},
+                {{ $user->primaryAddress->district_name }},
+                {{ $user->primaryAddress->regency_name }},
+                {{ $user->primaryAddress->province_name }},
+                {{ $user->primaryAddress->postcode }}
+                @else
+                -
+                @endif
+                </td>
+                <td class="space-x-2 px-6 py-4 text-center">
+                <a
+                href="{{ route('users.edit', $user) }}"
+                class="text-indigo-600 hover:text-indigo-900"
+                >
+                Edit
+                </a>
+                <form
+                action="{{ route('users.destroy', $user) }}"
+                method="POST"
+                class="inline-block"
+                onsubmit="return confirm('Yakin ingin menghapus user ini?');"
+                >
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="text-red-600 hover:text-red-900">Hapus</button>
+                </form>
+                </td>
+                </tr>
+                @endforeach
+                </tbody>
                 </table>
-
+                
                 <!-- Pagination -->
                 <div class="p-4">
-                    {{ $users->links() }}
+                {{ $users->links() }}
                 </div>
+                </div>
+            --}}
+            {{-- Panggil component table --}}
+            <div class="p-4 shadow sm:rounded-lg sm:p-8">
+                <x-table-flexible
+                    :data="$users"
+                    :columns="[
+                        'first_name' => 'Nama Depan',
+                        'last_name' => 'Nama Belakang',
+                        'email' => 'Email',
+                        'role' => 'Role',
+                        'primaryAddress.address1' => 'Alamat',
+                        'primaryAddress.district_name' => 'Kecamatan',
+                        'primaryAddress.regency_name' => 'Kabupaten',
+                        'primaryAddress.province_name' => 'Provinsi',
+                        'primaryAddress.postcode' => 'Kode Pos'
+                    ]"
+                    :actions="['edit' => 'users.edit', 'delete' => 'users.destroy','detail' => true]"
+                    :maxVisibleColumns="4"
+                />
             </div>
         </div>
     </div>
