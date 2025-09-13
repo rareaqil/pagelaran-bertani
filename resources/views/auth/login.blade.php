@@ -54,7 +54,7 @@
             </div>
 
             <a href="{{ url('/') }}"
-                class="absolute top-6 right-6 bg-yellow-500 text-white px-4 py-2 rounded-md shadow 
+                class="absolute top-6 right-6 bg-yellow-500 text-white px-4 py-2 bg-opacity-60 rounded-md shadow 
           hover:bg-yellow-600 active:scale-95 transition transform duration-150 z-50">
                 Back to website →
             </a>
