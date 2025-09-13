@@ -27,6 +27,18 @@ class User extends Authenticatable
 
   
 
+    // Relasi ke alamat
+    public function addresses()
+    {
+        return $this->hasMany(UserAddress::class);
+    }
+
+    // Relasi ke alamat utama (opsional)
+    public function primaryAddress()
+    {
+        return $this->hasOne(UserAddress::class)->latestOfMany();
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *
