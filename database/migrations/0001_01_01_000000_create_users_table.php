@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
@@ -16,41 +19,13 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
-            $table->string('phone')->nullable();
-            $table->string('age')->nullable();
-
-            // // Alamat lengkap Indonesia
-            // $table->string('address1')->nullable();
-            // $table->unsignedBigInteger('province_id')->nullable();
-            // $table->unsignedBigInteger('city_id')->nullable();
-            // $table->unsignedBigInteger('district_id')->nullable();
-            // $table->unsignedBigInteger('village_id')->nullable();
-            // $table->string('postcode', 10)->nullable();
-
+			$table->string('phone')->nullable();
+			$table->string('address1')->nullable();
+			$table->string('address2')->nullable();
+			$table->integer('province_id')->nullable();
+			$table->integer('city_id')->nullable();
+            $table->integer('postcode')->nullable();
             $table->enum('role', ['super_admin', 'admin', 'user'])->default('user');
-            $table->timestamps();
-        });
-
-
-        // Tabel Alamat user
-      Schema::create('user_addresses', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-
-            $table->unsignedBigInteger('province_id')->nullable();
-            $table->string('province_name')->nullable();
-
-            $table->unsignedBigInteger('regency_id')->nullable();
-            $table->string('regency_name')->nullable();
-
-            $table->unsignedBigInteger('district_id')->nullable();
-            $table->string('district_name')->nullable();
-
-            $table->unsignedBigInteger('village_id')->nullable();
-            $table->string('village_name')->nullable();
-
-            $table->string('address1')->nullable();
-            $table->string('postcode', 10)->nullable();
             $table->timestamps();
         });
 
@@ -69,7 +44,6 @@ return new class extends Migration
             $table->integer('last_activity')->index();
         });
 
-        // Jika tidak dipakai, bisa hapus table password_resets lama
         Schema::create('password_resets', function (Blueprint $table) {
             $table->string('email')->index();
             $table->string('token');
@@ -77,12 +51,13 @@ return new class extends Migration
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::dropIfExists('users');
-        Schema::dropIfExists('user_addresses');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
-        Schema::dropIfExists('password_resets');
     }
 };
