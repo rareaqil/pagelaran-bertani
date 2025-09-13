@@ -10,8 +10,6 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "azishapidin/indoregion": "^3.0",
-        "binafy/laravel-cart": "^1.2",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1"
     },
