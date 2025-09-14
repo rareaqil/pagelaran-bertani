@@ -8,7 +8,8 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\PostController;
 
 Route::get('/', function () {
-    return view('frontend.welcome');
+    // return view('frontend.welcome');
+    return view('frontend.home');
 });
 
 Route::get('/dashboard', function () {
@@ -48,11 +49,11 @@ Route::prefix('cart')->group(function () {
 
 // Super Admin
 // Super Admin
-// Route::middleware(['auth', 'role:super_admin'])->group(function () {
-//     Route::get('/superadmin/dashboard', function () {
-//         return 'Super Admin Dashboard';
-//     })->name('superadmin.dashboard');
-// });
+Route::middleware(['auth', 'role:super_admin'])->group(function () {
+    Route::get('/superadmin/dashboard', function () {
+        return 'Super Admin Dashboard';
+    })->name('superadmin.dashboard');
+});
 
 // Admin
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -86,4 +87,5 @@ Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web','auth']]
 require __DIR__.'/auth.php';
 
 require __DIR__.'/api.php';
+
 
