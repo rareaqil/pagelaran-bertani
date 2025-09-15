@@ -6,26 +6,34 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-     Schema::create('posts', function (Blueprint $table) {
-        $table->id();
-        $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-        $table->string('title');
-        $table->string('slug')->unique();
-        $table->text('body');
-        $table->string('image')->nullable();
-        $table->timestamp('published_at')->nullable();
-        $table->timestamps();
-    });
+        Schema::create('posts', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('slug')->unique();
+            $table->text('intro')->nullable();
+            $table->longText('content')->nullable();
+            $table->string('type')->nullable();
+            $table->string('image')->nullable();
+            $table->enum('status', ['draft','published','archived'])->default('draft');
+
+            // user tracking
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->string('created_by_name')->nullable();
+            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('deleted_by')->nullable()->constrained('users')->nullOnDelete();
+
+            $table->timestamp('published_at')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+
+            // index tambahan jika perlu
+            $table->index('slug');
+            $table->index('status');
+        });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('posts');

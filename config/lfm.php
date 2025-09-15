@@ -98,7 +98,7 @@ return [
 
     'rename_file'              => false,
 
-    'rename_duplicates'        => false,
+    'rename_duplicates'        => true,
 
     'alphanumeric_filename'    => false,
 
@@ -107,6 +107,7 @@ return [
     'should_validate_size'     => false,
 
     'should_validate_mime'     => true,
+    
 
     // behavior on files with identical name
     // setting it to true cause old file replace with new one

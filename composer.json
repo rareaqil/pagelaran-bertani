@@ -12,6 +12,7 @@
         "php": "^8.2",
         "azishapidin/indoregion": "^3.0",
         "binafy/laravel-cart": "^1.2",
+        "intervention/image": "^3.11",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "unisharp/laravel-filemanager": "^2.11"

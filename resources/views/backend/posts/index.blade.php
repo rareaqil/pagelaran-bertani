@@ -3,7 +3,7 @@
         <h2 class="text-xl font-semibold leading-tight text-gray-800">Manajemen Post</h2>
     </x-slot>
 
-    <div class="py-6">
+    <div class="bg-white py-6">
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
             {{-- Flash message --}}
             @if (session('success'))
@@ -27,37 +27,43 @@
                 <x-table-flexible
                     :data="$posts"
                     :columns="[
-                        'title'         => 'Judul',
-                        'slug'          => 'Slug',
-                        'user.name'     => 'Penulis',
-                        'published_at'  => 'Tanggal Publikasi',
-                        'created_at'    => 'Dibuat'
+                        'name'                  => 'Judul',
+                        'slug'                  => 'Slug',
+                        'type'                  => 'Type',
+                        'created_by_name'       => 'Penulis',
+                        'status'                => 'Status',
+                        'published_at'          => 'Tanggal Publikasi',
+                        'created_at'            => 'Dibuat',
+                        'updated_at'            => 'Diupdate',
+                        'updater.first_name'    => 'Last Update Oleh'
                     ]"
                     :actions="[
                         'edit'   => 'posts.edit',
                         'delete' => 'posts.destroy',
                         'detail' => true
                     ]"
-                    :maxVisibleColumns="5"
+                    :maxVisibleColumns="6"
                 />
             </div>
         </div>
     </div>
 
     @push('scripts')
-        <script type="module">
+        {{--
+            <script type="module">
             // contoh filter pencarian sederhana (jika perlu)
             const searchInput = document.getElementById('searchInput');
             const tableRows = document.querySelectorAll('#postsTbody tr');
-
+            
             if (searchInput) {
-                searchInput.addEventListener('keyup', function () {
-                    const val = this.value.toLowerCase();
-                    tableRows.forEach((row) => {
-                        row.style.display = row.textContent.toLowerCase().includes(val) ? '' : 'none';
-                    });
-                });
+            searchInput.addEventListener('keyup', function () {
+            const val = this.value.toLowerCase();
+            tableRows.forEach((row) => {
+            row.style.display = row.textContent.toLowerCase().includes(val) ? '' : 'none';
+            });
+            });
             }
-        </script>
+            </script>
+        --}}
     @endpush
 </x-app-layout>

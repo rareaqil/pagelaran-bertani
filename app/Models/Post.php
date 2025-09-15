@@ -4,52 +4,72 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Post extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     /**
-     * Kolom yang boleh diisi mass-assignment.
-     * Sesuaikan dengan kolom di tabel posts.
+     * Kolom yang boleh diisi mass-assignment
      */
     protected $fillable = [
-        'title',
+        'name',
         'slug',
-        'body',
-        'image',      // misal untuk menyimpan path gambar
-        'user_id',    // relasi ke user pembuat post
-        'published_at'
+        'intro',
+        'content',      // Summernote HTML
+        'type',
+        'image',        // path LFM
+        'status',
+        'created_by',
+        'created_by_name',
+        'updated_by',
+        'deleted_by',
+        'published_at',
     ];
 
     /**
-     * Casting kolom ke tipe tertentu.
+     * Casting kolom ke tipe tertentu
      */
     protected $casts = [
         'published_at' => 'datetime',
     ];
 
     /**
-     * Relasi: Post dimiliki oleh User (penulis).
+     * Relasi: Post dimiliki oleh User (pembuat)
      */
-    public function user()
+    public function creator()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     /**
-     * (Opsional) Relasi: Post punya banyak komentar.
+     * Relasi: User yang mengupdate post
      */
-    public function comments()
+    public function updater()
     {
-        return $this->hasMany(Comment::class);
+        return $this->belongsTo(User::class, 'updated_by');
     }
 
     /**
-     * (Opsional) Relasi: Kategori.
+     * Relasi: User yang menghapus post
      */
-    public function category()
+    public function deleter()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(User::class, 'deleted_by');
     }
+
+    /**
+     * Accessor opsional: tampilkan status dengan huruf kapital
+     */
+    public function getStatusLabelAttribute()
+    {
+        return ucfirst($this->status);
+    }
+
+    public function getRouteKeyName()
+{
+    return 'slug';
+}
+
 }
