@@ -17,7 +17,7 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
-                    {{-- Dropdown dengan gaya nav-link, tapi trigger bukan <a> --}}
+                    {{-- Management Users --}}
                     <x-nav-dropdown :active="request()->routeIs('users.*')" align="left" width="w-30" top="36">
                         <x-slot name="trigger">
                             <span class="flex items-center">
@@ -25,11 +25,35 @@
                             </span>
                         </x-slot>
                         <x-slot name="content">
-                            <x-dropdown-link :href="route('users.index')">
+                            <x-dropdown-link :href="route('users.index')" :active="request()->routeIs('users.index')">
                                 {{ __('List User') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="route('users.create')">
+                            <x-dropdown-link
+                                :href="route('users.create')"
+                                :active="request()->routeIs('users.create')"
+                            >
                                 {{ __('Tambah User') }}
+                            </x-dropdown-link>
+                        </x-slot>
+                    </x-nav-dropdown>
+
+                    {{-- Management Posts --}}
+                    <x-nav-dropdown :active="request()->routeIs('posts.*')" align="left" width="w-30" top="36">
+                        <x-slot name="trigger">
+                            <span class="flex items-center">
+                                {{ __('Management Posts') }}
+                            </span>
+                        </x-slot>
+
+                        <x-slot name="content">
+                            <x-dropdown-link :href="route('posts.index')" :active="request()->routeIs('posts.index')">
+                                {{ __('List Posts') }}
+                            </x-dropdown-link>
+                            <x-dropdown-link
+                                :href="route('posts.create')"
+                                :active="request()->routeIs('posts.create')"
+                            >
+                                {{ __('Tambah Post') }}
                             </x-dropdown-link>
                         </x-slot>
                     </x-nav-dropdown>
@@ -119,7 +143,9 @@
             </x-responsive-nav-link>
         </div>
         {{-- ===== Responsive Dropdown Management User ===== --}}
-        <div x-data="{ openMU: false }">
+        <div x-data="{
+            openMU: {{ request()->routeIs('users.*') ? 'true' : 'false' }},
+        }">
             <button
                 @click="openMU = ! openMU"
                 class="w-full px-4 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-100"
@@ -127,8 +153,32 @@
                 Management User
             </button>
             <div x-show="openMU" class="pl-4">
-                <x-responsive-nav-link :href="route('dashboard')">List User</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('dashboard')">Tambah User</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('users.index')" :active="request()->routeIs('users.index')">
+                    List User
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('users.create')" :active="request()->routeIs('users.create')">
+                    Tambah User
+                </x-responsive-nav-link>
+            </div>
+        </div>
+
+        {{-- ===== Responsive Dropdown Management Posts ===== --}}
+        <div x-data="{
+            openMP: {{ request()->routeIs('users.*') ? 'true' : 'false' }},
+        }">
+            <button
+                @click="openMP = ! openMP"
+                class="w-full px-4 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-100"
+            >
+                Management Posts
+            </button>
+            <div x-show="openMP" class="pl-4">
+                <x-responsive-nav-link :href="route('posts.index')" :active="request()->routeIs('posts.index')">
+                    List Posts
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('posts.create')" :active="request()->routeIs('posts.create')">
+                    Tambah Post
+                </x-responsive-nav-link>
             </div>
         </div>
 

@@ -39,6 +39,7 @@
                     ]"
                     :actions="[
                         'edit'   => 'posts.edit',
+                        'show'   => 'posts.show',
                         'delete' => 'posts.destroy',
                         'detail' => true
                     ]"

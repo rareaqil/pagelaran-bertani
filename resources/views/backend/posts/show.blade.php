@@ -86,13 +86,22 @@
                 {!! $post->content !!}
             </article>
 
-            {{-- Tombol kembali --}}
-            <div class="mt-10">
+            {{-- Tombol kembali & edit --}}
+            <div class="mt-10 flex gap-4">
+                {{-- Kembali ke daftar --}}
                 <a
                     href="{{ route('posts.index') }}"
                     class="inline-block rounded-lg bg-green-600 px-6 py-2 text-white shadow transition hover:bg-green-700"
                 >
                     ← Kembali ke Daftar
+                </a>
+
+                {{-- Edit post --}}
+                <a
+                    href="{{ route('posts.edit', $post) }}"
+                    class="inline-block rounded-lg bg-blue-600 px-6 py-2 text-white shadow transition hover:bg-blue-700"
+                >
+                    ✏️ Edit
                 </a>
             </div>
         </div>
