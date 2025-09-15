@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\PostController;
 
 Route::get('/', function () {
     // return view('frontend.welcome');
@@ -35,6 +36,8 @@ Route::prefix('cart')->group(function () {
 
     Route::patch('/item/{id}', [CartController::class, 'updateItemQty'])->name('cart.item.update');
 });
+
+
 });
 // Route::group(['middleware'=>'role:super admin,admin','prefix'=>'car', 'as'=>'car.'],function () {
 //     Route::group(['prefix'=>'car-type', 'as'=>'car-type.'],function () {
@@ -69,8 +72,16 @@ Route::middleware(['auth', 'role:user'])->group(function () {
 
 Route::middleware(['auth', 'role:super_admin,admin'])->prefix('backend')->group(function() {
     Route::resource('users', UserController::class);
+    Route::resource('posts', PostController::class);
+    
 });
 
+
+use UniSharp\LaravelFilemanager\Lfm;
+
+Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web','auth']], function () {
+    Lfm::routes();
+});
 
 
 require __DIR__.'/auth.php';
