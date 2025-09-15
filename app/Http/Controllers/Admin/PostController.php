@@ -4,15 +4,19 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Post;
+use Illuminate\Http\Request;
 use App\Http\Requests\PostRequest;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
-    public function index()
+    public function index(Request  $request)
     {
-        $posts = Post::latest()->paginate(10);
+        $sort = $request->query('sort', 'id'); // default sort by id
+        $direction = $request->query('direction', 'asc'); // default ascending
+    
+        $posts = Post::latest()->paginate(2) ->withQueryString();;
         return view('backend.posts.index', compact('posts'));
     }
 

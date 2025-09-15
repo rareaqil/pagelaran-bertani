@@ -34,8 +34,25 @@
             <thead class="bg-gray-50">
                 <tr>
                     @foreach ($mainColumns as $field => $label)
+                        @php
+                            $isSorted = request()->query('sort') === $field;
+                            $direction = request()->query('direction') === 'asc' ? 'desc' : 'asc';
+                        @endphp
+
                         <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                            {{ $label }}
+                            <a
+                                href="{{ request()->fullUrlWithQuery(['sort' => $field, 'direction' => $direction]) }}"
+                                class="flex items-center gap-1"
+                            >
+                                {{ $label }}
+                                @if ($isSorted)
+                                    @if (request()->query('direction') === 'asc')
+                                        ▲
+                                    @else
+                                        ▼
+                                    @endif
+                                @endif
+                            </a>
                         </th>
                     @endforeach
 
