@@ -21,12 +21,25 @@
 
 <div class="mx-auto w-full max-w-full sm:max-w-7xl">
     {{-- Search input --}}
-    <input
-        type="text"
-        class="mb-4 w-full rounded border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        placeholder="Search..."
-        id="tableSearch"
-    />
+
+    <div class="mb-4 flex items-center justify-between">
+        <input
+            type="text"
+            class="rounded border px-5 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Search..."
+            id="tableSearch"
+        />
+
+        <div>
+            <label for="perPage" class="mr-2 text-sm text-gray-700">Tampilkan per halaman:</label>
+            <select id="perPage" class="rounded border py-1 pl-2 pr-10">
+                <option value="10" {{ request('perPage') == 10 ? 'selected' : '' }}>10</option>
+                <option value="20" {{ request('perPage') == 20 ? 'selected' : '' }}>20</option>
+                <option value="50" {{ request('perPage') == 50 ? 'selected' : '' }}>50</option>
+                <option value="100" {{ request('perPage') == 100 ? 'selected' : '' }}>100</option>
+            </select>
+        </div>
+    </div>
 
     {{-- Desktop Table --}}
     <div class="hidden overflow-x-auto bg-white shadow sm:block sm:rounded-lg">
@@ -405,6 +418,14 @@
 </div>
 
 @push('scripts')
+    <script type="module">
+        const perPageSelect = document.getElementById('perPage');
+        perPageSelect.addEventListener('change', function () {
+            const url = new URL(window.location.href);
+            url.searchParams.set('perPage', this.value);
+            window.location.href = url.toString();
+        });
+    </script>
     <script type="module">
         // Toggle detail row (desktop & mobile)
         document.querySelectorAll('.toggle-detail').forEach((btn) => {

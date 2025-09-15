@@ -30,11 +30,12 @@ Route::middleware('auth')->group(function () {
 Route::prefix('cart')->group(function () {
     Route::get('/', [CartController::class, 'showPage'])->name('cart.show');
     Route::post('/add', [CartController::class, 'addItem'])->name('cart.add');
-    Route::post('/coupon', [CartController::class, 'applyCoupon'])->name('cart.coupon');
+    Route::post('/coupon', [CartController::class, 'applyVoucher'])->name('cart.coupon');
     Route::delete('/clear', [CartController::class, 'clear'])->name('cart.clear');
     Route::delete('/item/remove/{id}', [CartController::class, 'removeItem'])->name('cart.item.remove');
 
     Route::patch('/item/{id}', [CartController::class, 'updateItemQty'])->name('cart.item.update');
+    Route::post('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
 });
 
 

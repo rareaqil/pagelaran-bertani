@@ -107,9 +107,19 @@
                     </tbody>
                 </table>
 
-                <div class="mt-4 text-right font-bold">
-                    Total:
-                    <span id="cart-total">{{ number_format($total, 0, ',', '.') }}</span>
+                <div class="mt-4 text-right font-bold" id="cart-summary">
+                    <div>
+                        Subtotal:
+                        <span id="cart-subtotal">{{ number_format($total, 0, ',', '.') }}</span>
+                    </div>
+                    <div id="cart-discount" class="text-green-600" style="display: none">
+                        Discount:
+                        <span id="cart-discount-amount">0</span>
+                    </div>
+                    <div>
+                        Total:
+                        <span id="cart-total">{{ number_format($total, 0, ',', '.') }}</span>
+                    </div>
                 </div>
 
                 {{-- Apply Coupon --}}
@@ -131,12 +141,19 @@
                         Clear Cart
                     </button>
                 </div>
+                {{-- Checkout --}}
+                <div class="mt-4 text-right">
+                    <button type="button" id="checkout" class="rounded bg-green-600 px-4 py-2 text-white">
+                        Checkout
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
     @push('scripts')
         <script type="module">
+            let currentVoucher = null;
             $(function () {
                 // Initialize Select2 for product search
                 $('#product-search')
@@ -158,13 +175,15 @@
                     });
 
                 // Update cart DOM
-                function updateCartDOM(cart) {
+                function updateCartDOM(cart, voucher = 0) {
                     let tbody = $('#cart-items');
                     tbody.empty();
-                    let total = 0;
+                    console.log('cart data:', cart);
+                    console.log('voucher:', voucher);
+                    let subtotal = 0;
                     cart.items.forEach((item) => {
-                        let subtotal = item.price * item.quantity * (1 - item.discount);
-                        total += subtotal;
+                        let itemSubtotal = item.price * item.quantity * (1 - (item.discount ?? 0));
+                        subtotal += itemSubtotal;
                         tbody.append(`
                             <tr id="cart-item-${item.id}">
                                 <td class="border px-4 py-2">${item.name}</td>
@@ -174,14 +193,26 @@
                                     <input type="number" value="${item.quantity}" min="1" class="w-16 rounded border text-center qty-input" data-id="${item.id}"/>
                                     <button type="button" class="btn-increase rounded bg-gray-300 px-2 py-1" data-id="${item.id}">+</button>
                                 </td>
-                                <td class="border px-4 py-2">${subtotal.toLocaleString()}</td>
+                                <td class="border px-4 py-2">${itemSubtotal.toLocaleString()}</td>
                                 <td class="border px-4 py-2">
                                     <button class="remove-item rounded bg-red-500 px-2 py-1 text-white" data-id="${item.id}">Remove</button>
                                 </td>
                             </tr>
                         `);
                     });
-                    $('#cart-total').text(total.toLocaleString());
+
+                    // Update subtotal
+                    $('#cart-subtotal').text(subtotal.toLocaleString());
+
+                    // Update voucher / discount
+                    if (voucher) {
+                        $('#cart-discount').show();
+                        $('#cart-discount-amount').text(voucher.discount.toLocaleString());
+                        $('#cart-total').text((subtotal - voucher.discount).toLocaleString());
+                    } else {
+                        $('#cart-discount').hide();
+                        $('#cart-total').text(subtotal.toLocaleString());
+                    }
                 }
 
                 // Add Product Qty + / -
@@ -202,7 +233,7 @@
                         headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                         contentType: 'application/json',
                         success: function (res) {
-                            if (res.success) updateCartDOM(res.cart);
+                            if (res.success) updateCartDOM(res.cart, currentVoucher);
                         },
                     });
                 };
@@ -215,7 +246,7 @@
                         type: 'DELETE',
                         headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                         success: function (res) {
-                            if (res.success) updateCartDOM(res.cart);
+                            if (res.success) updateCartDOM(res.cart, currentVoucher);
                         },
                     });
                 });
@@ -231,7 +262,7 @@
                         headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                         contentType: 'application/json',
                         success: function (res) {
-                            if (res.success) updateCartDOM(res.cart);
+                            if (res.success) updateCartDOM(res.cart, currentVoucher);
                         },
                     });
                 });
@@ -248,17 +279,58 @@
                     input.val(parseInt(input.val()) + 1).trigger('change');
                 });
 
-                // Apply coupon
                 $('#apply-coupon').click(function () {
-                    const discount = parseFloat($('#coupon').val()) || 0;
+                    const code = $('#coupon').val();
                     $.ajax({
                         url: '{{ route('cart.coupon') }}',
                         type: 'POST',
-                        data: JSON.stringify({ discount }),
+                        data: JSON.stringify({ code }),
                         headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                         contentType: 'application/json',
                         success: function (res) {
-                            if (res.success) updateCartDOM(res.cart);
+                            if (res.success) {
+                                // update cart items
+
+                                // hitung subtotal dari cart.items
+                                let subtotal = 0;
+                                res.cart.items.forEach((item) => {
+                                    subtotal += item.price * item.quantity * (1 - (item.discount ?? 0));
+                                });
+                                $('#cart-subtotal').text(subtotal.toLocaleString());
+
+                                // tampilkan voucher jika ada
+                                if (res.voucher) {
+                                    currentVoucher = res.voucher; // simpan voucher di
+                                    updateCartDOM(res.cart, currentVoucher);
+                                    $('#cart-discount').show();
+                                    $('#cart-discount-amount').text(res.voucher.discount.toLocaleString());
+                                    $('#cart-total').text((subtotal - res.voucher.discount).toLocaleString());
+                                } else {
+                                    $('#cart-discount').hide();
+                                    $('#cart-total').text(subtotal.toLocaleString());
+                                }
+                            } else {
+                                alert(res.message || 'Coupon tidak valid');
+                            }
+                        },
+                    });
+                });
+
+                // Checkout
+                $('#checkout').click(function () {
+                    $.ajax({
+                        url: '{{ route('cart.checkout') }}',
+                        type: 'POST',
+                        data: JSON.stringify({ voucher: currentVoucher }),
+                        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                        contentType: 'application/json',
+                        success: function (res) {
+                            if (res.success) {
+                                alert('Order berhasil dibuat dengan ID: ' + res.order_id);
+                                window.location.href = '/orders/' + res.order_id; // redirect ke detail order
+                            } else {
+                                alert(res.message || 'Checkout gagal');
+                            }
                         },
                     });
                 });
@@ -270,7 +342,7 @@
                         type: 'DELETE',
                         headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                         success: function (res) {
-                            if (res.success) updateCartDOM(res.cart);
+                            if (res.success) updateCartDOM(res.cart, currentVoucher);
                         },
                     });
                 });

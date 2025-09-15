@@ -13,10 +13,35 @@ class PostController extends Controller
 {
     public function index(Request  $request)
     {
+        // $sort = $request->query('sort', 'id'); // default sort by id
+        // $direction = $request->query('direction', 'asc'); // default ascending
+
+        // $perPage = request()->query('perPage', 10); // default 10
+        // $posts = Post::latest()->paginate($perPage)->withQueryString();
+    
+        // return view('backend.posts.index', compact('posts'));
+
+
+
         $sort = $request->query('sort', 'id'); // default sort by id
         $direction = $request->query('direction', 'asc'); // default ascending
-    
-        $posts = Post::latest()->paginate(2) ->withQueryString();;
+
+        // --- Pagination ---
+        $perPage = $request->query('perPage', 10); // default 10
+        $page = $request->query('page', 1);
+
+        // Hitung total items untuk reset page jika perlu
+        $totalItems = Post::count();
+        $totalPages = ceil($totalItems / $perPage);
+        if ($page > $totalPages) {
+            $page = 1;
+        }
+
+        // Ambil data dengan sort & paginate
+        $posts = Post::orderBy($sort, $direction)
+            ->paginate($perPage, ['*'], 'page', $page)
+            ->withQueryString();
+
         return view('backend.posts.index', compact('posts'));
     }
 
@@ -31,7 +56,7 @@ class PostController extends Controller
 
         $data['image'] = $request->input('image');
 
-      $data['slug'] = $this->generateUniqueSlug($data['name']);
+        $data['slug'] = $this->generateUniqueSlug($data['name']);
         $data['created_by'] = auth()->id();
         $data['created_by_name'] = auth()->user()->first_name . ' ' . auth()->user()->last_name;
          if ($data['status'] === 'published' && empty($data['published_at'])) {
