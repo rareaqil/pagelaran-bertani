@@ -13,15 +13,6 @@ class PostController extends Controller
 {
     public function index(Request  $request)
     {
-        // $sort = $request->query('sort', 'id'); // default sort by id
-        // $direction = $request->query('direction', 'asc'); // default ascending
-
-        // $perPage = request()->query('perPage', 10); // default 10
-        // $posts = Post::latest()->paginate($perPage)->withQueryString();
-    
-        // return view('backend.posts.index', compact('posts'));
-
-
 
         $sort = $request->query('sort', 'id'); // default sort by id
         $direction = $request->query('direction', 'asc'); // default ascending
@@ -91,7 +82,7 @@ class PostController extends Controller
 
         $data['slug'] = $this->generateUniqueSlug($data['name'], $post->id);
         $data['updated_by'] = auth()->id();
-        
+
         if ($data['status'] === 'published' && $post->status !== 'published') {
             $data['published_at'] = now();
         }
@@ -117,11 +108,11 @@ class PostController extends Controller
 
     // Hellper
 
-    /** 
+    /**
      * generateUniqueSlug
-     * Usage: 
+     * Usage:
      * $data['slug'] = $this->generateUniqueSlug($data['name']);
-     * 
+     *
      */
 private function generateUniqueSlug($name, $id = null)
 {

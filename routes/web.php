@@ -7,6 +7,8 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\StockMovementController;
 
 Route::get('/', function () {
     // return view('frontend.welcome');
@@ -24,6 +26,17 @@ Route::middleware('auth')->group(function () {
 
 
     Route::get('/orders/{order}', [OrderController::class, 'showView'])->name('orders.showView');
+
+
+
+
+    Route::get('/stock', [StockMovementController::class, 'index'])->name('stock.index');
+    Route::post('/stock/hold', [StockMovementController::class, 'hold'])->name('stock.hold');
+    Route::post('/stock/confirm-payment/{holdId}', [StockMovementController::class, 'confirmPayment'])->name('stock.confirmPayment');
+    Route::post('/stock/cancel-hold/{holdId}', [StockMovementController::class, 'cancelHold'])->name('stock.cancelHold');
+    Route::post('/stock/add', [StockMovementController::class, 'addStock'])->name('stock.add');
+
+
     // Route::get('/cart', [CartController::class, 'index']);
     // Route::post('/cart/add', [CartController::class, 'addItem']);
     // Route::post('/cart/coupon', [CartController::class, 'applyCoupon']);
@@ -76,7 +89,9 @@ Route::middleware(['auth', 'role:user'])->group(function () {
 Route::middleware(['auth', 'role:super_admin,admin'])->prefix('backend')->group(function() {
     Route::resource('users', UserController::class);
     Route::resource('posts', PostController::class);
-    
+    Route::resource('products', ProductController::class);
+
+
 });
 
 

@@ -50,21 +50,6 @@
     </div>
 
     @push('scripts')
-        {{--
-            <script type="module">
-            // contoh filter pencarian sederhana (jika perlu)
-            const searchInput = document.getElementById('searchInput');
-            const tableRows = document.querySelectorAll('#postsTbody tr');
-            
-            if (searchInput) {
-            searchInput.addEventListener('keyup', function () {
-            const val = this.value.toLowerCase();
-            tableRows.forEach((row) => {
-            row.style.display = row.textContent.toLowerCase().includes(val) ? '' : 'none';
-            });
-            });
-            }
-            </script>
-        --}}
+
     @endpush
 </x-app-layout>

@@ -13,7 +13,7 @@ return new class extends Migration
     {
        Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('order_id')->unique()->after('id');
+            $table->string('order_id')->unique();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->decimal('total_amount', 12, 2);
             $table->string('status')->default('pending'); // pending, paid, cancelled

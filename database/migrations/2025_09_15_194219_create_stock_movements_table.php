@@ -14,10 +14,11 @@ return new class extends Migration
        Schema::create('stock_movements', function (Blueprint $table) {
             $table->id();
             $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
-            $table->enum('type', ['in', 'out']); // masuk atau keluar
+            $table->enum('type', ['in', 'out', 'hold', 'reversal']);
             $table->integer('quantity');
             $table->string('reference_type')->nullable(); // misal 'order'
             $table->unsignedBigInteger('reference_id')->nullable(); // id dari order
+            $table->unsignedBigInteger('related_movement_id')->nullable();
             $table->timestamps();
 
             $table->softDeletes();

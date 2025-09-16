@@ -4,22 +4,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Binafy\LaravelCart\Cartable;
 
 class Product extends Model implements Cartable
 {
-    use SoftDeletes;
+    use HasFactory,SoftDeletes;
 
     protected $fillable = [
         'name',
+        'description',
         'price',
         'stock',
-        'is_active',
-        'description',
-    ];
-
-    protected $casts = [
-        'is_active' => 'boolean',
+        'status_active',
+        'image',
+        'weight',
+        'sku',
     ];
 
     /*
@@ -30,6 +30,15 @@ class Product extends Model implements Cartable
     public function getPrice(): float
     {
         return (float) $this->price;
+    }
+
+    public function getAvailableStockAttribute()
+    {
+        $holdQty = $this->stockMovements()
+            ->where('type', 'hold')
+            ->sum('quantity');
+
+        return $this->stock - $holdQty;
     }
 
     /*

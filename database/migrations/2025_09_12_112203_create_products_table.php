@@ -22,9 +22,9 @@ return new class extends Migration
             $table->decimal('weight', 8, 2)->nullable();     // berat produk (kg/gr)
             $table->string('sku')->nullable()->unique();     // kode unik produk
             $table->timestamps();
-            $table->softDeletes(); 
+            $table->softDeletes();
 
-            $table->index(['name', 'status']); // untuk pencarian & filter cepat
+            $table->index(['name', 'status_active']); // untuk pencarian & filter cepat
         });
     }
 
