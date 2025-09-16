@@ -68,21 +68,94 @@ class CartController extends Controller
     }
 
     // Terapkan kupon (AJAX)
-    public function applyCoupon(Request $request)
+    // public function applyVoucher(Request $request)
+    // {
+    //     $code = $request->code;
+    //     $cart = Cart::firstOrCreate(['user_id' => Auth::id() ?? 1]);
+
+    //     $voucher = \App\Models\Voucher::where('code', $code)
+    //         ->where('is_active', true)
+    //         ->where(function ($q) {
+    //             $q->whereNull('start_date')->orWhere('start_date', '<=', now());
+    //         })
+    //         ->where(function ($q) {
+    //             $q->whereNull('end_date')->orWhere('end_date', '>=', now());
+    //         })
+    //         ->first();
+
+    //     if (!$voucher) {
+    //         return response()->json(['success' => false, 'message' => 'Voucher tidak valid']);
+    //     }
+
+    //     $total = $this->getCartTotal($cart->items);
+    //     if ($total < $voucher->min_order_amount) {
+    //         return response()->json(['success' => false, 'message' => 'Minimal order tidak terpenuhi']);
+    //     }
+
+    //     // simpan voucher ke cart
+    //     $cart->voucher_id = $voucher->id;
+    //     $cart->save();
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'cart' => $this->formatCart($cart, $voucher)
+    //     ]);
+    // }
+    public function applyVoucher(Request $request)
     {
-        $discount = floatval($request->discount);
+        $code = $request->code;
         $cart = Cart::firstOrCreate(['user_id' => Auth::id() ?? 1]);
 
-        foreach ($cart->items as $item) {
-            $item->discount = $discount;
-            $item->save();
+        $voucher = \App\Models\Voucher::where('code', $code)
+            ->where('is_active', true)
+            ->where(function ($q) {
+                $q->whereNull('start_date')->orWhere('start_date', '<=', now());
+            })
+            ->where(function ($q) {
+                $q->whereNull('end_date')->orWhere('end_date', '>=', now());
+            })
+            ->first();
+
+        if (!$voucher) {
+            return response()->json([
+                'success' => false, 
+                'message' => 'Voucher tidak valid'
+            ]);
         }
+
+        $total = $this->getCartTotal($cart->items);
+
+        if ($total < $voucher->min_order_amount) {
+            return response()->json([
+                'success' => false, 
+                'message' => 'Minimal order tidak terpenuhi'
+            ]);
+        }
+
+        // Hitung diskon berdasarkan type/value
+        $discount = 0;
+        if ($voucher->type === 'percent') {
+            $discount = $total * ($voucher->value ?? 0) / 100;
+        } elseif ($voucher->type === 'fixed') {
+            $discount = $voucher->value ?? 0;
+        }
+
+        // Batasi jika ada max_discount (opsional)
+        $discount = min($discount, $voucher->max_discount ?? $discount);
 
         return response()->json([
             'success' => true,
-            'cart' => $this->formatCart($cart)
+            'cart' => $this->formatCart($cart),
+            'voucher' => [
+                'id' => $voucher->id,
+                'code' => $voucher->code,
+                'discount' => $discount
+            ]
         ]);
     }
+
+
+
 
     // Hapus semua item (AJAX)
     public function clear()
@@ -145,4 +218,61 @@ class CartController extends Controller
             'cart' => $this->formatCart($cart)
         ]);
 }
+
+
+public function checkout(Request $request)
+{
+
+    $userId = auth()->id() ?? 1;
+    $cart = Cart::firstOrCreate(['user_id' => $userId]);
+    $items = $cart->items;
+
+    if ($items->isEmpty()) {
+        return response()->json(['success' => false, 'message' => 'Cart kosong']);
+    }
+
+    // Hitung subtotal
+    $subtotal = 0;
+    foreach ($items as $item) {
+        $subtotal += $item->itemable->getPrice() * $item->quantity * (1 - ($item->discount ?? 0));
+    }
+
+    // Ambil voucher dari request (frontend kirim currentVoucher)
+    $voucherId = $request->voucher['id'] ?? null;
+    $discount = $request->voucher['discount'] ?? 0;
+
+    // Buat order
+    $order = \App\Models\Order::create([
+        'user_id' => $userId,
+        'total_amount' => $subtotal - $discount,
+        'status' => 'pending',
+        'voucher_id' => $voucherId,
+        'discount_amount' => $discount,
+    ]);
+
+    // Simpan order_items
+    foreach ($items as $item) {
+        $order->items()->create([
+            'product_id' => $item->itemable->id,
+            'quantity' => $item->quantity,
+            'price' => $item->itemable->getPrice(),
+        ]);
+
+        // Stock Movement
+        \App\Models\StockMovement::create([
+            'product_id' => $item->itemable->id,
+            'type' => 'out',
+            'quantity' => $item->quantity,
+            'reference_type' => 'order',
+            'reference_id' => $order->id,
+        ]);
+    }
+
+    // Kosongkan cart
+    $cart->emptyCart();
+
+    return response()->json(['success' => true, 'order_id' => $order->id]);
+ }
+
+
 }

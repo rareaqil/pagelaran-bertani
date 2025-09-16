@@ -3,7 +3,7 @@
         <h2 class="text-xl font-semibold leading-tight text-gray-800">Manajemen Post</h2>
     </x-slot>
 
-    <div class="bg-white py-6">
+    <div class="py-6">
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
             {{-- Flash message --}}
             @if (session('success'))
@@ -50,21 +50,6 @@
     </div>
 
     @push('scripts')
-        {{--
-            <script type="module">
-            // contoh filter pencarian sederhana (jika perlu)
-            const searchInput = document.getElementById('searchInput');
-            const tableRows = document.querySelectorAll('#postsTbody tr');
-            
-            if (searchInput) {
-            searchInput.addEventListener('keyup', function () {
-            const val = this.value.toLowerCase();
-            tableRows.forEach((row) => {
-            row.style.display = row.textContent.toLowerCase().includes(val) ? '' : 'none';
-            });
-            });
-            }
-            </script>
-        --}}
+
     @endpush
 </x-app-layout>

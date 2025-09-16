@@ -4,15 +4,35 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Post;
+use Illuminate\Http\Request;
 use App\Http\Requests\PostRequest;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
-    public function index()
+    public function index(Request  $request)
     {
-        $posts = Post::latest()->paginate(10);
+
+        $sort = $request->query('sort', 'id'); // default sort by id
+        $direction = $request->query('direction', 'asc'); // default ascending
+
+        // --- Pagination ---
+        $perPage = $request->query('perPage', 10); // default 10
+        $page = $request->query('page', 1);
+
+        // Hitung total items untuk reset page jika perlu
+        $totalItems = Post::count();
+        $totalPages = ceil($totalItems / $perPage);
+        if ($page > $totalPages) {
+            $page = 1;
+        }
+
+        // Ambil data dengan sort & paginate
+        $posts = Post::orderBy($sort, $direction)
+            ->paginate($perPage, ['*'], 'page', $page)
+            ->withQueryString();
+
         return view('backend.posts.index', compact('posts'));
     }
 
@@ -27,7 +47,7 @@ class PostController extends Controller
 
         $data['image'] = $request->input('image');
 
-      $data['slug'] = $this->generateUniqueSlug($data['name']);
+        $data['slug'] = $this->generateUniqueSlug($data['name']);
         $data['created_by'] = auth()->id();
         $data['created_by_name'] = auth()->user()->first_name . ' ' . auth()->user()->last_name;
          if ($data['status'] === 'published' && empty($data['published_at'])) {
@@ -62,7 +82,7 @@ class PostController extends Controller
 
         $data['slug'] = $this->generateUniqueSlug($data['name'], $post->id);
         $data['updated_by'] = auth()->id();
-        
+
         if ($data['status'] === 'published' && $post->status !== 'published') {
             $data['published_at'] = now();
         }
@@ -88,11 +108,11 @@ class PostController extends Controller
 
     // Hellper
 
-    /** 
+    /**
      * generateUniqueSlug
-     * Usage: 
+     * Usage:
      * $data['slug'] = $this->generateUniqueSlug($data['name']);
-     * 
+     *
      */
 private function generateUniqueSlug($name, $id = null)
 {

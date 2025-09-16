@@ -19,10 +19,30 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request  $request)
     {
-        $users = User::with('primaryAddress')->paginate(10);
-        return view('backend.users.index', compact('users')); // folder blade disesuaikan
+        // --- Sorting ---
+        $sort = $request->query('sort', 'id'); // default sort by id
+        $direction = $request->query('direction', 'asc'); // default ascending
+
+        // --- Pagination ---
+        $perPage = $request->query('perPage', 10); // default 10
+        $page = $request->query('page', 1);
+
+        // Hitung total items untuk reset page jika perlu
+        $totalItems = User::count();
+        $totalPages = ceil($totalItems / $perPage);
+        if ($page > $totalPages) {
+            $page = 1;
+        }
+
+        // Ambil data dengan sort, relasi, dan paginate
+        $users = User::with('primaryAddress')
+            ->orderBy($sort, $direction)
+            ->paginate($perPage, ['*'], 'page', $page)
+            ->withQueryString();
+
+        return view('backend.users.index', compact('users'));
     }
 
     /**
