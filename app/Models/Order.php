@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Order extends Model
 {
@@ -24,6 +25,25 @@ class Order extends Model
         'voucher_id',
         'discount_amount',
     ];
+
+
+     protected static function booted()
+    {
+        static::creating(function ($order) {
+            // Generate order_id jika belum ada
+            if (!$order->order_id) {
+                $date = now()->format('Ymd'); // tanggal
+                $userId = 'U' . $order->user_id; // user id
+                // Hitung jumlah order hari ini untuk counter
+                $todayCount = self::whereDate('created_at', now()->toDateString())->count() + 1;
+                $counter = 'C' . str_pad($todayCount, 2, '0', STR_PAD_LEFT);
+                // Random 4 karakter alphanumeric
+                $random = Str::upper(Str::random(4));
+
+                $order->order_id = "ORD{$date}{$userId}{$counter}{$random}";
+            }
+        });
+    }
 
     // Relasi ke User
     public function user()
@@ -47,5 +67,12 @@ class Order extends Model
     public function payment()
     {
         return $this->hasOne(Payment::class);
+    }
+
+
+
+    public function getRouteKeyName()
+    {
+        return 'order_id';
     }
 }

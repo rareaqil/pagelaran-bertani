@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\PostController;
 
@@ -22,6 +23,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 
+    Route::get('/orders/{order}', [OrderController::class, 'showView'])->name('orders.showView');
     // Route::get('/cart', [CartController::class, 'index']);
     // Route::post('/cart/add', [CartController::class, 'addItem']);
     // Route::post('/cart/coupon', [CartController::class, 'applyCoupon']);

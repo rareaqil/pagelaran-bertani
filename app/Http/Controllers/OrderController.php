@@ -63,4 +63,29 @@ class OrderController extends Controller
 
         return response()->json(['message' => 'Order deleted successfully']);
     }
+
+
+
+    public function showView(Order $order)
+    {
+        $order->load(['user.primaryAddress', 'items.product', 'voucher']);
+
+        // Hitung subtotal
+        $subtotal = $order->items->sum(fn($item) => $item->price * $item->quantity);
+
+        // Hitung discount
+        $discountAmount = 0;
+        if ($order->voucher) {
+            $discountAmount = $order->voucher->type === 'percentage'
+                ? $subtotal * ($order->voucher->value / 100)
+                : $order->voucher->value;
+        }
+
+        // Hitung total
+        $total = $subtotal - $discountAmount;
+
+        return view('order.show', compact('order', 'subtotal', 'discountAmount', 'total'));
+    }
+
+    
 }
