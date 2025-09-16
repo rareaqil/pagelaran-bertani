@@ -22,7 +22,7 @@ class StockMovementController extends Controller
             'product_id' => 'required|exists:products,id',
             'quantity' => 'required|integer|min:1',
             'reference_type' => 'nullable|string',
-            'reference_id' => 'nullable|integer',
+            'reference_id' => 'nullable|string',
         ]);
 
         $product = Product::findOrFail($request->product_id);
@@ -89,7 +89,7 @@ class StockMovementController extends Controller
             'product_id' => 'required|exists:products,id',
             'quantity' => 'required|integer|min:1',
             'reference_type' => 'nullable|string',
-            'reference_id' => 'nullable|integer',
+            'reference_id' => 'nullable|string',
         ]);
 
         $product = Product::findOrFail($request->product_id);
@@ -107,6 +107,35 @@ class StockMovementController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Stok berhasil ditambahkan',
+            'data' => $movement
+        ]);
+    }
+
+    // Kurangi stok manual / in
+    public function minStock(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'quantity' => 'required|integer|min:1',
+            'reference_type' => 'nullable|string',
+            'reference_id' => 'nullable|string',
+        ]);
+
+        $product = Product::findOrFail($request->product_id);
+
+        $movement = StockMovement::create([
+            'product_id' => $product->id,
+            'type' => 'out',
+            'quantity' => $request->quantity,
+            'reference_type' => $request->reference_type,
+            'reference_id' => $request->reference_id,
+        ]);
+
+        $product->decrement('stock', $request->quantity);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Stok berhasil dikurangi',
             'data' => $movement
         ]);
     }

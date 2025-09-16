@@ -17,7 +17,7 @@ return new class extends Migration
             $table->enum('type', ['in', 'out', 'hold', 'reversal']);
             $table->integer('quantity');
             $table->string('reference_type')->nullable(); // misal 'order'
-            $table->unsignedBigInteger('reference_id')->nullable(); // id dari order
+            $table->string('reference_id')->nullable(); // id dari order
             $table->unsignedBigInteger('related_movement_id')->nullable();
             $table->timestamps();
 

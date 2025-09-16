@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\StockMovementController;
+
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -118,7 +120,7 @@ class CartController extends Controller
 
         if (!$voucher) {
             return response()->json([
-                'success' => false, 
+                'success' => false,
                 'message' => 'Voucher tidak valid'
             ]);
         }
@@ -127,7 +129,7 @@ class CartController extends Controller
 
         if ($total < $voucher->min_order_amount) {
             return response()->json([
-                'success' => false, 
+                'success' => false,
                 'message' => 'Minimal order tidak terpenuhi'
             ]);
         }
@@ -251,6 +253,8 @@ public function checkout(Request $request)
     ]);
 
     // Simpan order_items
+
+    $stockController = new StockMovementController();
     foreach ($items as $item) {
         $order->items()->create([
             'product_id' => $item->itemable->id,
@@ -259,19 +263,20 @@ public function checkout(Request $request)
         ]);
 
         // Stock Movement
-        \App\Models\StockMovement::create([
+        $holdRequest = new \Illuminate\Http\Request([
             'product_id' => $item->itemable->id,
-            'type' => 'out',
             'quantity' => $item->quantity,
             'reference_type' => 'order',
-            'reference_id' => $order->id,
+            'reference_id' => $order->order_id,
         ]);
+
+        $stockController->hold($holdRequest);
     }
 
     // Kosongkan cart
     $cart->emptyCart();
 
-    return response()->json(['success' => true, 'order_id' => $order->id]);
+    return response()->json(['success' => true, 'order_id' => $order->order_id]);
  }
 
 

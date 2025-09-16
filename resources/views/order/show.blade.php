@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-gray-800">Order #{{ $order->id }}</h2>
+        <h2 class="text-xl font-semibold leading-tight text-gray-800">Order #{{ $order->order_id }}</h2>
     </x-slot>
 
     <div class="py-12">
@@ -11,7 +11,7 @@
                     <div>
                         <p>
                             <strong>Order ID:</strong>
-                            {{ $order->id }}
+                            {{ $order->order_id }}
                         </p>
                         <p>
                             <strong>Tanggal:</strong>
@@ -102,6 +102,20 @@
                     <a href="{{ url()->previous() }}" class="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400">
                         Kembali
                     </a>
+                </div>
+                <div class="mt-6">
+                    @foreach ($holdMovements as $movement)
+                        <form
+                            action="{{ route('stock.confirmPayment', $movement->id) }}"
+                            method="POST"
+                            style="display: inline"
+                        >
+                            @csrf
+                            <button type="submit" class="btn btn-success">
+                                Confirm Payment ({{ $movement->quantity }} pcs)
+                            </button>
+                        </form>
+                    @endforeach
                 </div>
             </div>
         </div>

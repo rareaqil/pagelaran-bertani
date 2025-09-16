@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\StockMovement;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -70,6 +71,12 @@ class OrderController extends Controller
     {
         $order->load(['user.primaryAddress', 'items.product', 'voucher']);
 
+
+         $holdMovements = StockMovement::where('reference_type', 'order')
+        ->where('reference_id', $order->order_id)
+        ->where('type', 'hold')
+        ->get();
+
         // Hitung subtotal
         $subtotal = $order->items->sum(fn($item) => $item->price * $item->quantity);
 
@@ -84,8 +91,8 @@ class OrderController extends Controller
         // Hitung total
         $total = $subtotal - $discountAmount;
 
-        return view('order.show', compact('order', 'subtotal', 'discountAmount', 'total'));
+        return view('order.show', compact('order', 'subtotal', 'discountAmount', 'total','holdMovements'));
     }
 
-    
+
 }
