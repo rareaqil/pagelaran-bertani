@@ -12,6 +12,18 @@ Route::get('/', function () {
     return view('frontend.home');
 });
 
+Route::get('/learn', function () {
+    return view('frontend.learn');
+});
+
+Route::get('/order-product', function () {
+    return view('frontend.product');
+});
+
+Route::get('/contact-us', function () {
+    return view('frontend.contact-us');
+});
+
 Route::get('/dashboard', function () {
     return view('frontend.welcome');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -87,5 +99,3 @@ Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web','auth']]
 require __DIR__.'/auth.php';
 
 require __DIR__.'/api.php';
-
-

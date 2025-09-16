@@ -1,9 +1,9 @@
 <nav class="bg-green-600 text-white">
     <div class="container mx-auto flex items-center justify-between py-4 px-6">
-        <div class="flex items-center space-x-2">
+        <a href="{{ url('/') }}" class="flex items-center space-x-2">
             <img src="{{ asset('logo.png') }}" alt="Logo" class="h-10 w-10">
             <span class="font-bold text-xl">PAGELARAN BERTANI</span>
-        </div>
+        </a>
 
         <ul class="flex items-center space-x-6">
             <li>
@@ -19,14 +19,14 @@
                 </a>
             </li>
             <li>
-                <a href="/order"
-                    class="{{ request()->is('order') ? 'text-white underline' : 'text-amber-500 hover:text-white hover:underline transition duration-200' }}">
-                    Order Online
+                <a href="/order-product"
+                    class="{{ request()->is('order-product') ? 'text-white underline' : 'text-amber-500 hover:text-white hover:underline transition duration-200' }}">
+                    Order Product
                 </a>
             </li>
             <li>
-                <a href="/contact"
-                    class="{{ request()->is('contact') ? 'text-white underline' : 'text-amber-500 hover:text-white hover:underline transition duration-200' }}">
+                <a href="/contact-us"
+                    class="{{ request()->is('contact-us') ? 'text-white underline' : 'text-amber-500 hover:text-white hover:underline transition duration-200' }}">
                     Contact Us
                 </a>
             </li>
