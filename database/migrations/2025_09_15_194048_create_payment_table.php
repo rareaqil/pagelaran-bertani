@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('transaction_id')->nullable(); // ID dari midtrans
             $table->string('status')->default('pending'); // pending, settlement, expire, cancel
             $table->decimal('amount', 12, 2);
+            $table->timestamp('paid_at')->nullable();
+            $table->string('snap_token')->nullable(); // simpan respon JSON dari Midtrans
             $table->json('raw_response')->nullable(); // simpan respon JSON dari Midtrans
             $table->timestamps();
         });

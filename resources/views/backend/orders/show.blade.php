@@ -134,15 +134,52 @@
                         </form>
 
                         {{-- Tombol Lakukan Pembayaran --}}
-                        <form action="{{ route('orders.indexView', $order) }}" method="POST">
-                            @csrf
-                            <button type="submit" class="rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700">
-                                Lakukan Pembayaran
-                            </button>
-                        </form>
+                        <button id="pay-button" class="rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700">
+                            Lakukan Pembayaran
+                        </button>
                     </div>
                 @endif
             </div>
         </div>
     </div>
+
+    @push('scripts')
+        {{-- Midtrans Snap JS --}}
+        <script
+            src="https://app.sandbox.midtrans.com/snap/snap.js"
+            data-client-key="{{ config('midtrans.client_key') }}"
+        ></script>
+        <script type="module">
+            let snapOpen = false;
+
+            const payButton = document.getElementById('pay-button');
+            payButton.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                if (snapOpen) return; // Jangan buka popup jika sudah terbuka
+
+                snapOpen = true;
+
+                snap.pay('{{ $snapToken }}', {
+                    onSuccess: function (result) {
+                        console.log('Success:', result);
+                        snapOpen = false;
+                        location.reload();
+                    },
+                    onPending: function (result) {
+                        console.log('Pending:', result);
+                        snapOpen = false;
+                    },
+                    onError: function (result) {
+                        console.log('Error:', result);
+                        snapOpen = false;
+                    },
+                    onClose: function () {
+                        console.log('Popup closed by user');
+                        snapOpen = false;
+                    },
+                });
+            });
+        </script>
+    @endpush
 </x-app-layout>

@@ -12,10 +12,16 @@ class Payment extends Model
         'transaction_id',
         'status',
         'amount',
+        'paid_at',
+        'snap_token',
         'raw_response',
     ];
 
     protected $guarded = ['id', 'created_at', 'updated_at'];
+
+     protected $casts = [
+        'raw_response' => 'array', // otomatis encode/decode JSON
+    ];
 
     // Relasi ke Order
     public function order()
