@@ -117,6 +117,31 @@
                         </form>
                     @endforeach
                 </div>
+
+                @if (in_array($order->status, ['unpaid', 'pending']))
+                    <div class="mt-4 flex justify-end space-x-2">
+                        {{-- Tombol Batalkan --}}
+                        <form action="{{ route('orders.indexView', $order) }}" method="POST">
+                            @csrf
+                            @method('PATCH')
+                            <button
+                                type="submit"
+                                class="rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700"
+                                onclick="return confirm('Yakin batalkan pesanan ini?')"
+                            >
+                                Batalkan Pesanan
+                            </button>
+                        </form>
+
+                        {{-- Tombol Lakukan Pembayaran --}}
+                        <form action="{{ route('orders.indexView', $order) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700">
+                                Lakukan Pembayaran
+                            </button>
+                        </form>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
