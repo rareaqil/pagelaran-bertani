@@ -37,7 +37,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 
-    Route::get('/orders/{order}', [OrderController::class, 'showView'])->name('orders.showView');
+
 
 
 
@@ -103,6 +103,9 @@ Route::middleware(['auth', 'role:super_admin,admin'])->prefix('backend')->group(
     Route::resource('users', UserController::class);
     Route::resource('posts', PostController::class);
     Route::resource('products', ProductController::class);
+
+    Route::get('/orders/{order}', [OrderController::class, 'showView'])->name('orders.showView');
+    Route::get('/orders', [OrderController::class, 'indexView'])->name('orders.indexView');
 
 
 });

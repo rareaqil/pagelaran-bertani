@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('status')->default('pending'); // pending, paid, cancelled
             $table->foreignId('voucher_id')->nullable()->constrained('vouchers')->nullOnDelete();
             $table->decimal('discount_amount', 12, 2)->default(0);
+
+             $table->timestamp('expires_at')->nullable();
             $table->timestamps();
 
              $table->softDeletes();

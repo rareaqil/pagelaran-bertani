@@ -109,6 +109,8 @@
                                     class="flex-1 rounded border-gray-300 p-2"
                                     placeholder="Pilih gambar..."
                                     value="{{ old('image', $post->image ?? '') }}"
+                                    readonly
+                                    hidden
                                 />
                                 <button
                                     class="btn btn-outline-info rounded border border-gray-300 px-4 py-2 text-gray-700"

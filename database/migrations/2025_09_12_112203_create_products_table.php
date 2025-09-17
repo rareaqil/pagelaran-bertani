@@ -18,7 +18,7 @@ return new class extends Migration
             $table->decimal('price', 10, 2);                 // harga
             $table->integer('stock')->default(0);            // stok on-hand
             $table->boolean('status_active')->default(true);        // aktif / nonaktif
-            $table->string('image')->nullable();             // gambar produk
+            $table->text('image')->nullable();             // gambar produk
             $table->decimal('weight', 8, 2)->nullable();     // berat produk (kg/gr)
             $table->string('sku')->nullable()->unique();     // kode unik produk
             $table->timestamps();

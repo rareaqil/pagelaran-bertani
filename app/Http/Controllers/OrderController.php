@@ -67,6 +67,22 @@ class OrderController extends Controller
 
 
 
+
+    public function indexView(Request $request)
+    {
+        // Bisa ditambahkan pagination & search
+        $sort      = $request->query('sort', 'created_at');
+        $direction = $request->query('direction', 'desc');
+        $perPage   = $request->query('perPage', 10);
+
+        $orders = Order::with(['user','voucher','items','payment'])
+            ->orderBy($sort, $direction)
+            ->paginate($perPage)
+            ->withQueryString();
+
+        return view('backend.orders.index', compact('orders'));
+    }
+
     public function showView(Order $order)
     {
         $order->load(['user.primaryAddress', 'items.product', 'voucher']);
@@ -91,7 +107,7 @@ class OrderController extends Controller
         // Hitung total
         $total = $subtotal - $discountAmount;
 
-        return view('order.show', compact('order', 'subtotal', 'discountAmount', 'total','holdMovements'));
+        return view('backend.orders.show', compact('order', 'subtotal', 'discountAmount', 'total','holdMovements'));
     }
 
 

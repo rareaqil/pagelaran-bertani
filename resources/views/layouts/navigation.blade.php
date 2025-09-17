@@ -81,6 +81,22 @@
                             </x-dropdown-link>
                         </x-slot>
                     </x-nav-dropdown>
+                    <x-nav-dropdown :active="request()->routeIs('orders.*')" align="left" width="w-30" top="36">
+                        <x-slot name="trigger">
+                            <span class="flex items-center">
+                                {{ __('Transactions') }}
+                            </span>
+                        </x-slot>
+
+                        <x-slot name="content">
+                            <x-dropdown-link
+                                :href="route('orders.indexView')"
+                                :active="request()->routeIs('orders.indexView')"
+                            >
+                                {{ __('Orders') }}
+                            </x-dropdown-link>
+                        </x-slot>
+                    </x-nav-dropdown>
                 </div>
             </div>
 

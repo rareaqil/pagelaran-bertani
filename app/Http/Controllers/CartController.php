@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\StockMovementController;
 
 use App\Models\Product;
+use App\Models\Order;
+use App\Models\Voucher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Binafy\LaravelCart\Models\Cart;
@@ -108,7 +110,7 @@ class CartController extends Controller
         $code = $request->code;
         $cart = Cart::firstOrCreate(['user_id' => Auth::id() ?? 1]);
 
-        $voucher = \App\Models\Voucher::where('code', $code)
+        $voucher = Voucher::where('code', $code)
             ->where('is_active', true)
             ->where(function ($q) {
                 $q->whereNull('start_date')->orWhere('start_date', '<=', now());
@@ -244,10 +246,10 @@ public function checkout(Request $request)
     $discount = $request->voucher['discount'] ?? 0;
 
     // Buat order
-    $order = \App\Models\Order::create([
+    $order = Order::create([
         'user_id' => $userId,
         'total_amount' => $subtotal - $discount,
-        'status' => 'pending',
+        'status' => 'unpaid',
         'voucher_id' => $voucherId,
         'discount_amount' => $discount,
     ]);
@@ -263,7 +265,7 @@ public function checkout(Request $request)
         ]);
 
         // Stock Movement
-        $holdRequest = new \Illuminate\Http\Request([
+        $holdRequest = new Request([
             'product_id' => $item->itemable->id,
             'quantity' => $item->quantity,
             'reference_type' => 'order',
