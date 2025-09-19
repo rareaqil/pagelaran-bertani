@@ -29,6 +29,7 @@
                     :columns="[
                         'name'                  => 'Judul',
                         'slug'                  => 'Slug',
+                        'fruitType.name'        => 'Jenis Buah',
                         'type'                  => 'Type',
                         'created_by_name'       => 'Penulis',
                         'status'                => 'Status',
@@ -50,6 +51,6 @@
     </div>
 
     @push('scripts')
-
+        
     @endpush
 </x-app-layout>

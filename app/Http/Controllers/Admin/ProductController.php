@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\FruitType;
 use App\Http\Requests\ProductRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -33,11 +34,13 @@ class ProductController extends Controller
 
     public function create()
     {
-        return view('backend.products.form');
+        $fruits = FruitType::whereNull('deleted_at')->get();
+        return view('backend.products.form', compact('fruits'));
     }
 
     public function store(ProductRequest $request)
     {
+        dd($request->all());
         $data = $request->validated();
 
 
@@ -62,11 +65,13 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        return view('backend.products.form', compact('product'));
+        $fruits = FruitType::whereNull('deleted_at')->get();
+        return view('backend.products.form', compact('product','fruits'));
     }
 
     public function update(ProductRequest $request, Product $product)
     {
+        // dd($request->all());
         $data = $request->validated();
 
         if ($request->hasFile('image')) {

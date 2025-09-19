@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests\PostRequest;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use App\Models\FruitType;
+
 
 class PostController extends Controller
 {
@@ -38,11 +40,15 @@ class PostController extends Controller
 
     public function create()
     {
-        return view('backend.posts.form');
+
+           $fruits = FruitType::whereNull('deleted_at')->get();
+
+        return view('backend.posts.form', compact('fruits'));
     }
 
     public function store(PostRequest $request)
     {
+        // dd($request->all());
         $data = $request->validated();
 
         $data['image'] = $request->input('image');
@@ -66,11 +72,15 @@ class PostController extends Controller
 
     public function edit(Post $post)
     {
-        return view('backend.posts.form', compact('post'));
+
+        $fruits = FruitType::whereNull('deleted_at')->get();
+
+        return view('backend.posts.form', compact('post','fruits'));
     }
 
     public function update(PostRequest $request, Post $post)
     {
+        //  dd($request->all());
         $data = $request->validated();
 
         if ($request->hasFile('image')) {
