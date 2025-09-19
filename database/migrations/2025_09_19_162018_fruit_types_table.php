@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique(); // Nama jenis buah
             $table->string('slug')->unique(); // Slug untuk URL atau reference
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 

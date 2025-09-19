@@ -8,6 +8,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\FruitTypeController;
 use App\Http\Controllers\StockMovementController;
 
 Route::get('/', function () {
@@ -103,6 +104,13 @@ Route::middleware(['auth', 'role:super_admin,admin'])->prefix('backend')->group(
     Route::resource('users', UserController::class);
     Route::resource('posts', PostController::class);
     Route::resource('products', ProductController::class);
+
+
+    Route::get('/fruit-types', [FruitTypeController::class, 'index'])->name('fruit-types.index');
+    Route::post('/fruit-types/store', [FruitTypeController::class, 'store'])->name('fruit-types.store');
+    Route::post('/fruit-types/{fruitType}/toggle', [FruitTypeController::class, 'toggle'])->name('fruit-types.toggle');
+    Route::delete('/fruit-types/{fruitType}', [FruitTypeController::class, 'destroy'])->name('fruit-types.destroy');
+
 
     Route::get('/orders/{order}', [OrderController::class, 'showView'])->name('orders.showView');
     Route::get('/orders', [OrderController::class, 'indexView'])->name('orders.indexView');
