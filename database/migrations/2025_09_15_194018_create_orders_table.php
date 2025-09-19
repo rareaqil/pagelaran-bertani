@@ -14,11 +14,14 @@ return new class extends Migration
        Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->string('order_id')->unique();
+            $table->string('transaction_id')->nullable(); // ID Midtrans
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->decimal('total_amount', 12, 2);
             $table->string('status')->default('pending'); // pending, paid, cancelled
             $table->foreignId('voucher_id')->nullable()->constrained('vouchers')->nullOnDelete();
             $table->decimal('discount_amount', 12, 2)->default(0);
+
+             $table->timestamp('expires_at')->nullable();
             $table->timestamps();
 
              $table->softDeletes();

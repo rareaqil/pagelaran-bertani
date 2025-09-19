@@ -37,7 +37,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 
-    Route::get('/orders/{order}', [OrderController::class, 'showView'])->name('orders.showView');
+
 
 
 
@@ -47,6 +47,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/stock/confirm-payment/{holdId}', [StockMovementController::class, 'confirmPayment'])->name('stock.confirmPayment');
     Route::post('/stock/cancel-hold/{holdId}', [StockMovementController::class, 'cancelHold'])->name('stock.cancelHold');
     Route::post('/stock/add', [StockMovementController::class, 'addStock'])->name('stock.add');
+    Route::post('/stock/min', [StockMovementController::class, 'minStock'])->name('stock.min');
 
 
     // Route::get('/cart', [CartController::class, 'index']);
@@ -102,6 +103,9 @@ Route::middleware(['auth', 'role:super_admin,admin'])->prefix('backend')->group(
     Route::resource('users', UserController::class);
     Route::resource('posts', PostController::class);
     Route::resource('products', ProductController::class);
+
+    Route::get('/orders/{order}', [OrderController::class, 'showView'])->name('orders.showView');
+    Route::get('/orders', [OrderController::class, 'indexView'])->name('orders.indexView');
 
 
 });

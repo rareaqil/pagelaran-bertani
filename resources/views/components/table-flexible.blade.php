@@ -99,8 +99,14 @@
                                     }
                                 @endphp
 
-                                @if ($field === 'image' && $value)
-                                    <img src="{{ $value }}" alt="Gambar" class="h-16 w-16 rounded object-cover" />
+                                @php
+                                    // Ambil URL pertama, hapus spasi ekstra
+                                    $firstImage = explode(',', $value)[0] ?? null;
+                                    $firstImage = $firstImage ? trim($firstImage) : null;
+                                @endphp
+
+                                @if ($field === 'image' && $value && $firstImage)
+                                    <img src="{{ $firstImage }}" alt="Gambar" class="h-16 w-16 rounded object-cover" />
                                 @elseif ($field === 'price' && $value)
                                     {{-- Format harga dengan Rp dan pemisah ribuan --}}
                                     Rp {{ number_format($value, 0, ',', '.') }}
@@ -324,9 +330,14 @@
                         <strong class="mr-2 text-gray-700">{{ $label }}:</strong>
 
                         {{-- Kondisi sesuai jenis field --}}
-
                         @if ($field === 'image' && $value)
-                            <img src="{{ $value }}" alt="Gambar" class="mt-1 h-16 w-16 rounded object-cover" />
+                            @php
+                                // Ambil URL pertama, hapus spasi ekstra
+                                $firstImage = explode(',', $value)[0] ?? null;
+                                $firstImage = $firstImage ? trim($firstImage) : null;
+                            @endphp
+
+                            <img src="{{ $firstImage }}" alt="Gambar" class="mt-1 h-16 w-16 rounded object-cover" />
                         @elseif ($field === 'price' && $value)
                             <span class="font-semibold text-gray-900">
                                 Rp {{ number_format($value, 0, ',', '.') }}

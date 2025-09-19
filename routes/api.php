@@ -40,16 +40,22 @@ use Illuminate\Http\Request;
 // });
 
 
+use App\Http\Controllers\PaymentController;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+
+
 Route::prefix('api')->group(function () {
     Route::get('/provinces', [RegionController::class, 'provinces']);
     Route::get('/regencies/{provinceId}', [RegionController::class, 'regencies']);
     Route::get('/districts/{regencyId}', [RegionController::class, 'districts']);
     Route::get('/villages/{districtId}', [RegionController::class, 'villages']);
 
+    Route::post('/midtrans/callback', [PaymentController::class, 'midtransCallback'])->withoutMiddleware([VerifyCsrfToken::class])
+    ->name('midtrans.callback');
 
 
 
-Route::get('/products', function(Request $request) {
+    Route::get('/products', function(Request $request) {
     $query = $request->get('q', '');
     $products = Product::where('name', 'like', "%$query%")->get();
     return $products;

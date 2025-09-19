@@ -1,9 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Log;
 use App\Models\Payment;
 use Illuminate\Http\Request;
+
+use App\Models\Order;
+
+use App\Services\MidtransService;
 
 class PaymentController extends Controller
 {
@@ -107,4 +111,82 @@ class PaymentController extends Controller
         $payment->delete();
         return response()->noContent();
     }
+
+
+    public function midtransCallback(Request $request, MidtransService $midtrans)
+    {
+
+        // Log::info('RAW INPUT', [file_get_contents('php://input')]);
+        $notif = $midtrans->notification();
+
+        Log::info('Midtrans raw callback', $request->all());
+
+        if (! $midtrans->isSignatureValid($notif)) {
+             Log::warning('Midtrans signature invalid', ['order_id' => $notif->order_id ?? null]);
+            return response()->json(['message' => 'Invalid signature'], 401);
+        }
+
+        $order = Order::where('order_id', $notif->order_id)->first();
+        if (! $order) {
+             Log::warning('Midtrans order_id not found', ['order_id' => $notif->order_id ?? null]);
+
+            return response()->json(['message' => 'Order not found'], 404);
+        }
+
+        $status = $midtrans->mapStatus($notif);
+
+         Log::info('Midtrans mapped status', [
+        'order_id' => $notif->order_id,
+        'status'   => $status,
+         ]);
+        switch ($status) {
+            case 'success':
+                // $order->update([
+                //     'status'         => 'processing',
+                //     'payment_status' => 'paid',
+                // ]);
+
+                // Update atau buat Payment (ONE TO ONE)
+                // $order->payment()->updateOrCreate(
+                //     ['order_id' => $order->id],
+                //     [
+                //         'status'      => 'PAID',
+                //         'paid_at'     => now(),
+                //         'midtrans_id' => $notif->transaction_id,
+                //     ]
+                // );
+                break;
+
+            case 'pending':
+                // $order->update(['payment_status' => 'pending']);
+                // $order->payment()->updateOrCreate(
+                //     ['order_id' => $order->id],
+                //     ['status' => 'PENDING', 'midtrans_id' => $notif->transaction_id]
+                // );
+                break;
+
+            case 'expire':
+                // $order->update(['payment_status' => 'expired']);
+                // $order->payment()->updateOrCreate(
+                //     ['order_id' => $order->id],
+                //     ['status' => 'EXPIRED', 'midtrans_id' => $notif->transaction_id]
+                // );
+                break;
+
+            case 'cancel':
+            case 'failed':
+                // $order->update(['payment_status' => $status]);
+                // $order->payment()->updateOrCreate(
+                //     ['order_id' => $order->id],
+                //     ['status' => strtoupper($status), 'midtrans_id' => $notif->transaction_id]
+                // );
+                break;
+
+            // refund / partial_refund / authorize dapat ditangani serupa
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+
 }

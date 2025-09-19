@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\StockMovementController;
+
 use App\Models\Product;
+use App\Models\Order;
+use App\Models\Voucher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Binafy\LaravelCart\Models\Cart;
@@ -106,7 +110,7 @@ class CartController extends Controller
         $code = $request->code;
         $cart = Cart::firstOrCreate(['user_id' => Auth::id() ?? 1]);
 
-        $voucher = \App\Models\Voucher::where('code', $code)
+        $voucher = Voucher::where('code', $code)
             ->where('is_active', true)
             ->where(function ($q) {
                 $q->whereNull('start_date')->orWhere('start_date', '<=', now());
@@ -118,7 +122,7 @@ class CartController extends Controller
 
         if (!$voucher) {
             return response()->json([
-                'success' => false, 
+                'success' => false,
                 'message' => 'Voucher tidak valid'
             ]);
         }
@@ -127,7 +131,7 @@ class CartController extends Controller
 
         if ($total < $voucher->min_order_amount) {
             return response()->json([
-                'success' => false, 
+                'success' => false,
                 'message' => 'Minimal order tidak terpenuhi'
             ]);
         }
@@ -242,15 +246,17 @@ public function checkout(Request $request)
     $discount = $request->voucher['discount'] ?? 0;
 
     // Buat order
-    $order = \App\Models\Order::create([
+    $order = Order::create([
         'user_id' => $userId,
         'total_amount' => $subtotal - $discount,
-        'status' => 'pending',
+        'status' => 'unpaid',
         'voucher_id' => $voucherId,
         'discount_amount' => $discount,
     ]);
 
     // Simpan order_items
+
+    $stockController = new StockMovementController();
     foreach ($items as $item) {
         $order->items()->create([
             'product_id' => $item->itemable->id,
@@ -259,19 +265,20 @@ public function checkout(Request $request)
         ]);
 
         // Stock Movement
-        \App\Models\StockMovement::create([
+        $holdRequest = new Request([
             'product_id' => $item->itemable->id,
-            'type' => 'out',
             'quantity' => $item->quantity,
             'reference_type' => 'order',
-            'reference_id' => $order->id,
+            'reference_id' => $order->order_id,
         ]);
+
+        $stockController->hold($holdRequest);
     }
 
     // Kosongkan cart
     $cart->emptyCart();
 
-    return response()->json(['success' => true, 'order_id' => $order->id]);
+    return response()->json(['success' => true, 'order_id' => $order->order_id]);
  }
 
 

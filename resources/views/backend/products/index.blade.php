@@ -33,6 +33,7 @@
                         'stock'         => 'Stok',
                         'status_active' => 'Status',
                         'sku'           => 'SKU',
+                        'description'   => 'Deskripsi',
                         'created_at'    => 'Dibuat',
                     ]"
                     :actions="[

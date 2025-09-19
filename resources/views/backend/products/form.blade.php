@@ -64,7 +64,7 @@
                     </div>
 
                     {{-- Stok --}}
-                    <div>
+                    <div class="hidden">
                         <x-input-label for="stock" :value="'Stok'" />
                         <x-text-input
                             id="stock"
@@ -79,19 +79,21 @@
                 </div>
 
                 <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                    {{-- Berat --}}
-                    <div>
+                    {{--
+                        Berat
+                        <div>
                         <x-input-label for="weight" :value="'Berat (Kg)'" />
                         <x-text-input
-                            id="weight"
-                            name="weight"
-                            type="number"
-                            step="0.01"
-                            class="mt-1 block w-full"
-                            value="{{ old('weight', $product->weight ?? '') }}"
+                        id="weight"
+                        name="weight"
+                        type="number"
+                        step="0.01"
+                        class="mt-1 block w-full"
+                        value="{{ old('weight', $product->weight ?? '') }}"
                         />
                         <x-input-error class="mt-2" :messages="$errors->get('weight')" />
-                    </div>
+                        </div>
+                    --}}
 
                     {{-- SKU --}}
                     <div>
@@ -128,43 +130,8 @@
                 </div>
 
                 {{-- Upload Gambar Produk --}}
-                <div>
-                    <x-input-label for="image" :value="'Gambar Produk'" />
-                    <div class="mt-1 flex flex-col gap-4 md:flex-row md:items-center">
-                        <div class="flex-1">
-                            <div class="flex gap-2">
-                                <input
-                                    id="image"
-                                    name="image"
-                                    type="text"
-                                    class="flex-1 rounded border-gray-300 p-2"
-                                    placeholder="Pilih gambar..."
-                                    value="{{ old('image', $product->image ?? '') }}"
-                                />
-                                <button
-                                    class="btn btn-outline-info rounded border border-gray-300 px-4 py-2 text-gray-700"
-                                    id="button-image"
-                                    type="button"
-                                    data-input="image"
-                                >
-                                    Browse
-                                </button>
-                            </div>
-                            <x-input-error class="mt-2" :messages="$errors->get('image')" />
-                        </div>
 
-                        <div class="flex-shrink-0">
-                            <img
-                                id="preview-image"
-                                src="{{ old('image', $product->image ?? asset('images/no-image.png')) }}"
-                                alt="Preview"
-                                class="rounded border border-gray-300"
-                                style="max-height: 180px; width: auto; object-fit: contain; background-color: #f3f3f3"
-                            />
-                        </div>
-                    </div>
-                </div>
-
+                <x-multiple-image name="image" :label="'Gambar Produk'" :value="$product->image ?? ''" :max="5" />
                 <div>
                     <x-primary-button>
                         {{ isset($product) ? 'Update' : 'Simpan' }}
@@ -173,16 +140,4 @@
             </form>
         </div>
     </div>
-
-    @push('scripts')
-        {{-- File Manager untuk gambar (jika pakai Laravel Filemanager) --}}
-        <script type="module" src="{{ asset('vendor/laravel-filemanager/js/stand-alone-button.js') }}"></script>
-        <script type="module">
-            $('#button-image').filemanager('image');
-            $('#image').on('change', function () {
-                const url = $(this).val();
-                $('#preview-image').attr('src', url || '{{ asset('images/no-image.png') }}');
-            });
-        </script>
-    @endpush
 </x-app-layout>
