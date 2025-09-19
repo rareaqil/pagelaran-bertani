@@ -34,6 +34,7 @@
                         'status_active' => 'Status',
                         'sku'           => 'SKU',
                         'description'   => 'Deskripsi',
+                        'fruitType.name'        => 'Jenis Buah',
                         'created_at'    => 'Dibuat',
                     ]"
                     :actions="[

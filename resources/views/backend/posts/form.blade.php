@@ -27,7 +27,6 @@
                         type="text"
                         class="mt-1 block w-full"
                         value="{{ old('name', $post->name ?? '') }}"
-                        required
                     />
                     <x-input-error class="mt-2" :messages="$errors->get('name')" />
                 </div>
@@ -79,6 +78,27 @@
                         </select>
                         <x-input-error class="mt-2" :messages="$errors->get('status')" />
                     </div>
+                </div>
+
+                {{-- Jenis Buah --}}
+                <div>
+                    <x-input-label for="fruit_type_id" :value="'Jenis Buah'" />
+                    <select
+                        id="fruit_type_id"
+                        name="fruit_type_id"
+                        class="select2 mt-1 block w-full rounded border-gray-300"
+                    >
+                        <option value="">-- Tidak ada --</option>
+                        @foreach ($fruits as $fruit)
+                            <option
+                                value="{{ $fruit->id }}"
+                                {{ old('fruit_type_id', $post->fruit_type_id ?? '') == $fruit->id ? 'selected' : '' }}
+                            >
+                                {{ $fruit->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <x-input-error class="mt-2" :messages="$errors->get('fruit_type_id')" />
                 </div>
 
                 {{-- Konten --}}
@@ -159,10 +179,45 @@
             img {
                 display: inline-block !important;
             }
+
+            .select2-container .select2-selection--single {
+                height: 95%;
+            }
+            .select2-container--classic .select2-selection--single {
+                background-color: #fff;
+                border: 1px solid rgb(209 213 219); /* gray-300 */
+                border-radius: 0.25rem; /* rounded */
+                padding: 0.5rem 2.5rem 0.5rem 0.75rem; /* vertical, right for arrow */
+                font-size: 1rem;
+                line-height: 1.5rem;
+                color: #111827; /* gray-900 */
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+                background-repeat: no-repeat;
+                background-position: right 0.5rem center;
+                background-size: 1.5em 1.5em;
+            }
+            .select2-container--classic .select2-selection__rendered {
+                padding-left: 0; /* sudah di-handle container */
+            }
+            .select2-container--classic .select2-selection__arrow {
+                display: none; /* kita pakai svg custom di atas */
+            }
         </style>
     @endpush
 
     @push('scripts')
+        <script type="module">
+            document.addEventListener('DOMContentLoaded', function () {
+                $('#fruit_type_id').select2({
+                    theme: 'classic',
+                    placeholder: '-- Pilih Jenis Buah --',
+                    allowClear: true,
+                    width: '100%', // mengikuti lebar input
+                    height: '100&',
+                });
+            });
+        </script>
+
         <script
             type="module"
             src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-lite.min.js"

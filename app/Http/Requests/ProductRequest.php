@@ -19,6 +19,7 @@ class ProductRequest extends FormRequest
         return [
             'name'          => 'required|string|max:255',
             'description'   => 'nullable|string',
+            'fruit_type_id'=> 'nullable|exists:fruit_types,id',
             'price'         => 'required|numeric|min:0',
             'stock'         => 'required|integer|min:0',
             'status_active' => 'required|boolean',

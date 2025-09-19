@@ -19,6 +19,7 @@ class PostRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'content' => 'required|string', // Summernote HTML
+            'fruit_type_id'=> 'nullable|exists:fruit_types,id',
             'intro' => 'nullable|string|max:500',
             'type' => 'nullable|string|max:100',
             'status' => 'required|in:draft,published,archived',

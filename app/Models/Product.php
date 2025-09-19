@@ -15,6 +15,7 @@ class Product extends Model implements Cartable
         'name',
         'description',
         'price',
+        'fruit_type_id',
         'stock',
         'status_active',
         'image',
@@ -59,6 +60,11 @@ class Product extends Model implements Cartable
     public function stockMovements()
     {
         return $this->hasMany(StockMovement::class);
+    }
+
+    public function fruitType()
+    {
+        return $this->belongsTo(FruitType::class);
     }
 
     public function orderItems()

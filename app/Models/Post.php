@@ -22,6 +22,7 @@ class Post extends Model
         'image',        // path LFM
         'status',
         'created_by',
+        'fruit_type_id',
         'created_by_name',
         'updated_by',
         'deleted_by',
@@ -65,6 +66,11 @@ class Post extends Model
     public function getStatusLabelAttribute()
     {
         return ucfirst($this->status);
+    }
+
+    public function fruitType()
+    {
+        return $this->belongsTo(FruitType::class);
     }
 
     public function getRouteKeyName()
