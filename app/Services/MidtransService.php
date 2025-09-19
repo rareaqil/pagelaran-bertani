@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Log;
 use App\Models\Order;
 use Exception;
 use Midtrans\Config;
@@ -33,6 +34,44 @@ class MidtransService
         Config::$isProduction = $this->isProduction;
         Config::$isSanitized = $this->isSanitized;
         Config::$is3ds = $this->is3ds;
+    }
+
+
+    public function notification(): Notification
+    {
+        return new Notification();
+    }
+
+    public function isSignatureValid(Notification $n): bool
+    {
+
+
+        $localKey = hash('sha512',
+            $n->order_id.$n->status_code.$n->gross_amount.$this->serverKey
+        );
+         Log::info('Signature debug', [
+            'concat'   => $n->order_id.$n->status_code.$n->gross_amount.$this->serverKey,
+            'expected' => $localKey,
+            'provided' => $n->signature_key,
+        ]);
+        return hash_equals($localKey, $n->signature_key);
+    }
+
+    public function mapStatus(Notification $n): string
+    {
+        return match ($n->transaction_status) {
+            'capture'    => ($n->fraud_status === 'accept') ? 'success' : 'pending',
+            'settlement' => 'success',
+            'pending'    => 'pending',
+            'deny'       => 'failed',
+            'cancel'     => 'cancel',
+            'expire'     => 'expire',
+            'failure'    => 'failed',
+            'refund'     => 'refund',
+            'partial_refund' => 'partial_refund',
+            'authorize'  => 'authorize',
+            default      => 'unknown',
+        };
     }
 
     /**

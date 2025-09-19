@@ -327,7 +327,7 @@
                         success: function (res) {
                             if (res.success) {
                                 alert('Order berhasil dibuat dengan ID: ' + res.order_id);
-                                window.location.href = '/orders/' + res.order_id; // redirect ke detail order
+                                window.location.href = '/backend/orders/' + res.order_id; // redirect ke detail order
                             } else {
                                 alert(res.message || 'Checkout gagal');
                             }

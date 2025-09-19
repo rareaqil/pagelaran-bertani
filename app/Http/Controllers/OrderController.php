@@ -140,13 +140,13 @@ class OrderController extends Controller
     // --- Midtrans Snap Token ---
     $payment = $order->payment;
     if ($payment === null || $payment->status === 'EXPIRED') {
-        $snapToken = $midtransService->createSnapToken($order);
-
-        // dd($snapToken);
+        $midtransData = $midtransService->createSnapToken($order);
+        $snapToken = $midtransData['snap_token'];
+        // dd($midtransData);
         // Simpan payment baru
         $order->payment()->create([
-            'raw_response'  => json_encode($snapToken['params']),
-            'snap_token'    => $snapToken['snap_token'],
+            'raw_response'  => json_encode($midtransData['params']),
+            'snap_token'    => $snapToken,
             'amount'        => $total, // total yang sudah dihitung
             'status'        => 'PENDING',
             'payment_gateway' => 'midtrans',

@@ -89,9 +89,19 @@
                                 </tr>
                             @endif
 
+                            {{-- Tambahkan Admin Fee --}}
+                            <tr class="text-blue-700">
+                                <td colspan="3" class="border px-4 py-2 text-right">Biaya Admin</td>
+                                <td class="border px-4 py-2 text-right">
+                                    {{ number_format($adminFee ?? 2000, 0, ',', '.') }}
+                                </td>
+                            </tr>
+
                             <tr class="font-bold">
                                 <td colspan="3" class="border px-4 py-2 text-right">Total</td>
-                                <td class="border px-4 py-2 text-right">{{ number_format($total, 0, ',', '.') }}</td>
+                                <td class="border px-4 py-2 text-right">
+                                    {{ number_format($total + ($adminFee ?? 2000), 0, ',', '.') }}
+                                </td>
                             </tr>
                         </tfoot>
                     </table>
