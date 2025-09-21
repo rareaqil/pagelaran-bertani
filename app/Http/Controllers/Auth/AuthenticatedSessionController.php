@@ -32,21 +32,20 @@ class AuthenticatedSessionController extends Controller
     // }
 
     public function store(LoginRequest $request){
-    $request->authenticate();
-    $request->session()->regenerate();
-  switch (Auth::user()->role) {
-    case 'super_admin':
-        return redirect()->route('dashboard');
-    case 'admin':
-        return redirect()->route('dashboard');
-    case 'user':
-        return redirect()->route('user.dashboard');
-    default:
-        Auth::guard('web')->logout();
-        return redirect()->route('login')->with('status', 'Role tidak dikenali.');
-}
-
-}
+        $request->authenticate();
+        $request->session()->regenerate();
+        switch (Auth::user()->role) {
+            case 'super_admin':
+                return redirect()->route('dashboard');
+            case 'admin':
+                return redirect()->route('dashboard');
+            case 'user':
+                return redirect()->route('home');
+            default:
+                Auth::guard('web')->logout();
+                return redirect()->route('login')->with('status', 'Role tidak dikenali.');
+        }
+    }
 
     /**
      * Destroy an authenticated session.

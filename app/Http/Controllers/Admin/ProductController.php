@@ -34,7 +34,7 @@ class ProductController extends Controller
 
     public function create()
     {
-        $fruits = FruitType::whereNull('deleted_at')->get();
+        $fruits = FruitType::where('is_active', 1)->get();
         return view('backend.products.form', compact('fruits'));
     }
 
@@ -65,7 +65,7 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        $fruits = FruitType::whereNull('deleted_at')->get();
+        $fruits = FruitType::where('is_active', 1)->get();
         return view('backend.products.form', compact('product','fruits'));
     }
 

@@ -30,11 +30,40 @@
                     Contact Us
                 </a>
             </li>
-            <li>
-                <a href="/login"
-                    class="flex items-center space-x-1 {{ request()->is('login') ? 'text-white underline' : 'text-amber-500 hover:text-white hover:underline transition duration-200' }}">
-                    <i class="fa fa-user"></i><span>Login</span>
-                </a>
+            <li class="relative" x-data="{ open: false }">
+                @guest
+                    {{-- Kalau belum login --}}
+                    <a href="{{ route('login') }}"
+                        class="flex items-center space-x-1 {{ request()->is('login') ? 'text-white underline' : 'text-amber-500 hover:text-white hover:underline transition duration-200' }}">
+                        <i class="fa fa-user"></i><span>Login</span>
+                    </a>
+                @else
+                    {{-- Kalau sudah login --}}
+                    <button @click="open = !open"
+                        class="flex items-center space-x-1 text-amber-500 hover:text-white hover:underline transition duration-200 focus:outline-none">
+                        <i class="fa fa-user"></i>
+                        <span>{{ auth()->user()->first_name }} {{ auth()->user()->last_name }}</span>
+                        <i class="fa fa-caret-down ml-1"></i>
+                    </button>
+
+                    {{-- Dropdown --}}
+                    <ul x-cloak x-show="open" @click.away="open = false" x-transition
+                        class="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-lg py-2 z-50">
+                        <li>
+                            <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                <i class="fa fa-user-circle mr-2"></i> Profile
+                            </a>
+                        </li>
+                        <li>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                    <i class="fa fa-sign-out-alt mr-2"></i> Logout
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                @endguest
             </li>
             <li>
                 <a href="/cart"
@@ -45,3 +74,4 @@
         </ul>
     </div>
 </nav>
+<script src="//unpkg.com/alpinejs" defer></script>
