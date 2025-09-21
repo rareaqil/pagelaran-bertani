@@ -38,5 +38,10 @@ class DatabaseSeeder extends Seeder
             'password' => 'password123',
             'role' => 'user',
         ]);
+
+        // --- Fruit Seeder ---
+        $this->call([
+            FruitTypeSeeder::class,
+        ]);
     }
 }

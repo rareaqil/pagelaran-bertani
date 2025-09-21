@@ -10,29 +10,20 @@ use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\FruitTypeController;
 use App\Http\Controllers\StockMovementController;
+use App\Http\Controllers\FrontendController;
 
-Route::get('/', function () {
-    // return view('frontend.welcome');
-    return view('frontend.home');
-});
-
-Route::get('/learn', function () {
-    return view('frontend.learn');
-});
-
-Route::get('/order-product', function () {
-    return view('frontend.product');
-});
-
-Route::get('/contact-us', function () {
-    return view('frontend.contact-us');
-});
-
-Route::get('/dashboard', function () {
-    return view('frontend.welcome');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Route::get('/dashboard', function () {
+//     return view('frontend.welcome');
+// })->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/', [FrontendController::class, 'home'])->name('home');
 
 Route::middleware('auth')->group(function () {
+    //frontend-web
+    Route::get('/learn', [FrontendController::class, 'learn'])->name('learn');
+    Route::get('/order-product', [FrontendController::class, 'product'])->name('order.product');
+    Route::get('/contact-us', [FrontendController::class, 'contact'])->name('contact.us');
+    
+    //profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
