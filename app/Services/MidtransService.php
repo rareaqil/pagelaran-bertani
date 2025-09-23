@@ -84,11 +84,12 @@ class MidtransService
      */
     public function createSnapToken(Order $order): array
     {
+        $adminFee = $order->admin_fee;
         // data transaksi
         $params = [
             'transaction_details' => [
                 'order_id' => $order->order_id,
-                'gross_amount' => $this->getTotalAmount($order, 2000),
+                'gross_amount' => $this->getTotalAmount($order, $adminFee),
             ],
             'item_details' => $this->mapItemsToDetails($order),
             'customer_details' => $this->getCustomerDetails($order),
@@ -166,23 +167,18 @@ class MidtransService
 
     public function getTotalAmount(Order $order, int $adminFee = 2000): int
     {
-        // Hitung subtotal semua item
-        $subtotal = $order->items->sum(function ($item) {
-            return $item->price * $item->quantity;
-        });
+         // Hitung subtotal
+        $subtotal = $order->items->sum(fn($item) => $item->price * $item->quantity);
 
-        // Hitung diskon voucher
-        $discount = 0;
-        if ($order->voucher) {
-            if ($order->voucher->type === 'percentage') {
-                $discount = $subtotal * ($order->voucher->value / 100);
-            } else {
-                $discount = $order->voucher->value;
-            }
-        }
+        // Pakai method voucher yang sudah aman
+        $discount = $order->voucher
+            ? $order->voucher->getDiscount($subtotal)
+            : 0;
 
-        // Total akhir = subtotal - discount + biaya admin, dibulatkan ke integer
-        return (int) round($subtotal - $discount + $adminFee);
+        // Pastikan total minimal 0 + admin fee
+        $total = max(0, $subtotal - $discount) + $adminFee;
+
+        return (int) round($total);
     }
 
     /**
@@ -205,12 +201,8 @@ class MidtransService
         // Tambahkan voucher sebagai item diskon (jika ada)
         if ($order->voucher) {
             $discountAmount = 0;
-            if ($order->voucher->type === 'percentage') {
-                $subtotal = $order->items->sum(fn($i) => $i->price * $i->quantity);
-                $discountAmount = $subtotal * ($order->voucher->value / 100);
-            } else {
-                $discountAmount = $order->voucher->value;
-            }
+            $subtotal = $order->items->sum(fn($i) => $i->price * $i->quantity);
+            $discountAmount = $order->voucher?->getDiscount($subtotal) ?? 0;
 
             if ($discountAmount > 0) {
                 $items[] = [
@@ -225,7 +217,7 @@ class MidtransService
         // Tambahkan biaya admin 2000
         $items[] = [
             'id' => 'admin-fee',
-            'price' => 2000,
+            'price' => $order->admin_fee??2000,
             'quantity' => 1,
             'name' => 'Biaya Admin',
         ];

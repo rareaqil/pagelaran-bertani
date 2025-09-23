@@ -24,8 +24,20 @@ class Order extends Model
         'status',
         'voucher_id',
         'discount_amount',
+        'admin_fee',
+
+        // Shipment
+        'scheduled_at',
+        'estimate_minutes',
+        'courier',
+        'tracking_link',
+        'estimated_arrival',
     ];
 
+    protected $casts = [
+        'scheduled_at'     => 'datetime',
+        'estimated_arrival'=> 'datetime',
+    ];
 
      protected static function booted()
     {

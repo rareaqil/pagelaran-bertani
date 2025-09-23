@@ -107,6 +107,178 @@
                     </table>
                 </div>
 
+                {{-- After Paid --}}
+                {{-- if status_payment = success && status = paid --}}
+                {{-- untuk User | Add Penjelasan untuk mengirimkan chat ke whatsaap Admin berupa detail order dan lain lain dalam bentuk button menggunaan wa.me --}}
+                {{-- untuk Admin | Add field untuk mengisi seperti estimasi pengiriman, link untuk lacak, kemudian ??? , jika sudah isi ubah status ke shipment --}}
+
+                {{-- @if ($order->status_payment === 'success' && $order->status === 'paid') --}}
+                @if ($order->status === 'Paid')
+                    <div class="mt-8 border-t pt-6">
+                        {{-- USER: Tombol WhatsApp ke Admin --}}
+                        @unless (auth()->user()->isAdmin())
+                            <p class="mb-2 text-sm text-gray-700">
+                                Hubungi Admin via WhatsApp untuk konfirmasi pesanan Anda.
+                            </p>
+                            <a
+                                href="https://wa.me/62XXXXXXXXXX?text={{ urlencode("Halo Admin, saya sudah bayar Order #{$order->order_id}") }}"
+                                target="_blank"
+                                class="rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700"
+                            >
+                                Chat Admin via WhatsApp
+                            </a>
+                        @endunless
+
+                        {{-- ADMIN: Form input pengiriman lengkap --}}
+                        @if (auth()->user()->isAdmin())
+                            <form
+                                {{-- action="#" --}}
+                                action="{{ route('orders.setShipment', $order) }}"
+                                method="POST"
+                                class="mt-4 space-y-4"
+                            >
+                                @csrf
+                                @method('POST')
+
+                                {{-- Tanggal & Waktu Kirim --}}
+                                <label class="block">
+                                    <span class="text-gray-700">Tanggal & Waktu Kirim</span>
+                                    <input
+                                        type="datetime-local"
+                                        name="scheduled_at"
+                                        class="mt-1 w-full rounded border-gray-300"
+                                        value="{{ old('scheduled_at', optional($order->scheduled_at)->format('Y-m-d\TH:i')) }}"
+                                        required
+                                    />
+                                </label>
+
+                                {{-- Estimasi Durasi (menit) --}}
+                                <label class="block">
+                                    <span class="text-gray-700">Estimasi Durasi (menit)</span>
+                                    <input
+                                        type="number"
+                                        name="estimate_minutes"
+                                        min="1"
+                                        step="1"
+                                        class="mt-1 w-full rounded border-gray-300"
+                                        value="{{ old('estimate_minutes', $order->estimate_minutes) }}"
+                                        placeholder="misal: 45"
+                                        required
+                                    />
+                                    <span class="text-sm text-gray-500">
+                                        Lama perjalanan, contoh 45 untuk ±45 menit.
+                                    </span>
+                                </label>
+
+                                {{-- Link Lacak --}}
+                                <label class="block">
+                                    <span class="text-gray-700">Link Lacak (Opsional)</span>
+                                    <input
+                                        type="url"
+                                        name="tracking_link"
+                                        class="mt-1 w-full rounded border-gray-300"
+                                        value="{{ old('tracking_link', $order->tracking_link) }}"
+                                        placeholder="https://kurir.example/track/ABC123"
+                                    />
+                                </label>
+
+                                {{-- Kurir --}}
+                                <label class="block">
+                                    <span class="text-gray-700">Kurir</span>
+                                    <input
+                                        name="courier"
+                                        class="mt-1 w-full rounded border-gray-300"
+                                        value="{{ old('courier', $order->courier) }}"
+                                        placeholder="Misal: Gojek Instant / Grab Express"
+                                    />
+                                </label>
+
+                                <button
+                                    type="submit"
+                                    class="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                                >
+                                    Set Shipment
+                                </button>
+                            </form>
+                        @endif
+                    </div>
+                @endif
+
+                {{-- Shipment --}}
+                {{-- if status_payment = success && status = shipment --}}
+                {{-- Add Tabel Detail Pengiriman | isinya After Paid yang telah diisi oleh Admin --}}
+                {{-- USER: Detail Pengiriman --}}
+                @if ($order->payment->status === 'PAID' && $order->status === 'Shipment')
+                    {{-- @if ($order->status === 'Paid') --}}
+                    <div class="mt-8 border-t pt-6">
+                        <h3 class="mb-2 text-lg font-semibold">Detail Pengiriman</h3>
+
+                        <table class="mb-4 w-full table-auto border border-gray-200 text-sm">
+                            <tr>
+                                <th class="border px-4 py-2 text-left">Kurir</th>
+                                <td class="border px-4 py-2">{{ $order->courier ?? '-' }}</td>
+                            </tr>
+
+                            <tr>
+                                <th class="border px-4 py-2 text-left">Tanggal & Waktu Kirim</th>
+                                <td class="border px-4 py-2">
+                                    {{ $order->scheduled_at ? $order->scheduled_at->format('d M Y H:i') : '-' }}
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th class="border px-4 py-2 text-left">Estimasi Durasi</th>
+                                <td class="border px-4 py-2">
+                                    @if ($order->estimate_minutes)
+                                        ±{{ $order->estimate_minutes }} menit
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                            </tr>
+
+                            {{-- Perkiraan Waktu Tiba --}}
+                            <tr>
+                                <th class="border px-4 py-2 text-left">Perkiraan Tiba</th>
+                                <td class="border px-4 py-2">
+                                    {{ $order->estimated_arrival ? $order->estimated_arrival->format('d M Y H:i') : '-' }}
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th class="border px-4 py-2 text-left">Link Lacak</th>
+                                <td class="border px-4 py-2">
+                                    @if ($order->tracking_link)
+                                        <a
+                                            href="{{ $order->tracking_link }}"
+                                            class="text-blue-600 hover:underline"
+                                            target="_blank"
+                                        >
+                                            Lacak Pengiriman
+                                        </a>
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                            </tr>
+                        </table>
+
+                        {{-- Tombol Konfirmasi Pesanan Diterima (hanya untuk user, bukan admin) --}}
+                        @if ($order->user_id === auth()->id() ||auth()->user()->isAdmin())
+                            <form action="{{ route('orders.confirmReceived', $order) }}" method="POST" class="mt-4">
+                                @csrf
+                                <button
+                                    type="submit"
+                                    class="rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700"
+                                    onclick="return confirm('Konfirmasi bahwa pesanan telah diterima?')"
+                                >
+                                    Konfirmasi Pesanan Diterima
+                                </button>
+                            </form>
+                        @endif
+                    </div>
+                @endif
+
                 {{-- Back button --}}
                 <div class="mt-6">
                     <a href="{{ url()->previous() }}" class="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400">
@@ -128,10 +300,10 @@
                     @endforeach
                 </div>
 
-                @if (in_array($order->status, ['unpaid', 'pending']))
+                @if (in_array($order->status, ['Unpaid', 'Pending']))
                     <div class="mt-4 flex justify-end space-x-2">
                         {{-- Tombol Batalkan --}}
-                        <form action="{{ route('orders.indexView', $order) }}" method="POST">
+                        <form action="{{ route('orders.orderReversal', $order) }}" method="POST">
                             @csrf
                             @method('PATCH')
                             <button

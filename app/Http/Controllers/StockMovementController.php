@@ -63,6 +63,20 @@ class StockMovementController extends Controller
         // Kurangi stok fisik
         $product->decrement('stock', $hold->quantity);
 
+        // Tambah stok Voucher digunakan
+         if ($hold->reference instanceof \App\Models\Order) {
+        $order = $hold->reference;
+
+        if ($order->voucher) {
+            $voucher = $order->voucher;
+            $voucher->increment('used_count');
+
+            if (!is_null($voucher->max_usage) && $voucher->used_count >= $voucher->max_usage) {
+                $voucher->update(['is_active' => false]);
+            }
+        }
+    }
+
         // Update movement jadi out
         $hold->update(['type' => 'out']);
 

@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\StockMovement;
+use App\Http\Controllers\StockMovementController;
 use App\Services\MidtransService;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -84,90 +87,129 @@ class OrderController extends Controller
         return view('backend.orders.index', compact('orders'));
     }
 
-    // public function showView(Order $order)
-    // {
-    //     $order->load(['user.primaryAddress', 'items.product', 'voucher']);
-
-
-    //      $holdMovements = StockMovement::where('reference_type', 'order')
-    //     ->where('reference_id', $order->order_id)
-    //     ->where('type', 'hold')
-    //     ->get();
-
-    //     // Hitung subtotal
-    //     $subtotal = $order->items->sum(fn($item) => $item->price * $item->quantity);
-
-    //     // Hitung discount
-    //     $discountAmount = 0;
-    //     if ($order->voucher) {
-    //         $discountAmount = $order->voucher->type === 'percentage'
-    //             ? $subtotal * ($order->voucher->value / 100)
-    //             : $order->voucher->value;
-    //     }
-
-    //     // Hitung total
-    //     $total = $subtotal - $discountAmount;
-
-    //     return view('backend.orders.show', compact('order', 'subtotal', 'discountAmount', 'total','holdMovements'));
-    // }
 
 
     public function showView(MidtransService $midtransService, Order $order)
-{
-    // Load relasi
-    $order->load(['user.primaryAddress', 'items.product', 'voucher', 'payment']);
+    {
+        // Load relasi
+        $order->load(['user.primaryAddress', 'items.product', 'voucher', 'payment']);
 
-    // Ambil stock hold movement
-    $holdMovements = StockMovement::where('reference_type', 'order')
-        ->where('reference_id', $order->order_id)
-        ->where('type', 'hold')
-        ->get();
+        // Ambil stock hold movement
+        $holdMovements = StockMovement::where('reference_type', 'Order')
+            ->where('reference_id', $order->order_id)
+            ->where('type', 'hold')
+            ->get();
 
-    // Hitung subtotal
-    $subtotal = $order->items->sum(fn($item) => $item->price * $item->quantity);
+        // Hitung subtotal
+        $subtotal = $order->items->sum(fn($item) => $item->price * $item->quantity);
 
-    // Hitung discount
-    $discountAmount = 0;
-    if ($order->voucher) {
-        $discountAmount = $order->voucher->type === 'percentage'
-            ? $subtotal * ($order->voucher->value / 100)
-            : $order->voucher->value;
+        // Hitung discount
+        $discountAmount = 0;
+        if($order->voucher !== null) $discountAmount = $order->voucher->getDiscountOnly($subtotal);
+
+        //Admin Fee
+        $adminFee = $order->admin_fee ?? 2000;
+
+        // Total
+        $total = $subtotal - $discountAmount;
+
+
+        // --- Midtrans Snap Token ---
+        $payment = $order->payment;
+        if ($payment === null || $payment->status === 'EXPIRED') {
+            $midtransData = $midtransService->createSnapToken($order);
+            $snapToken = $midtransData['snap_token'];
+            // dd($midtransData);
+            // Simpan payment baru
+            $order->payment()->create([
+                'raw_response'  => json_encode($midtransData['params']),
+                'snap_token'    => $snapToken,
+                'amount'        => $total, // total yang sudah dihitung
+                'status'        => 'PENDING',
+                'payment_gateway' => 'midtrans',
+            ]);
+        } else {
+            //  $snapToken = $midtransService->createSnapToken($order);
+
+            // dd($snapToken);
+            $snapToken = $payment->snap_token;
+        }
+
+        return view('backend.orders.show', compact(
+            'order',
+            'subtotal',
+            'discountAmount',
+            'total',
+            'holdMovements',
+            'snapToken',
+            'adminFee',
+        ));
     }
 
-    // Total
-    $total = $subtotal - $discountAmount;
 
-    // --- Midtrans Snap Token ---
-    $payment = $order->payment;
-    if ($payment === null || $payment->status === 'EXPIRED') {
-        $midtransData = $midtransService->createSnapToken($order);
-        $snapToken = $midtransData['snap_token'];
-        // dd($midtransData);
-        // Simpan payment baru
-        $order->payment()->create([
-            'raw_response'  => json_encode($midtransData['params']),
-            'snap_token'    => $snapToken,
-            'amount'        => $total, // total yang sudah dihitung
-            'status'        => 'PENDING',
-            'payment_gateway' => 'midtrans',
+
+
+   public function setShipment(Request $request, Order $order)
+   {
+        $data = $request->validate([
+            'scheduled_at'     => ['required', 'date'],
+            'estimate_minutes' => ['required', 'integer', 'min:1'],
+            'tracking_link'    => ['nullable', 'url'],
+            'courier'          => ['nullable', 'string', 'max:255'],
         ]);
-    } else {
-        //  $snapToken = $midtransService->createSnapToken($order);
 
-        // dd($snapToken);
-        $snapToken = $payment->snap_token;
+        // Pastikan tipe data integer
+        $estimateMinutes = (int) $data['estimate_minutes'];
+
+        // Konversi jadwal kirim menjadi instance Carbon
+        $scheduledAt = Carbon::parse($data['scheduled_at']);
+
+        // Hitung perkiraan waktu tiba
+        $estimatedArrival = $scheduledAt->copy()->addMinutes($estimateMinutes);
+
+        $order->update([
+            'scheduled_at'      => $scheduledAt,
+            'estimate_minutes'  => $estimateMinutes,
+            'tracking_link'     => $data['tracking_link'] ?? null,
+            'courier'           => $data['courier'] ?? null,
+            'estimated_arrival' => $estimatedArrival,
+            'status'            => 'Shipment', // opsional
+        ]);
+
+        return back()->with('success', 'Detail pengiriman berhasil disimpan.');
     }
 
-    return view('backend.orders.show', compact(
-        'order',
-        'subtotal',
-        'discountAmount',
-        'total',
-        'holdMovements',
-        'snapToken'
-    ));
-}
+
+     public function orderReversal(Order $order){
+         // Ubah status order menjadi cancelled
+        $order->update(['status' => 'cancelled']);
+
+        // Ambil semua hold yang terkait order ini
+        $holds = StockMovement::where('reference_type', 'Order')
+            ->where('reference_id', $order->order_id)
+            ->where('type', 'hold')
+            ->get();
+
+        // Instansiasi controller StockMovementController
+        $stockCtrl = app(StockMovementController::class);
+
+        // Panggil cancelHold() untuk setiap hold
+        foreach ($holds as $hold) {
+            // cancelHold() mengembalikan JSON response,
+            // kita bisa abaikan return-nya karena kita hanya butuh efeknya
+            $stockCtrl->cancelHold($hold->id);
+        }
+
+        return back()->with('success', 'Order dibatalkan dan stok yang di-hold telah dilepas.');
+     }
 
 
+     public function confirmReceived(Order $order)
+    {
+        // Hanya user pemilik pesanan yang boleh konfirmasi atau admin
+        abort_unless($order->user_id === auth()->id() || auth()->user()->isAdmin(), 403);
 
+        $order->update(['status' => 'Completed']);
+        return back()->with('success', 'Terima kasih telah mengkonfirmasi penerimaan pesanan.');
+    }
 }
