@@ -39,9 +39,11 @@ class DatabaseSeeder extends Seeder
             'role' => 'user',
         ]);
 
-        // --- Fruit Seeder ---
+        // --- Another Seeder ---
         $this->call([
             FruitTypeSeeder::class,
+            SettingsSeeder::class,
+            IndoRegionSeeder::class,
         ]);
     }
 }
