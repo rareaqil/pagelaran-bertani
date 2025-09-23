@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Log;
+
 
 class StockMovement extends Model
 {
@@ -30,8 +32,15 @@ class StockMovement extends Model
     // Bisa jadi relasi polymorphic ke reference (order, restock, dll)
     public function reference()
     {
-        return $this->morphTo(__FUNCTION__, 'reference_type', 'reference_id');
+        Log::info('MorphTo reference', [
+            'reference_type' => $this->reference_type,
+            'reference_id'   => $this->reference_id,
+        ]);
+
+        // Pakai order_id sebagai owner key jika memang reference_id menyimpan nilai order_id
+        return $this->morphTo(__FUNCTION__, 'reference_type', 'reference_id', 'order_id');
     }
+
 
      public function relatedMovement()
     {

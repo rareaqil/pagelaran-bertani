@@ -1,6 +1,4 @@
-@extends('frontend.layouts.main')
-
-@section('content')
+<x-app-layout>
     <x-slot name="header">
         <h2 class="text-xl font-semibold leading-tight text-gray-800">Cart</h2>
     </x-slot>
@@ -20,18 +18,32 @@
                             <span class="flex-1">
                                 {{ $product->name }} - {{ number_format($product->price, 0, ',', '.') }}
                             </span>
-                            <button type="button" onclick="changeQty({{ $product->id }}, -1)"
-                                class="rounded bg-gray-300 px-2 py-1">
+                            <button
+                                type="button"
+                                onclick="changeQty({{ $product->id }}, -1)"
+                                class="rounded bg-gray-300 px-2 py-1"
+                            >
                                 -
                             </button>
-                            <input type="number" id="qty-{{ $product->id }}" value="1" min="1"
-                                class="w-16 rounded border text-center" />
-                            <button type="button" onclick="changeQty({{ $product->id }}, 1)"
-                                class="rounded bg-gray-300 px-2 py-1">
+                            <input
+                                type="number"
+                                id="qty-{{ $product->id }}"
+                                value="1"
+                                min="1"
+                                class="w-16 rounded border text-center"
+                            />
+                            <button
+                                type="button"
+                                onclick="changeQty({{ $product->id }}, 1)"
+                                class="rounded bg-gray-300 px-2 py-1"
+                            >
                                 +
                             </button>
-                            <button type="button" onclick="addToCart({{ $product->id }})"
-                                class="rounded bg-blue-500 px-3 py-1 text-white">
+                            <button
+                                type="button"
+                                onclick="addToCart({{ $product->id }})"
+                                class="rounded bg-blue-500 px-3 py-1 text-white"
+                            >
                                 Add
                             </button>
                         </div>
@@ -57,14 +69,27 @@
                                     {{ number_format($item->itemable->getPrice(), 0, ',', '.') }}
                                 </td>
                                 <td class="flex items-center gap-2 border px-4 py-2">
-                                    <button type="button" class="btn-decrease rounded bg-gray-300 px-2 py-1"
-                                        data-id="{{ $item->id }}">
+                                    <button
+                                        type="button"
+                                        class="btn-decrease rounded bg-gray-300 px-2 py-1"
+                                        data-id="{{ $item->id }}"
+                                    >
                                         -
                                     </button>
-                                    <input type="number" value="{{ $item->quantity }}" min="1"
-                                        class="qty-input w-16 rounded border text-center" data-id="{{ $item->id }}" />
-                                    <button type="button" class="btn-increase rounded bg-gray-300 px-2 py-1"
-                                        data-id="{{ $item->id }}">
+                                    <input
+                                        type="number"
+                                        value="{{ $item->quantity }}"
+                                        min="1"
+                                        class="qty-input w-16 rounded border text-center"
+                                        data-id="{{ $item->id }}"
+                                        data-available-stock="{{ $item->itemable->available_stock }}"
+                                        readonly
+                                    />
+                                    <button
+                                        type="button"
+                                        class="btn-increase rounded bg-gray-300 px-2 py-1"
+                                        data-id="{{ $item->id }}"
+                                    >
                                         +
                                     </button>
                                 </td>
@@ -72,8 +97,10 @@
                                     {{ number_format($item->itemable->getPrice() * $item->quantity * (1 - $item->discount), 0, ',', '.') }}
                                 </td>
                                 <td class="border px-4 py-2">
-                                    <button class="remove-item rounded bg-red-500 px-2 py-1 text-white"
-                                        data-id="{{ $item->id }}">
+                                    <button
+                                        class="remove-item rounded bg-red-500 px-2 py-1 text-white"
+                                        data-id="{{ $item->id }}"
+                                    >
                                         Remove
                                     </button>
                                 </td>
@@ -99,8 +126,12 @@
 
                 {{-- Apply Coupon --}}
                 <div class="mt-4 flex gap-2">
-                    <input type="text" id="coupon" placeholder="Discount (0.1 = 10%)"
-                        class="rounded border px-2 py-1" />
+                    <input
+                        type="text"
+                        id="coupon"
+                        placeholder="Discount (0.1 = 10%)"
+                        class="rounded border px-2 py-1"
+                    />
                     <button type="button" id="apply-coupon" class="rounded bg-blue-500 px-2 py-1 text-white">
                         Apply Coupon
                     </button>
@@ -125,7 +156,8 @@
     @push('scripts')
         <script type="module">
             let currentVoucher = null;
-            $(function() {
+
+            $(function () {
                 // Initialize Select2 for product search
                 $('#product-search')
                     .select2({
@@ -133,17 +165,14 @@
                         ajax: {
                             url: '/api/products',
                             dataType: 'json',
-                            processResults: function(data) {
+                            processResults: function (data) {
                                 return {
-                                    results: data.map((p) => ({
-                                        id: p.id,
-                                        text: p.name + ' - ' + p.price
-                                    })),
+                                    results: data.map((p) => ({ id: p.id, text: p.name + ' - ' + p.price })),
                                 };
                             },
                         },
                     })
-                    .on('select2:select', function(e) {
+                    .on('select2:select', function (e) {
                         addToCart(e.params.data.id);
                         $(this).val(null).trigger('change'); // reset after select
                     });
@@ -159,20 +188,20 @@
                         let itemSubtotal = item.price * item.quantity * (1 - (item.discount ?? 0));
                         subtotal += itemSubtotal;
                         tbody.append(`
-                            <tr id="cart-item-${item.id}">
-                                <td class="border px-4 py-2">${item.name}</td>
-                                <td class="border px-4 py-2">${item.price.toLocaleString()}</td>
-                                <td class="flex items-center gap-2 border px-4 py-2">
-                                    <button type="button" class="btn-decrease rounded bg-gray-300 px-2 py-1" data-id="${item.id}">-</button>
-                                    <input type="number" value="${item.quantity}" min="1" class="w-16 rounded border text-center qty-input" data-id="${item.id}"/>
-                                    <button type="button" class="btn-increase rounded bg-gray-300 px-2 py-1" data-id="${item.id}">+</button>
-                                </td>
-                                <td class="border px-4 py-2">${itemSubtotal.toLocaleString()}</td>
-                                <td class="border px-4 py-2">
-                                    <button class="remove-item rounded bg-red-500 px-2 py-1 text-white" data-id="${item.id}">Remove</button>
-                                </td>
-                            </tr>
-                        `);
+                <tr id="cart-item-${item.id}">
+                    <td class="border px-4 py-2">${item.name}</td>
+                    <td class="border px-4 py-2">${item.price.toLocaleString()}</td>
+                    <td class="flex items-center gap-2 border px-4 py-2">
+                        <button type="button" class="btn-decrease rounded bg-gray-300 px-2 py-1" data-id="${item.id}">-</button>
+                        <input type="number" value="${item.quantity}" min="1" class="w-16 rounded border text-center qty-input" readonly data-id="${item.id}" data-available-stock="${item.itemable?.available_stock ?? 9999}"/>
+                        <button type="button" class="btn-increase rounded bg-gray-300 px-2 py-1" data-id="${item.id}">+</button>
+                    </td>
+                    <td class="border px-4 py-2">${itemSubtotal.toLocaleString()}</td>
+                    <td class="border px-4 py-2">
+                        <button class="remove-item rounded bg-red-500 px-2 py-1 text-white" data-id="${item.id}">Remove</button>
+                    </td>
+                </tr>
+            `);
                     });
 
                     // Update subtotal
@@ -189,142 +218,157 @@
                     }
                 }
 
-                // Add Product Qty + / -
-                window.changeQty = function(productId, delta) {
-                    const input = $(`#qty-${productId}`);
-                    let val = parseInt(input.val()) + delta;
-                    if (val < 1) val = 1;
-                    input.val(val);
-                };
+                // Fungsi baru: otomatis apply voucher jika ada
+                function autoApplyVoucher(cart) {
+                    if (!currentVoucher) {
+                        updateCartDOM(cart);
+                        return;
+                    }
+
+                    $.ajax({
+                        url: '{{ route('cart.coupon') }}',
+                        type: 'POST',
+                        data: JSON.stringify({ code: currentVoucher.code }),
+                        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                        contentType: 'application/json',
+                        success: function (res) {
+                            if (res.success) {
+                                currentVoucher = res.voucher;
+                                updateCartDOM(res.cart, currentVoucher);
+                            } else {
+                                currentVoucher = null; // voucher invalid / subtotal tidak terpenuhi
+                                updateCartDOM(cart);
+                            }
+                        },
+                    });
+                }
 
                 // Add to cart
-                window.addToCart = function(productId) {
+                window.addToCart = function (productId) {
                     const qty = parseInt($(`#qty-${productId}`).val()) || 1;
                     $.ajax({
                         url: '{{ route('cart.add') }}',
                         type: 'POST',
-                        data: JSON.stringify({
-                            id: productId,
-                            quantity: qty
-                        }),
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
+                        data: JSON.stringify({ id: productId, quantity: qty }),
+                        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                         contentType: 'application/json',
-                        success: function(res) {
-                            if (res.success) updateCartDOM(res.cart, currentVoucher);
+                        success: function (res) {
+                            if (res.success) {
+                                autoApplyVoucher(res.cart);
+                            } else {
+                                alert(res.message || 'Gagal menambahkan item');
+                            }
                         },
                     });
                 };
 
                 // Remove item
-                $(document).on('click', '.remove-item', function() {
+                $(document).on('click', '.remove-item', function () {
                     const id = $(this).data('id');
                     $.ajax({
                         url: `/cart/item/remove/${id}`,
                         type: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        success: function(res) {
-                            if (res.success) updateCartDOM(res.cart, currentVoucher);
+                        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                        success: function (res) {
+                            if (res.success) autoApplyVoucher(res.cart);
                         },
                     });
                 });
 
                 // Update qty input
-                $(document).on('change', '.qty-input', function() {
+                $(document).on('change', '.qty-input', function () {
                     const id = $(this).data('id');
                     const quantity = parseInt($(this).val());
                     $.ajax({
                         url: `/cart/item/${id}`,
                         type: 'PATCH',
-                        data: JSON.stringify({
-                            quantity
-                        }),
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
+                        data: JSON.stringify({ quantity }),
+                        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                         contentType: 'application/json',
-                        success: function(res) {
-                            if (res.success) updateCartDOM(res.cart, currentVoucher);
+                        success: function (res) {
+                            if (res.success) autoApplyVoucher(res.cart);
                         },
                     });
                 });
 
                 // Cart table +/- buttons
-                $(document).on('click', '.btn-decrease', function() {
+                $(document).on('click', '.btn-decrease', function () {
                     const id = $(this).data('id');
                     const input = $(`.qty-input[data-id="${id}"]`);
-                    input.val(Math.max(parseInt(input.val()) - 1, 1)).trigger('change');
-                });
-                $(document).on('click', '.btn-increase', function() {
-                    const id = $(this).data('id');
-                    const input = $(`.qty-input[data-id="${id}"]`);
-                    input.val(parseInt(input.val()) + 1).trigger('change');
+                    let val = Math.max(parseInt(input.val()) - 1, 1);
+                    input.val(val);
+
+                    $.ajax({
+                        url: `/cart/item/${id}`,
+                        type: 'PATCH',
+                        data: JSON.stringify({ quantity: val }),
+                        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                        contentType: 'application/json',
+                        success: function (res) {
+                            autoApplyVoucher(res.cart);
+                        },
+                    });
                 });
 
-                $('#apply-coupon').click(function() {
+                $(document).on('click', '.btn-increase', function () {
+                    const id = $(this).data('id');
+                    const input = $(`.qty-input[data-id="${id}"]`);
+                    let val = parseInt(input.val()) + 1;
+
+                    const availableStock = parseInt(input.data('available-stock')) || 9999;
+
+                    if (val > availableStock) {
+                        alert(`Maksimum stok tersedia: ${availableStock}`);
+                        val = availableStock;
+                    }
+
+                    input.val(val);
+
+                    $.ajax({
+                        url: `/cart/item/${id}`,
+                        type: 'PATCH',
+                        data: JSON.stringify({ quantity: val }),
+                        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                        contentType: 'application/json',
+                        success: function (res) {
+                            autoApplyVoucher(res.cart);
+                        },
+                    });
+                });
+
+                // Apply coupon manual (tetap bisa)
+                $('#apply-coupon').click(function () {
                     const code = $('#coupon').val();
                     $.ajax({
                         url: '{{ route('cart.coupon') }}',
                         type: 'POST',
-                        data: JSON.stringify({
-                            code
-                        }),
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
+                        data: JSON.stringify({ code }),
+                        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                         contentType: 'application/json',
-                        success: function(res) {
+                        success: function (res) {
                             if (res.success) {
-                                // update cart items
-
-                                // hitung subtotal dari cart.items
-                                let subtotal = 0;
-                                res.cart.items.forEach((item) => {
-                                    subtotal += item.price * item.quantity * (1 - (item
-                                        .discount ?? 0));
-                                });
-                                $('#cart-subtotal').text(subtotal.toLocaleString());
-
-                                // tampilkan voucher jika ada
-                                if (res.voucher) {
-                                    currentVoucher = res.voucher; // simpan voucher di
-                                    updateCartDOM(res.cart, currentVoucher);
-                                    $('#cart-discount').show();
-                                    $('#cart-discount-amount').text(res.voucher.discount
-                                        .toLocaleString());
-                                    $('#cart-total').text((subtotal - res.voucher.discount)
-                                        .toLocaleString());
-                                } else {
-                                    $('#cart-discount').hide();
-                                    $('#cart-total').text(subtotal.toLocaleString());
-                                }
+                                currentVoucher = res.voucher;
+                                updateCartDOM(res.cart, currentVoucher);
                             } else {
                                 alert(res.message || 'Coupon tidak valid');
+                                currentVoucher = null;
                             }
                         },
                     });
                 });
 
                 // Checkout
-                $('#checkout').click(function() {
+                $('#checkout').click(function () {
                     $.ajax({
                         url: '{{ route('cart.checkout') }}',
                         type: 'POST',
-                        data: JSON.stringify({
-                            voucher: currentVoucher
-                        }),
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
+                        data: JSON.stringify({ voucher: currentVoucher }),
+                        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                         contentType: 'application/json',
-                        success: function(res) {
+                        success: function (res) {
                             if (res.success) {
                                 alert('Order berhasil dibuat dengan ID: ' + res.order_id);
-                                window.location.href = '/orders/' + res
-                                    .order_id; // redirect ke detail order
+                                window.location.href = '/backend/orders/' + res.order_id; // redirect ke detail order
                             } else {
                                 alert(res.message || 'Checkout gagal');
                             }
@@ -333,19 +377,17 @@
                 });
 
                 // Clear cart
-                $('#clear-cart').click(function() {
+                $('#clear-cart').click(function () {
                     $.ajax({
                         url: '{{ route('cart.clear') }}',
                         type: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        success: function(res) {
-                            if (res.success) updateCartDOM(res.cart, currentVoucher);
+                        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                        success: function (res) {
+                            if (res.success) autoApplyVoucher(res.cart);
                         },
                     });
                 });
             });
         </script>
     @endpush
-@endsection
+</x-app-layout>

@@ -22,7 +22,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/learn', [FrontendController::class, 'learn'])->name('learn');
     Route::get('/order-product', [FrontendController::class, 'product'])->name('order.product');
     Route::get('/contact-us', [FrontendController::class, 'contact'])->name('contact.us');
-    
+
     //profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -88,6 +88,8 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/user/dashboard', function () {
         return view('dashboard');
     })->name('user.dashboard');
+
+    Route::get('/orders/{order}', [OrderController::class, 'showView'])->name('orders.showView');
 });
 
 
@@ -105,9 +107,18 @@ Route::middleware(['auth', 'role:super_admin,admin'])->prefix('backend')->group(
 
     Route::get('/orders/{order}', [OrderController::class, 'showView'])->name('orders.showView');
     Route::get('/orders', [OrderController::class, 'indexView'])->name('orders.indexView');
+    Route::post('/orders/{order}/set-shipment', [OrderController::class,'setShipment'])
+        ->name('orders.setShipment');
+
+    Route::post('/orders/{order}/confirm-received', [OrderController::class,'confirmReceived'])
+        ->name('orders.confirmReceived');
+    Route::patch('/orders/{order}/cancel', [OrderController::class, 'orderReversal'])
+     ->name('orders.orderReversal');
 
 
 });
+
+
 
 
 use UniSharp\LaravelFilemanager\Lfm;

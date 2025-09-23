@@ -25,7 +25,7 @@ class User extends Authenticatable
 
      protected $guarded = ['id', 'created_at', 'updated_at'];
 
-  
+
 
     // Relasi ke alamat
     public function addresses()
@@ -38,6 +38,12 @@ class User extends Authenticatable
     {
         return $this->hasOne(UserAddress::class)->latestOfMany();
     }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
 
     /**
      * The attributes that should be hidden for serialization.

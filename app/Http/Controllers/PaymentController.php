@@ -1,9 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Http\Controllers\StockMovementController;
+use App\Models\StockMovement;
 use Illuminate\Support\Facades\Log;
 use App\Models\Payment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 use App\Models\Order;
 
@@ -141,45 +144,87 @@ class PaymentController extends Controller
          ]);
         switch ($status) {
             case 'success':
-                // $order->update([
-                //     'status'         => 'processing',
-                //     'payment_status' => 'paid',
-                // ]);
+                $order->update([
+                    'status'  => 'Paid',
+                ]);
 
                 // Update atau buat Payment (ONE TO ONE)
-                // $order->payment()->updateOrCreate(
-                //     ['order_id' => $order->id],
-                //     [
-                //         'status'      => 'PAID',
-                //         'paid_at'     => now(),
-                //         'midtrans_id' => $notif->transaction_id,
-                //     ]
-                // );
+                $order->payment()->updateOrCreate(
+                    ['order_id' => $order->id],
+                    [
+                        'status'      => 'PAID',
+                        'paid_at'     => now(),
+                        'transaction_id' => $notif->transaction_id,
+                    ]
+                );
+
+                $holdMovements = StockMovement::where('reference_type', 'Order')
+                ->where('reference_id', $order->order_id)
+                ->where('type', 'hold')
+                ->get();
+
+                // Setting ConfirmPayment
+
+
+                 Log::info('Hold Status Cancel', [
+                    'holdMovements' => $holdMovements->first(),
+                ]);
+
+                $stockMovementCtrl = new StockMovementController();
+                foreach($holdMovements as $hold) {
+                    $stockMovementCtrl->confirmPayment($hold->id);
+                }
+
+
+
                 break;
 
             case 'pending':
-                // $order->update(['payment_status' => 'pending']);
-                // $order->payment()->updateOrCreate(
-                //     ['order_id' => $order->id],
-                //     ['status' => 'PENDING', 'midtrans_id' => $notif->transaction_id]
-                // );
+                $order->update(['status' => 'Pending']);
+                $order->payment()->updateOrCreate(
+                    ['order_id' => $order->id],
+                    ['status' => 'PENDING', 'transaction_id' => $notif->transaction_id]
+                );
                 break;
+
+            // case 'expire':
+            //     $order->update(['status' => 'Expired']);
+            //     $order->payment()->updateOrCreate(
+            //         ['order_id' => $order->id],
+            //         ['status' => 'EXPIRED', 'transaction_id' => $notif->transaction_id]
+            //     );
+            //     break;
 
             case 'expire':
-                // $order->update(['payment_status' => 'expired']);
-                // $order->payment()->updateOrCreate(
-                //     ['order_id' => $order->id],
-                //     ['status' => 'EXPIRED', 'midtrans_id' => $notif->transaction_id]
-                // );
-                break;
-
             case 'cancel':
             case 'failed':
-                // $order->update(['payment_status' => $status]);
-                // $order->payment()->updateOrCreate(
-                //     ['order_id' => $order->id],
-                //     ['status' => strtoupper($status), 'midtrans_id' => $notif->transaction_id]
-                // );
+                $order->update(['status' => Str::ucfirst($status)]);
+                $order->payment()->updateOrCreate(
+                    ['order_id' => $order->id],
+                    ['status' => strtoupper($status), 'transaction_id' => $notif->transaction_id]
+                );
+
+                $holdMovements = StockMovement::where('reference_type', 'Order')
+                ->where('reference_id', $order->order_id)
+                ->where('type', 'hold')
+                ->get();
+
+                 Log::info('Hold Status Cancel', [
+                    'holdMovements' => $holdMovements->all(),
+                ]);
+
+                // Call Movementstoc release hold
+                $holdMovements = StockMovement::where('reference_type', 'Order')
+                ->where('reference_id', $order->order_id)
+                ->where('type', 'hold')
+                ->get();
+
+                $stockMovementCtrl = new StockMovementController();
+                foreach($holdMovements as $hold) {
+                    $stockMovementCtrl->cancelHold($hold->id);
+                }
+
+
                 break;
 
             // refund / partial_refund / authorize dapat ditangani serupa
