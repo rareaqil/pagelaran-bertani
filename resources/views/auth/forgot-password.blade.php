@@ -9,6 +9,11 @@
 </head>
 
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <a href="{{ url('/login') }}"
+        class="absolute top-6 right-6 bg-yellow-500 text-white px-4 py-2 rounded-md shadow 
+          hover:bg-yellow-600 active:scale-95 transition transform duration-150 z-50">
+        Back to login page →
+    </a>
 
     <div class="w-full max-w-md bg-white shadow-lg rounded-lg p-6">
         <h2 class="text-2xl font-bold text-center text-amber-500 mb-4">

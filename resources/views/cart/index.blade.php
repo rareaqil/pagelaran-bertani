@@ -152,6 +152,11 @@
             </div>
         </div>
     </div>
+@endsection
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     @push('scripts')
         <script type="module">
@@ -204,19 +209,20 @@
             `);
                     });
 
-                    // Update subtotal
-                    $('#cart-subtotal').text(subtotal.toLocaleString());
+            // Update subtotal
+            $('#cart-subtotal').text(subtotal.toLocaleString());
 
-                    // Update voucher / discount
-                    if (voucher) {
-                        $('#cart-discount').show();
-                        $('#cart-discount-amount').text(voucher.discount.toLocaleString());
-                        $('#cart-total').text((subtotal - voucher.discount).toLocaleString());
-                    } else {
-                        $('#cart-discount').hide();
-                        $('#cart-total').text(subtotal.toLocaleString());
-                    }
-                }
+            // Update voucher / discount
+            if (voucher) {
+                $('#cart-discount').show();
+                $('#cart-discount-amount').text(voucher.discount.toLocaleString());
+                $('#cart-total').text((subtotal - voucher.discount).toLocaleString());
+            } else {
+                $('#cart-discount').hide();
+                $('#cart-total').text(subtotal.toLocaleString());
+            }
+        }
+
 
                 // Fungsi baru: otomatis apply voucher jika ada
                 function autoApplyVoucher(cart) {
