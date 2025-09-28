@@ -24,16 +24,28 @@ class MidtransService
     public function __construct()
     {
         // Ambil setting Midtrans runtime (fallback ke config jika DB belum siap)
+        // $this->serverKey   = config('midtrans.server_key');
+        // $this->isProduction = config('midtrans.is_production');
         $this->serverKey   = midtrans_config('server_key');
-        $this->isProduction = (bool) midtrans_config('is_production');
-        $this->isSanitized  = (bool) midtrans_config('is_sanitized');
-        $this->is3ds        = (bool) midtrans_config('is_3ds');
+        $this->isProduction = (bool)midtrans_config('is_production');
+        $this->isSanitized = config('midtrans.is_sanitized');
+        $this->is3ds = config('midtrans.is_3ds');
+        // $this->is3ds = config('midtrans.is_3ds');
 
         // Mengatur konfigurasi global Midtrans
-        Config::$serverKey   = $this->serverKey;
+        Config::$serverKey = $this->serverKey;
         Config::$isProduction = $this->isProduction;
-        Config::$isSanitized  = $this->isSanitized;
-        Config::$is3ds        = $this->is3ds;
+        Config::$isSanitized = $this->isSanitized;
+        Config::$is3ds = $this->is3ds;
+
+        // dd('Midtrans config', [
+        //     'server_key'   => $this->serverKey ,
+        //     'is_production'=> $this->isProduction ? 'true' : 'false',
+        //     'is_sanitized' => $this->isSanitized ? 'true' : 'false',
+        //     'is_3ds'       => $this->is3ds ? 'true' : 'false',
+        //     'm_server_key'   => midtrans_config('server_key') == $this->serverKey ? 'match' : 'mismatch',
+        //     'm_is_production'=> (bool)midtrans_config('midtrans_is_production') == $this->isProduction ? 'match' : 'mismatch',
+        // ]);
     }
 
     public function notification(): Notification

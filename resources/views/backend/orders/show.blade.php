@@ -208,7 +208,7 @@
                 {{-- if status_payment = success && status = shipment --}}
                 {{-- Add Tabel Detail Pengiriman | isinya After Paid yang telah diisi oleh Admin --}}
                 {{-- USER: Detail Pengiriman --}}
-                @if ($order->payment->status === 'PAID' && $order->status === 'Shipment')
+                @if ($order->payment?->status === 'PAID' && $order->status === 'Shipment')
                     {{-- @if ($order->status === 'Paid') --}}
                     <div class="mt-8 border-t pt-6">
                         <h3 class="mb-2 text-lg font-semibold">Detail Pengiriman</h3>
@@ -329,7 +329,7 @@
         {{-- Midtrans Snap JS --}}
         <script
             src="https://app.sandbox.midtrans.com/snap/snap.js"
-            data-client-key="{{ config('midtrans.client_key') }}"
+            data-client-key="{{ midtrans_config('client_key') }}"
         ></script>
         <script type="module">
             let snapOpen = false;

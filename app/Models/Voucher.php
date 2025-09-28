@@ -46,21 +46,20 @@ class Voucher extends Model
         if (!$this->isValid($orderAmount)) return 0;
 
         if ($this->type === 'percentage') {
-            return $orderAmount * ($this->value / 100);
+            // dibulatkan ke bilangan bulat terdekat
+            return round($orderAmount * ($this->value / 100));
         }
 
         // type = fixed → batasi maksimal 500
-        return min($this->value, max(0, $orderAmount - 500));
+        return round(min($this->value, max(0, $orderAmount - 500)));
     }
 
     public function getDiscountOnly($orderAmount): float
     {
-
         if ($this->type === 'percentage') {
-            return $orderAmount * ($this->value / 100);
+            return round($orderAmount * ($this->value / 100));
         }
 
-        // type = fixed → batasi maksimal 500
-        return min($this->value, max(0, $orderAmount - 500));
+        return round(min($this->value, max(0, $orderAmount - 500)));
     }
 }

@@ -127,6 +127,24 @@ class CartController extends Controller
         ]);
     }
 
+    // public function removeVoucher()
+    // {
+    //     $cart = Cart::firstOrCreate([
+    //         'user_id' => auth()->id() ?? 1
+    //     ]);
+
+    //     // jika Anda menyimpan relasi voucher di cart/order, kosongkan
+    //     if (method_exists($cart, 'voucher')) {
+    //         $cart->voucher()->dissociate();
+    //         $cart->save();
+    //     }
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'cart'    => $this->formatCart($cart)
+    //     ]);
+    // }
+
 
 
 
