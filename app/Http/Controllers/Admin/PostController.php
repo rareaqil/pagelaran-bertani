@@ -41,7 +41,7 @@ class PostController extends Controller
     public function create()
     {
 
-           $fruits = FruitType::whereNull('deleted_at')->get();
+           $fruits = FruitType::get();
 
         return view('backend.posts.form', compact('fruits'));
     }
@@ -142,7 +142,3 @@ private function generateUniqueSlug($name, $id = null)
     return $slug;
 }
 }
-
-
-
-

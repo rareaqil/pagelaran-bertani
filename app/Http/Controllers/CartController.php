@@ -217,68 +217,6 @@ class CartController extends Controller
         return null;
     }
 
-
-    // public function checkout(Request $request)
-    // {
-
-    //     $userId = auth()->id() ?? 1;
-    //     $cart = Cart::firstOrCreate(['user_id' => $userId]);
-    //     $items = $cart->items;
-
-    //     if ($items->isEmpty()) {
-    //         return response()->json(['success' => false, 'message' => 'Cart kosong']);
-    //     }
-
-    //     // Hitung subtotal
-    //     $subtotal = 0;
-    //     foreach ($items as $item) {
-    //         $subtotal += $item->itemable->getPrice() * $item->quantity * (1 - ($item->discount ?? 0));
-    //     }
-
-    //     // Ambil voucher dari request (frontend kirim currentVoucher)
-    //     $voucherId = $request->voucher['id'] ?? null;
-    //     $discount = $request->voucher['discount'] ?? 0;
-
-    //     $adminFee = (int) Setting::getValue('admin_fee', 2000);
-
-    //     // Buat order
-    //     $order = Order::create([
-    //         'user_id' => $userId,
-    //         'total_amount' => $subtotal - $discount,
-    //         'status' => 'unpaid',
-    //         'voucher_id' => $voucherId,
-    //         'discount_amount' => $discount,
-    //         'admin_fee' => $adminFee,
-    //     ]);
-
-    //     // Simpan order_items
-
-    //     $stockController = new StockMovementController();
-    //     foreach ($items as $item) {
-    //         $order->items()->create([
-    //             'product_id' => $item->itemable->id,
-    //             'quantity' => $item->quantity,
-    //             'price' => $item->itemable->getPrice(),
-    //         ]);
-
-    //         // Stock Movement
-    //         $holdRequest = new Request([
-    //             'product_id' => $item->itemable->id,
-    //             'quantity' => $item->quantity,
-    //             'reference_type' => 'order',
-    //             'reference_id' => $order->order_id,
-    //         ]);
-
-    //         $stockController->hold($holdRequest);
-    //     }
-
-    //     // Kosongkan cart
-    //     $cart->emptyCart();
-
-    //     return response()->json(['success' => true, 'order_id' => $order->order_id]);
-    // }
-
-
     public function checkout(Request $request)
     {
         $userId = auth()->id() ?? 1;
@@ -328,7 +266,6 @@ class CartController extends Controller
             'discount_amount' => $discount,
             'admin_fee'       => $adminFee,
         ]);
-        // dd($order);
 
         // Simpan order_items & hold stock
         $stockController = new StockMovementController();

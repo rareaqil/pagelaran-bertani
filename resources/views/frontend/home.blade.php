@@ -3,14 +3,14 @@
 @section('content')
     {{-- Hero Section --}}
     <section class="relative h-[500px] bg-cover bg-center flex items-center"
-        style="background-image: url('https://plus.unsplash.com/premium_photo-1725902576834-522b1abe8d80?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');">
+        style="background-image: url('{{ asset('media/Photo_Melon/GH1/Honey globe 47.jpg') }}');">
 
         <div class="absolute inset-0 bg-black/30"></div>
 
         <div class="relative z-10 text-white px-10">
             <h1 class="text-6xl md:text-5xl font-bold">Eat Fresh, Live Healthy</h1>
             <p class="mt-2 text-xl">Dari Kebun Kami untuk Anda</p>
-            <a href="/order"
+            <a href="/order-product"
                 class="mt-4 bg-amber-500 text-white px-6 py-2 rounded shadow hover:bg-amber-600 hover:scale-105 transform transition duration-200 inline-block">
                 Order Online
             </a>
@@ -35,64 +35,85 @@
         </div>
 
         <!-- Kanan (gambar) -->
-        <div class="w-full h-[350px]">
-            <img src="https://plus.unsplash.com/premium_photo-1700089174974-871b8ea3731d?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                alt="Melon Segar" class="w-full h-full object-cover rounded-lg shadow">
+        <div class="w-full h-[350px] [perspective:1000px]">
+            <div
+                class="relative w-full h-full transition-transform duration-500 transform group-hover:rotate-y-6 group-hover:-rotate-x-3 group-hover:scale-105 group-hover:shadow-2xl rounded-lg group">
+                <img src="{{ asset('media/Photo_Melon/GH2/Inthanon Jelang Panen.jpg') }}" alt="Melon Segar"
+                    class="w-full h-full object-cover rounded-lg shadow-lg transition duration-300 transform hover:-translate-y-2 hover:shadow-2xl">
+            </div>
         </div>
     </section>
 
     {{-- Product Section --}}
-    <section class="py-16 px-6 md:px-20 bg-green-600">
+    {{-- Product Section --}}
+    <section class="py-16 px-6 md:px-20 bg-green-600" x-data="{ openModal: false, product: {} }">
         <h2 class="text-xl md:text-2xl font-bold text-amber-500 mb-8">Belanja Buah Segar Musim Ini</h2>
 
+        <!-- Grid Product -->
         <div class="grid md:grid-cols-4 gap-8">
-            <!-- Product Card -->
-            <div
-                class="bg-white rounded-lg shadow-md hover:shadow-2xl transition transform hover:-translate-y-2 hover:scale-105 p-4 cursor-pointer">
-                <img src="https://images.unsplash.com/photo-1615485290690-285a539321e6?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                    alt="Melon Inthanon" class="w-full h-48 object-cover rounded-md">
-                <h3 class="mt-4 text-lg font-semibold text-gray-800">Melon Inthanon</h3>
-                <p class="text-gray-600">Rp 50.000/kg</p>
-            </div>
-
-            <div
-                class="bg-white rounded-lg shadow-md hover:shadow-2xl transition transform hover:-translate-y-2 hover:scale-105 p-4 cursor-pointer">
-                <img src="https://images.unsplash.com/photo-1571575173700-afb9492e6a50?q=80&w=1036&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                    alt="Melon Honey Globe" class="w-full h-48 object-cover rounded-md">
-                <h3 class="mt-4 text-lg font-semibold text-gray-800">Melon Honey Globe</h3>
-                <p class="text-gray-600">Rp 50.000/kg</p>
-            </div>
-
-            <div
-                class="bg-white rounded-lg shadow-md hover:shadow-2xl transition transform hover:-translate-y-2 hover:scale-105 p-4 cursor-pointer">
-                <img src="https://images.unsplash.com/photo-1571575173700-afb9492e6a50?q=80&w=1036&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                    alt="Melon Honey Globe" class="w-full h-48 object-cover rounded-md">
-                <h3 class="mt-4 text-lg font-semibold text-gray-800">Melon Honey Globe</h3>
-                <p class="text-gray-600">Rp 50.000/kg</p>
-            </div>
-
-            <div
-                class="bg-white rounded-lg shadow-md hover:shadow-2xl transition transform hover:-translate-y-2 hover:scale-105 p-4 cursor-pointer">
-                <img src="https://images.unsplash.com/photo-1615485290690-285a539321e6?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                    alt="Melon Honey Globe" class="w-full h-48 object-cover rounded-md">
-                <h3 class="mt-4 text-lg font-semibold text-gray-800">Melon Honey Globe</h3>
-                <p class="text-gray-600">Rp 50.000/kg</p>
-            </div>
+            @forelse($products as $product)
+                <div @click="openModal = true; product = {
+                    name: '{{ $product->name }}',
+                    description: '{{ $product->description }}',
+                    price: '{{ number_format($product->price, 0, ',', '.') }}',
+                    image: '{{ asset('storage/' . str_replace(' ', '%20', $product->image)) }}',
+                    weight: '{{ $product->weight }}',
+                    sku: '{{ $product->sku }}',
+                    stock: '{{ $product->stock }}'
+                }"
+                    class="bg-white rounded-lg shadow-md hover:shadow-2xl transition transform hover:-translate-y-2 hover:scale-105 p-4 cursor-pointer">
+                    <img src="{{ $product->image }}" alt="{{ $product->name }}"
+                        class="w-full h-48 object-cover rounded-md">
+                    <h3 class="mt-4 text-lg font-semibold text-gray-800">{{ $product->name }}</h3>
+                    <p class="text-gray-600">Rp {{ number_format($product->price, 0, ',', '.') }}/kg</p>
+                </div>
+            @empty
+                <p class="text-white">Belum ada produk tersedia.</p>
+            @endforelse
         </div>
 
-        <!-- Button -->
         <div class="mt-10 text-center">
             <a href="/order"
                 class="bg-amber-500 text-white px-6 py-2 rounded shadow hover:bg-amber-600 hover:scale-105 transform transition duration-200 inline-block">
                 Order Online
             </a>
         </div>
+
+        <!-- Modal Product (di luar grid, full screen) -->
+        <div x-show="openModal" x-transition x-cloak
+            class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div class="bg-white w-11/12 md:w-3/4 lg:w-2/3 xl:w-1/2 rounded-lg shadow-lg relative p-6">
+                <!-- Close -->
+                <button @click="openModal = false" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
+                    ✕
+                </button>
+
+                <!-- Isi Modal -->
+                <div class="grid md:grid-cols-2 gap-6">
+                    <img src="{{ $product->image }}" alt="{{ $product->name }}" class="w-full h-64 object-cover">
+                    <div>
+                        <h3 class="text-2xl font-bold text-green-700" x-text="product.name"></h3>
+                        <p class="text-gray-600 mt-2" x-text="'SKU: ' + product.sku"></p>
+                        <p class="text-gray-600" x-text="'Stock: ' + product.stock"></p>
+                        <p class="mt-2 text-lg font-semibold text-amber-600" x-text="'Rp ' + product.price + '/kg'"></p>
+                        <p class="mt-4 text-gray-700 leading-relaxed" x-text="product.description"></p>
+                        <p class="mt-2 text-sm text-gray-500" x-text="'Berat: ' + product.weight + ' kg'"></p>
+
+                        <a href="/order-product"
+                            class="mt-6 inline-block bg-amber-500 text-white px-5 py-2 rounded shadow hover:bg-amber-600 transition">
+                            Pesan Sekarang
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 
     {{-- Testimoni Section --}}
-    <section class="py-16 px-6 md:px-20 bg-white">
+    <section class="py-16 px-6 md:px-20 bg-white" x-data="{ openModal: false }">
         <h2 class="text-xl md:text-2xl font-bold text-amber-500 mb-8">Testimoni Pelanggan</h2>
 
+        <!-- Grid testimoni singkat -->
         <div class="grid md:grid-cols-4 gap-8">
             <div class="bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden">
                 <img src="/images/testi1.jpg" alt="Testimoni" class="w-full h-48 object-cover">
@@ -130,10 +151,50 @@
 
         <!-- Button -->
         <div class="mt-10 text-center">
-            <a href="/testimonials"
+            <button @click="openModal = true"
                 class="bg-amber-500 text-white px-6 py-2 rounded shadow hover:bg-amber-600 hover:scale-105 transform transition duration-200 inline-block">
                 See More
-            </a>
+            </button>
+        </div>
+
+        <!-- Modal -->
+        <div x-show="openModal" x-transition class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+            x-cloak>
+            <div
+                class="bg-white w-11/12 md:w-3/4 lg:w-2/3 xl:w-1/2 rounded-lg shadow-lg overflow-y-auto max-h-[80vh] relative">
+                <!-- Close button -->
+                <button @click="openModal = false" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
+                    ✕
+                </button>
+
+                <div class="p-6">
+                    <h3 class="text-lg font-bold text-amber-500 mb-4">Semua Testimoni</h3>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <!-- contoh testimoni isi -->
+                        <div class="bg-green-600 p-4 text-white rounded-lg">
+                            <p class="font-semibold">Andi</p>
+                            <p class="text-xs">12 Sep 2025</p>
+                            <p class="mt-2 text-sm">Buah segar banget, pengiriman cepat!</p>
+                        </div>
+                        <div class="bg-green-600 p-4 text-white rounded-lg">
+                            <p class="font-semibold">Sinta</p>
+                            <p class="text-xs">10 Sep 2025</p>
+                            <p class="mt-2 text-sm">Rasanya manis dan fresh, recommended!</p>
+                        </div>
+                        <div class="bg-green-600 p-4 text-white rounded-lg">
+                            <p class="font-semibold">Budi</p>
+                            <p class="text-xs">05 Sep 2025</p>
+                            <p class="mt-2 text-sm">Harga oke, kualitas top.</p>
+                        </div>
+                        <div class="bg-green-600 p-4 text-white rounded-lg">
+                            <p class="font-semibold">Rina</p>
+                            <p class="text-xs">01 Sep 2025</p>
+                            <p class="mt-2 text-sm">Puas banget belanja di sini.</p>
+                        </div>
+                        <!-- tambahkan testimoni lain sesuai kebutuhan -->
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -176,3 +237,8 @@
         </div>
     </footer>
 @endsection
+<style>
+    [x-cloak] {
+        display: none !important;
+    }
+</style>
