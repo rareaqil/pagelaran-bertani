@@ -112,8 +112,14 @@
                                 {{ __('Type Fruits') }}
                             </x-dropdown-link>
                             <x-dropdown-link
+                                :href="route('vouchers.index')"
+                                :active="request()->routeIs('vouchers.*')"
+                            >
+                                {{ __('Vouchers') }}
+                            </x-dropdown-link>
+                            <x-dropdown-link
                                 :href="route('settings.index')"
-                                :active="request()->routeIs('fruit-types.*')"
+                                :active="request()->routeIs('settings.*')"
                             >
                                 {{ __('Settings') }}
                             </x-dropdown-link>
