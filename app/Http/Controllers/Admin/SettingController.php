@@ -16,6 +16,16 @@ class SettingController extends Controller
                 'rules' => 'required|numeric|min:0',
             ],
         ],
+        'Contact Us' => [
+            'contact_email' => [
+                'description' => 'Alamat email untuk kontak',
+                'rules' => 'required|email',
+            ],
+            'contact_whatsapp' => [
+                'description' => 'Nomor WhatsApp untuk kontak',
+                'rules' => 'required|string',
+            ],
+        ],
         'Midtrans' => [
             'midtrans_merchant_id' => [
                 'description' => 'Merchant ID Midtrans',
