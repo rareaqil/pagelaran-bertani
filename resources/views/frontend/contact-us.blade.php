@@ -121,3 +121,8 @@
     <!-- Alpine.js -->
     <script src="//unpkg.com/alpinejs" defer></script>
 @endsection
+<style>
+    [x-cloak] {
+        display: none !important;
+    }
+</style>
