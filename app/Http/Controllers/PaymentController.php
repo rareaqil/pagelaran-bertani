@@ -16,10 +16,10 @@ class PaymentController extends Controller
 {
     public function createSnapToken(Order $order)
     {
-        Config::$serverKey = config('services.midtrans.server_key');
-        Config::$isProduction = false;
-        Config::$isSanitized  = true;
-        Config::$is3ds        = true;
+        Config::$serverKey   = midtrans_config('server_key');
+        Config::$isProduction = (bool) midtrans_config('is_production');
+        Config::$isSanitized  = (bool) midtrans_config('is_sanitized');
+        Config::$is3ds        = (bool) midtrans_config('is_3ds');
 
         // ===> Ambil item detail dari order
         $items = $order->items->map(function ($item) {

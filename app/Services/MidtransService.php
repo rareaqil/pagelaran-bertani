@@ -23,19 +23,18 @@ class MidtransService
      */
     public function __construct()
     {
-        // Konfigurasi server key, environment, dan lainnya
-        $this->serverKey = config('midtrans.server_key');
-        $this->isProduction = config('midtrans.is_production');
-        $this->isSanitized = config('midtrans.is_sanitized');
-        $this->is3ds = config('midtrans.is_3ds');
+        // Ambil setting Midtrans runtime (fallback ke config jika DB belum siap)
+        $this->serverKey   = midtrans_config('server_key');
+        $this->isProduction = (bool) midtrans_config('is_production');
+        $this->isSanitized  = (bool) midtrans_config('is_sanitized');
+        $this->is3ds        = (bool) midtrans_config('is_3ds');
 
         // Mengatur konfigurasi global Midtrans
-        Config::$serverKey = $this->serverKey;
+        Config::$serverKey   = $this->serverKey;
         Config::$isProduction = $this->isProduction;
-        Config::$isSanitized = $this->isSanitized;
-        Config::$is3ds = $this->is3ds;
+        Config::$isSanitized  = $this->isSanitized;
+        Config::$is3ds        = $this->is3ds;
     }
-
 
     public function notification(): Notification
     {

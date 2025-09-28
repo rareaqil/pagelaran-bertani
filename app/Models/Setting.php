@@ -21,4 +21,14 @@ class Setting extends Model
         $setting = self::where('key', $key)->first();
         return $setting ? $setting->value : $default;
     }
+
+     // Ambil value setting, fallback ke env jika tidak ada
+    public static function getEnvOrSetting(string $key, string $envKey, $default = null)
+    {
+        $value = self::getValue($key);
+        if ($value === null || trim($value) === '') {
+            return env($envKey, $default);
+        }
+        return $value;
+    }
 }

@@ -29,5 +29,14 @@ class SettingsSeeder extends Seeder
             'updated_at' => now(),
         ]);
         */
+
+         if (!DB::table('settings')->where('key', 'midtrans_is_production')->exists()) {
+            DB::table('settings')->insert([
+                'key'        => 'midtrans_is_production',
+                'value'      => env('MIDTRANS_IS_PRODUCTION', false),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
     }
 }

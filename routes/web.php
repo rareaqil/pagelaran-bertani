@@ -9,8 +9,10 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\FruitTypeController;
+use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\StockMovementController;
 use App\Http\Controllers\FrontendController;
+
 
 // Route::get('/dashboard', function () {
 //     return view('frontend.welcome');
@@ -114,6 +116,12 @@ Route::middleware(['auth', 'role:super_admin,admin'])->prefix('backend')->group(
         ->name('orders.confirmReceived');
     Route::patch('/orders/{order}/cancel', [OrderController::class, 'orderReversal'])
      ->name('orders.orderReversal');
+
+
+
+
+    Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+    Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
 
 
 });
