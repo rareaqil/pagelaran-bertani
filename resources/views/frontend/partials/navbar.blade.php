@@ -65,10 +65,17 @@
                     </ul>
                 @endguest
             </li>
-            <li>
-                <a href="/cart"
+            <li class="relative">
+                <a href="{{ route('cart.show') }}"
                     class="flex items-center space-x-1 {{ request()->is('cart') ? 'text-white underline' : 'text-amber-500 hover:text-white hover:underline transition duration-200' }}">
-                    <i class="fa fa-shopping-basket"></i>
+                    <i class="fa fa-shopping-basket text-lg"></i>
+
+                    @if (!empty($cartCount) && $cartCount > 0)
+                        <span
+                            class="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                            {{ $cartCount }}
+                        </span>
+                    @endif
                 </a>
             </li>
         </ul>

@@ -57,15 +57,29 @@
                         </div>
 
                         <!-- Form Qty + Add -->
+                        <!-- Form Qty + Add -->
                         <div class="mt-3 flex items-center gap-2" @click.stop>
-                            <button type="button" @click="changeQty(product.id, -1)"
-                                class="rounded bg-gray-200 text-black px-2 py-1">-</button>
-                            <input type="number" :id="`qty-${product.id}`" value="1" min="1"
-                                class="w-12 rounded border text-center text-black" readonly />
-                            <button type="button" @click="changeQty(product.id, 1)"
-                                class="rounded bg-gray-200 text-black px-2 py-1">+</button>
-                            <button type="button" @click="addToCart(product.id)"
-                                class="rounded bg-blue-600 px-3 py-1 text-white">Add</button>
+                            @auth
+                                <button type="button" @click="changeQty(product.id, -1)"
+                                    class="rounded bg-gray-200 text-black px-2 py-1">-</button>
+                                <input type="number" :id="`qty-${product.id}`" value="1" min="1"
+                                    class="w-12 rounded border text-center text-black" readonly />
+                                <button type="button" @click="changeQty(product.id, 1)"
+                                    class="rounded bg-gray-200 text-black px-2 py-1">+</button>
+                                <button type="button" @click="addToCart(product.id)"
+                                    class="rounded bg-blue-600 px-3 py-1 text-white">Add</button>
+                            @endauth
+
+                            @guest
+                                <button disabled
+                                    class="rounded bg-gray-300 text-gray-500 px-2 py-1 cursor-not-allowed">-</button>
+                                <input type="number" value="0" disabled
+                                    class="w-12 rounded border text-center text-gray-400 bg-gray-100" />
+                                <button disabled
+                                    class="rounded bg-gray-300 text-gray-500 px-2 py-1 cursor-not-allowed">+</button>
+                                <button disabled class="rounded bg-gray-400 px-3 py-1 text-white cursor-not-allowed">Login
+                                    dulu</button>
+                            @endguest
                         </div>
                     </div>
                 </div>
@@ -106,10 +120,13 @@
         </div>
     </div>
 
+    <div id="toast-container" class="fixed top-20 right-4 z-50 space-y-2 w-72">
+    </div>
+
     <script src="//unpkg.com/alpinejs" defer></script>
 
-    <!-- Script -->
     <script>
+        // Ubah jumlah qty
         window.changeQty = function(productId, delta) {
             const input = document.getElementById(`qty-${productId}`);
             let val = parseInt(input.value) + delta;
@@ -117,6 +134,26 @@
             input.value = val;
         };
 
+        // Toast notifikasi
+        function showToast(message, type = "success") {
+            const container = document.getElementById("toast-container");
+            const toast = document.createElement("div");
+            toast.className = `px-4 py-2 rounded-lg shadow-lg text-white ${
+            type === "success" ? "bg-green-600" : "bg-red-600"
+        }`;
+            toast.innerText = message;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add("opacity-0", "transition", "duration-500");
+                setTimeout(() => {
+                    toast.remove();
+                    location.reload();
+                }, 500);
+            }, 3000);
+        }
+
+        // Tambah ke keranjang
         window.addToCart = function(productId) {
             const qty = parseInt(document.getElementById(`qty-${productId}`).value) || 1;
             fetch("{{ route('cart.add') }}", {
@@ -133,17 +170,19 @@
                 .then(res => res.json())
                 .then(res => {
                     if (res.success) {
-                        if (typeof autoApplyVoucher === "function") {
-                            autoApplyVoucher(res.cart);
+                        // Update badge cart
+                        if (document.getElementById("cart-count")) {
+                            document.getElementById("cart-count").innerText = res.cartCount;
                         }
-                        alert('Berhasil menambahkan ke keranjang!');
+                        showToast("Berhasil menambahkan ke keranjang!", "success");
+                        // location.reload();
                     } else {
-                        alert(res.message || 'Gagal menambahkan item');
+                        showToast(res.message || "Gagal menambahkan item", "error");
                     }
                 })
                 .catch(err => {
                     console.error(err);
-                    alert('Terjadi kesalahan saat menambahkan ke keranjang');
+                    showToast("Terjadi kesalahan saat menambahkan ke keranjang", "error");
                 });
         };
     </script>
