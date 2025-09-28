@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\FruitTypeController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\StockMovementController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\OrderProductController;
@@ -119,6 +120,12 @@ Route::middleware(['auth', 'role:super_admin,admin'])->prefix('backend')->group(
 
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
+
+
+      Route::get('vouchers', [VoucherController::class, 'index'])->name('vouchers.index');
+    Route::post('vouchers/store', [VoucherController::class, 'store'])->name('vouchers.store');
+    Route::post('vouchers/{voucher}/toggle', [VoucherController::class, 'toggle'])->name('vouchers.toggle');
+    Route::delete('vouchers/{voucher}', [VoucherController::class, 'destroy'])->name('vouchers.destroy');
 
 
 });

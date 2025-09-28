@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Voucher extends Model
 {
-    use SoftDeletes;
+
 
     protected $guarded = ['id', 'created_at', 'updated_at', 'deleted_at'];
 
@@ -16,6 +16,12 @@ class Voucher extends Model
     {
         return $this->hasMany(Order::class);
     }
+
+    protected $casts = [
+    'start_date' => 'datetime',
+    'end_date'   => 'datetime',
+    'is_active'  => 'boolean',
+    ];
 
     // Cek apakah voucher masih valid
     public function isValid($orderAmount = 0): bool
