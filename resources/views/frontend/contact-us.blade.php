@@ -13,7 +13,7 @@
             </p>
 
             <!-- Form Kontak -->
-            <form action="#" method="POST" class="bg-amber-50 shadow-lg rounded-xl p-8 space-y-6">
+            <form action="{{ route('contact.send') }}" method="POST" class="bg-amber-50 shadow-lg rounded-xl p-8 space-y-6">
                 @csrf
 
                 <!-- Email -->
@@ -56,6 +56,12 @@
                     </button>
                 </div>
             </form>
+            @if (session('success'))
+                <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)"
+                    class="mt-6 p-4 bg-green-100 text-green-700 rounded-lg text-center shadow transition">
+                    ✅ {{ session('success') }}
+                </div>
+            @endif
 
             <!-- Info Kontak + Modal -->
             <div x-data="{ open: false, targetUrl: '' }" class="mt-12 text-center">

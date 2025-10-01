@@ -14,7 +14,8 @@ use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\StockMovementController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\OrderProductController;
-
+use App\Http\Controllers\LearnController;
+use App\Http\Controllers\ContactController;
 
 // Route::get('/dashboard', function () {
 //     return view('frontend.welcome');
@@ -24,9 +25,11 @@ Route::get('/', [ProductController::class, 'home'])->name('home');
 // Route::get('/order-product', [ProductController::class, 'OrderProduct'])->name('products');
 
 //frontend-web
-Route::get('/learn', [FrontendController::class, 'learn'])->name('learn');
 Route::get('/order-product', [OrderProductController::class, 'index'])->name('order.product');
 Route::get('/contact-us', [FrontendController::class, 'contact'])->name('contact.us');
+Route::get('/order-history', [FrontendController::class, 'OrderHistory'])->name('order.history');
+Route::get('/learn', [LearnController::class, 'index'])->name('learn.index');
+Route::post('/contact/send', [ContactController::class, 'send'])->name('contact.send');
 
 Route::middleware('auth')->group(function () {
     //profile

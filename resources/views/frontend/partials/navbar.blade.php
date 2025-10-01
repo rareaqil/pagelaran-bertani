@@ -30,6 +30,12 @@
                     Contact Us
                 </a>
             </li>
+            <li>
+                <a href="/order-history"
+                    class="{{ request()->is('order-history') ? 'text-white underline' : 'text-amber-500 hover:text-white hover:underline transition duration-200' }}">
+                    Order History
+                </a>
+            </li>
             <li class="relative" x-data="{ open: false }">
                 @guest
                     {{-- Kalau belum login --}}
