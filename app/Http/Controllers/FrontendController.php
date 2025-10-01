@@ -25,4 +25,9 @@ class FrontendController extends Controller
     {
         return view('frontend.contact-us');
     }
+
+    public function OrderHistory()
+    {
+        return view('frontend.order-history');
+    }
 }

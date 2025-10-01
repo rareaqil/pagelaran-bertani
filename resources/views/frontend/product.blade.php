@@ -68,6 +68,10 @@
                                     class="rounded bg-gray-200 text-black px-2 py-1">+</button>
                                 <button type="button" @click="addToCart(product.id)"
                                     class="rounded bg-blue-600 px-3 py-1 text-white">Add</button>
+                                {{-- Info stok --}}
+                                <span class="text-sm text-gray-100 ml-2">
+                                    Stok: <span x-text="product.stock"></span>
+                                </span>
                             @endauth
 
                             @guest
