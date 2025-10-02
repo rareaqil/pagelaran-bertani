@@ -297,7 +297,12 @@
                     if (res.success) {
                         autoApplyVoucher(res.cart);
                     } else {
-                        alert(res.message || 'Gagal menambahkan item');
+                        Swal.fire({
+                            title: 'Gagal',
+                            text: res.message || 'Gagal menambahkan item',
+                            icon: 'error',
+                            confirmButtonText: 'OK',
+                        });
                     }
                 },
             });
@@ -369,7 +374,12 @@
             const availableStock = parseInt(input.data('available-stock')) || 9999;
 
             if (val > availableStock) {
-                alert(`Maksimum stok tersedia: ${availableStock}`);
+                Swal.fire({
+                    title: 'Stok Habis',
+                    text: `Maksimum stok tersedia: ${availableStock}`,
+                    icon: 'warning',
+                    confirmButtonText: 'OK',
+                });
                 val = availableStock;
             }
 
@@ -411,7 +421,13 @@
 
                         $('#remove-coupon').removeClass('hidden');
                     } else {
-                        alert(res.message || 'Coupon tidak valid');
+                        Swal.fire({
+                            title: 'Voucher Tidak Valid',
+                            text: res.message || 'Coupon tidak valid',
+                            icon: 'error',
+                            confirmButtonText: 'OK',
+                        });
+
                         currentVoucher = null;
 
                         $('#remove-coupon').addClass('hidden');
@@ -438,8 +454,23 @@
             $(this).addClass('hidden');
         });
 
-        // Checkout
         $('#checkout').click(function () {
+            Swal.fire({
+                title: 'Konfirmasi Pembayaran',
+                text: 'Apakah Anda yakin ingin melakukan pembayaran?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, bayar!',
+                cancelButtonText: 'Batal',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // ✅ Jalankan AJAX checkout kalau user setuju
+                    doCheckout();
+                }
+            });
+        });
+
+        function doCheckout() {
             $.ajax({
                 url: '{{ route('cart.checkout') }}',
                 type: 'POST',
@@ -452,14 +483,40 @@
                 contentType: 'application/json',
                 success: function (res) {
                     if (res.success) {
-                        alert('Order berhasil dibuat dengan ID: ' + res.order_id);
-                        window.location.href = '/backend/orders/' + res.order_id; // redirect ke detail order
+                        Swal.fire({
+                            title: 'Sukses!',
+                            text: 'Order berhasil dibuat dengan ID: ' + res.order_id,
+                            icon: 'success',
+                            confirmButtonText: 'Lihat Pesanan',
+                        }).then(() => {
+                            window.location.href = res.redirect;
+                        });
                     } else {
-                        alert(res.message || 'Checkout gagal');
+                        if (res.redirect) {
+                            Swal.fire({
+                                title: 'Lengkapi Profil',
+                                text: res.message,
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonText: 'Ke Profil',
+                                cancelButtonText: 'Batal',
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = res.redirect;
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Gagal',
+                                text: res.message || 'Checkout gagal',
+                                icon: 'error',
+                                confirmButtonText: 'OK',
+                            });
+                        }
                     }
                 },
             });
-        });
+        }
 
         // Clear cart
         $('#clear-cart').click(function () {
