@@ -17,7 +17,7 @@ class CartController extends Controller
     // Tampilkan halaman cart
     public function showPage()
     {
-        $userId = Auth::id() ?? 1;
+        $userId = Auth::id() ?? redirect('/login')->send();
         $cart = Cart::firstOrCreate(['user_id' => $userId]);
         $items = $cart->items;
         $total = $this->getCartTotal($items);
@@ -30,7 +30,7 @@ class CartController extends Controller
     // Tambah item ke cart (AJAX)
     public function addItem(Request $request)
     {
-       $userId = Auth::id() ?? 1;
+       $userId = Auth::id() ?? redirect('/login')->send();
         $cart = Cart::firstOrCreate(['user_id' => $userId]);
 
         $product = Product::find($request->id);
@@ -72,7 +72,7 @@ class CartController extends Controller
     // Hapus item tertentu (AJAX)
     public function removeItem($id)
     {
-        $cart = Cart::firstOrCreate(['user_id' => Auth::id() ?? 1]);
+        $cart = Cart::firstOrCreate(['user_id' => Auth::id() ?? redirect('/login')->send()]);
         $item = $cart->items()->where('id', $id)->first();
         if ($item) $item->delete();
 
@@ -151,7 +151,7 @@ class CartController extends Controller
     // Hapus semua item (AJAX)
     public function clear()
     {
-        $cart = Cart::firstOrCreate(['user_id' => Auth::id() ?? 1]);
+        $cart = Cart::firstOrCreate(['user_id' => Auth::id() ?? redirect('/login')->send()]);
         $cart->emptyCart();
 
         return response()->json([
@@ -192,7 +192,7 @@ class CartController extends Controller
     // Update quantity item
     public function updateItemQty(Request $request, $id)
     {
-        $cart = Cart::firstOrCreate(['user_id' => Auth::id() ?? 1]);
+        $cart = Cart::firstOrCreate(['user_id' => Auth::id() ?? redirect('/login')->send()]);
         $item = $cart->items()->where('id', $id)->first();
         if (!$item) {
             return response()->json(['success' => false, 'message' => 'Item not found']);
@@ -237,7 +237,37 @@ class CartController extends Controller
 
     public function checkout(Request $request)
     {
-        $userId = auth()->id() ?? 1;
+
+
+       $userId = auth()->id(); // pasti ada
+        if (!$userId) {
+            return response()->json([
+                'success' => false,
+                'redirect' => url('/login'),
+                'message' => 'Silakan login untuk melanjutkan.'
+            ]);
+        }
+
+
+        $user = auth()->user();
+        $address = $user->primaryAddress;
+
+        if (
+            !$address ||
+            empty($address->address1) ||
+            empty($address->province_name) ||
+            empty($address->regency_name) ||
+            empty($address->district_name) ||
+            empty($address->village_name) ||
+            empty($address->postcode) ||
+            empty($user->phone)
+        ) {
+            return response()->json([
+                'success' => false,
+                'redirect' => url('/profile'),
+                'message' => 'Profil belum lengkap. Pastikan alamat dan nomor telepon sudah terisi.'
+            ]);
+        }
         $cart   = Cart::firstOrCreate(['user_id' => $userId]);
         $items  = $cart->items;
 
@@ -310,9 +340,16 @@ class CartController extends Controller
         // Kosongkan cart
         $cart->emptyCart();
 
+         if ($user->role === 'admin' || $user->role === 'super_admin') {
+            $redirectUrl = url('/backend/orders/' . $order->order_id);
+        } else {
+            $redirectUrl = url('/orders/' . $order->order_id);
+        }
+
         return response()->json([
             'success'  => true,
-            'order_id' => $order->order_id
+            'order_id' => $order->order_id,
+             'redirect' => $redirectUrl,
         ]);
     }
 
