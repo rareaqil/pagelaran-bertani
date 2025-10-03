@@ -19,6 +19,20 @@ class OrderController extends Controller
         return response()->json($orders);
     }
 
+    public function OrderHistory(Request $request)
+    {
+        $query = Order::with(['voucher', 'items', 'payment'])
+        ->where('user_id', auth()->id());
+
+        if ($request->status) {
+            $query->where('status', $request->status);
+        }
+
+        $orders = $query->latest()->get();
+
+        return view('frontend.order-history', compact('orders'));
+    }
+
     // Membuat order baru
     public function store(Request $request)
     {
