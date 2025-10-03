@@ -27,7 +27,7 @@ Route::get('/', [ProductController::class, 'home'])->name('home');
 //frontend-web
 Route::get('/order-product', [OrderProductController::class, 'index'])->name('order.product');
 Route::get('/contact-us', [FrontendController::class, 'contact'])->name('contact.us');
-Route::get('/order-history', [FrontendController::class, 'OrderHistory'])->name('order.history');
+Route::get('/order-history', [OrderController::class, 'OrderHistory'])->name('order.history');
 Route::get('/learn', [LearnController::class, 'index'])->name('learn.index');
 Route::post('/contact/send', [ContactController::class, 'send'])->name('contact.send');
 
