@@ -101,12 +101,35 @@
 
                                 @php
                                     // Ambil URL pertama, hapus spasi ekstra
-                                    $firstImage = explode(',', $value)[0] ?? null;
-                                    $firstImage = $firstImage ? trim($firstImage) : null;
+                                    $images = array_map('trim', explode(',', $value));
+                                    $firstImage = $images[0] ?? null;
                                 @endphp
 
                                 @if ($field === 'image' && $value && $firstImage)
-                                    <img src="{{ $firstImage }}" alt="Gambar" class="h-16 w-16 rounded object-cover" />
+                                    {{-- Thumbnail pertama --}}
+                                    <a
+                                        href="{{ $firstImage }}"
+                                        class="glightbox"
+                                        data-gallery="gallery-{{ $item->id }}"
+                                    >
+                                        <img
+                                            src="{{ $firstImage }}"
+                                            alt="Gambar"
+                                            class="h-16 w-16 rounded object-cover"
+                                        />
+                                    </a>
+
+                                    {{-- Sisanya untuk lightbox --}}
+                                    @foreach ($images as $key => $img)
+                                        @if ($key > 0)
+                                            <a
+                                                href="{{ $img }}"
+                                                class="glightbox"
+                                                data-gallery="gallery-{{ $item->id }}"
+                                                style="display: none"
+                                            ></a>
+                                        @endif
+                                    @endforeach
                                 @elseif ($field === 'price' && $value)
                                     {{-- Format harga dengan Rp dan pemisah ribuan --}}
                                     Rp {{ number_format($value, 0, ',', '.') }}
@@ -162,7 +185,7 @@
                                         <a
                                             href="{{ route($actions['show'], $item) }}"
                                             class="text-green-600 hover:text-green-900"
-                                            title="Lihat Postingan"
+                                            title="Lihat Detail"
                                             target="_blank"
                                         >
                                             <svg
@@ -218,8 +241,9 @@
                                     @if (isset($actions['delete']))
                                         <form
                                             action="{{ route($actions['delete'], $item) }}"
+                                            class="delete-form"
                                             method="POST"
-                                            onsubmit="return confirm('Yakin ingin menghapus?');"
+                                            data-name="{{ $item->name }}"
                                         >
                                             @csrf
                                             @method('DELETE')
@@ -246,7 +270,7 @@
                                     @if (isset($actions['addStock']))
                                         <button
                                             type="button"
-                                            class="text-purple-600 hover:text-purple-900"
+                                            class="flex items-center gap-2 rounded bg-purple-100 px-3 py-1 text-sm text-purple-700 transition hover:bg-purple-200 hover:text-purple-900"
                                             title="Tambah Stock"
                                             onclick="openStockModal({{ $item->id }}, '{{ $item->name }}')"
                                         >
@@ -264,8 +288,7 @@
                                                     d="M12 4v16m8-8H4"
                                                 />
                                             </svg>
-
-                                            <span>Tambah Produk</span>
+                                            <span>Tambah Stok</span>
                                         </button>
                                     @endif
                                 </div>
@@ -335,11 +358,39 @@
                         @if ($field === 'image' && $value)
                             @php
                                 // Ambil URL pertama, hapus spasi ekstra
-                                $firstImage = explode(',', $value)[0] ?? null;
-                                $firstImage = $firstImage ? trim($firstImage) : null;
+                                $images = array_map('trim', explode(',', $value));
+                                $firstImage = $images[0] ?? null;
                             @endphp
 
-                            <img src="{{ $firstImage }}" alt="Gambar" class="mt-1 h-16 w-16 rounded object-cover" />
+                            {{-- <img src="{{ $firstImage }}" alt="Gambar" class="mt-1 h-16 w-16 rounded object-cover" /> --}}
+                            @if ($firstImage)
+                                <div class="mt-1 flex flex-row-reverse">
+                                    {{-- Thumbnail pertama --}}
+                                    <a
+                                        href="{{ $firstImage }}"
+                                        class="glightbox shadow-md"
+                                        data-gallery="gallery-{{ $item->id }}"
+                                    >
+                                        <img
+                                            src="{{ $firstImage }}"
+                                            alt="Gambar"
+                                            class="h-16 w-16 rounded object-cover"
+                                        />
+                                    </a>
+
+                                    {{-- Sisanya untuk lightbox, disembunyikan --}}
+                                    @foreach ($images as $key => $img)
+                                        @if ($key > 0)
+                                            <a
+                                                href="{{ $img }}"
+                                                class="glightbox"
+                                                data-gallery="gallery-{{ $item->id }}"
+                                                style="display: none"
+                                            ></a>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            @endif
                         @elseif ($field === 'price' && $value)
                             <span class="font-semibold text-gray-900">
                                 Rp {{ number_format($value, 0, ',', '.') }}
@@ -393,7 +444,7 @@
                             <a
                                 href="{{ route($actions['show'], $item) }}"
                                 class="text-green-600 hover:text-green-900"
-                                title="Lihat Postingan"
+                                title="Lihat Detail"
                                 target="_blank"
                             >
                                 <svg
@@ -450,7 +501,7 @@
                             <form
                                 action="{{ route($actions['delete'], $item) }}"
                                 method="POST"
-                                onsubmit="return confirm('Yakin ingin menghapus?');"
+                                data-name="{{ $item->name }}"
                             >
                                 @csrf
                                 @method('DELETE')
@@ -471,6 +522,31 @@
                                     </svg>
                                 </button>
                             </form>
+                        @endif
+
+                        @if (isset($actions['addStock']))
+                            <button
+                                type="button"
+                                class="flex items-center gap-2 rounded bg-purple-100 px-3 py-1 text-purple-700 transition hover:bg-purple-200 hover:text-purple-900"
+                                title="Tambah Stock"
+                                onclick="openStockModal({{ $item->id }}, '{{ $item->name }}')"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="h-5 w-5"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M12 4v16m8-8H4"
+                                    />
+                                </svg>
+                                <span>Tambah Stok</span>
+                            </button>
                         @endif
                     </div>
                 @endif
@@ -586,6 +662,36 @@
                     if (detailRow) detailRow.classList.add('hidden');
                 }
             });
+        });
+    </script>
+    <script>
+        document.querySelectorAll('.delete-form').forEach((form) => {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const itemName = this.dataset.name || 'item ini';
+                Swal.fire({
+                    title: 'Apakah kamu yakin?',
+                    text: `${itemName} akan dihapus permanen!`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.submit(); // lanjut submit form jika yakin
+                    }
+                });
+            });
+        });
+    </script>
+    <script>
+        const lightbox = GLightbox({
+            selector: '.glightbox',
+            touchNavigation: true,
+            loop: true,
+            zoomable: true,
         });
     </script>
 @endpush

@@ -40,7 +40,9 @@
     <div id="preview-{{ $name }}" class="mt-3 flex flex-wrap gap-3 rounded-lg border border-gray-300 bg-gray-50 p-3">
         @forelse ($urls as $u)
             <div class="h-24 w-24 overflow-hidden rounded border border-gray-300 bg-white shadow">
-                <img src="{{ $u }}" class="h-full w-full object-contain" />
+                <a href="{{ $u }}" class="glightbox" data-gallery="gallery-{{ $name }}">
+                    <img src="{{ $u }}" class="h-full w-full object-contain" />
+                </a>
             </div>
         @empty
             <div class="text-gray-400">Belum ada gambar</div>
@@ -68,7 +70,11 @@
                     .filter(Boolean);
 
                 if (urls.length > max) {
-                    alert(`Maksimal ${max} foto`);
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Maksimal Foto',
+                        text: `Maksimal ${max} foto yang boleh dipilih`,
+                    });
                     urls = urls.slice(0, max);
                     input.val(urls.join(','));
                 }
@@ -81,12 +87,19 @@
 
                 urls.forEach((u) => {
                     preview.append(`
-                  <div class="h-24 w-24 overflow-hidden rounded border border-gray-300 bg-white shadow">
-                      <img src="${u}" class="h-full w-full object-contain"/>
-                  </div>
-                `);
+                    <div class="h-24 w-24 overflow-hidden rounded border border-gray-300 bg-white shadow">
+                        <a href="${u}" class="glightbox" data-gallery="gallery-{{ $name }}">
+                            <img src="${u}" class="h-full w-full object-contain"/>
+                        </a>
+                    </div>
+                    `);
                 });
+                // Re-init lightbox
+                const lightbox = GLightbox({ selector: '.glightbox' });
             });
         });
+    </script>
+    <script>
+        const lightbox = GLightbox({ selector: '.glightbox' });
     </script>
 @endpush

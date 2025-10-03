@@ -4,8 +4,12 @@
     </x-slot>
 
     {{-- Alpine state + listener event open/close modal --}}
-    <div class="rounded bg-white p-6 shadow" x-data="{ openModal: false, editingId: null }" @close-modal.window="openModal = false"
-        @open-modal.window="openModal = true">
+    <div
+        class="rounded bg-white p-6 shadow"
+        x-data="{ openModal: false, editingId: null }"
+        @close-modal.window="openModal = false"
+        @open-modal.window="openModal = true"
+    >
         {{-- Tombol tambah --}}
         <x-primary-button @click="openModal = true; editingId = null; resetForm();">
             + Tambah Jenis Buah
@@ -28,7 +32,8 @@
                         <td class="slug px-4 py-2">{{ $fruit->slug }}</td>
                         <td class="status px-4 py-2 text-center">
                             <span
-                                class="badge {{ $fruit->is_active ? 'bg-green-200 text-green-700' : 'bg-gray-200 text-gray-700' }}">
+                                class="badge {{ $fruit->is_active ? 'bg-green-200 text-green-700' : 'bg-gray-200 text-gray-700' }}"
+                            >
                                 {{ $fruit->is_active ? 'Aktif' : 'Nonaktif' }}
                             </span>
                         </td>
@@ -52,8 +57,14 @@
                 <form id="fruit-form">
                     @csrf
                     <input type="hidden" id="fruit-id" />
-                    <x-text-input id="fruit-name" type="text" name="name" placeholder="Nama jenis buah"
-                        class="mb-4 w-full" required />
+                    <x-text-input
+                        id="fruit-name"
+                        type="text"
+                        name="name"
+                        placeholder="Nama jenis buah"
+                        class="mb-4 w-full"
+                        required
+                    />
                     <div class="flex justify-end gap-2">
                         <x-secondary-button type="button" @click="openModal = false">Batal</x-secondary-button>
                         <x-primary-button id="save-btn">Simpan</x-primary-button>
@@ -78,17 +89,17 @@
         }
 
         // Simpan (create / update)
-        $('#fruit-form').on('submit', function(e) {
+        $('#fruit-form').on('submit', function (e) {
             e.preventDefault();
             const id = $('#fruit-id').val();
             const name = $('#fruit-name').val();
 
             $.post('/backend/fruit-types/store', {
-                    _token: token,
-                    id,
-                    name
-                })
-                .done(function(res) {
+                _token: token,
+                id,
+                name,
+            })
+                .done(function (res) {
                     if (id) {
                         const row = $(`#fruit-table tr[data-id="${id}"]`);
                         row.find('.name').text(res.name);
@@ -111,12 +122,15 @@
                     }
                     resetForm();
                     window.dispatchEvent(new CustomEvent('close-modal'));
+                    Swal.fire('Berhasil', 'Data berhasil disimpan', 'success');
                 })
-                .fail((err) => alert(err.responseJSON?.message ?? 'Gagal menyimpan'));
+                .fail((err) => {
+                    Swal.fire('Gagal', err.responseJSON?.message ?? 'Gagal menyimpan', 'error');
+                });
         });
 
         // Edit
-        $(document).on('click', '.edit', function() {
+        $(document).on('click', '.edit', function () {
             const tr = $(this).closest('tr');
             const id = tr.data('id');
             const name = tr.find('.name').text();
@@ -131,13 +145,13 @@
         });
 
         // Toggle aktif / nonaktif
-        $(document).on('click', '.toggle', function() {
+        $(document).on('click', '.toggle', function () {
             const tr = $(this).closest('tr');
             const id = tr.data('id');
             $.post(`/backend/fruit-types/${id}/toggle`, {
-                    _token: token
-                })
-                .done(function(res) {
+                _token: token,
+            })
+                .done(function (res) {
                     const badge = tr.find('.status span');
                     const btn = tr.find('.toggle');
                     if (res.status) {
@@ -147,24 +161,44 @@
                         badge.text('Nonaktif').removeClass().addClass('badge bg-gray-200 text-gray-700');
                         btn.text('Aktifkan');
                     }
+                    Swal.fire('Berhasil', 'Status berhasil diubah', 'success');
                 })
-                .fail((err) => alert(err.responseJSON?.message ?? 'Gagal mengubah status'));
+                .fail((err) => {
+                    Swal.fire('Gagal', err.responseJSON?.message ?? 'Gagal mengubah status', 'error');
+                });
         });
 
         // Delete
-        $(document).on('click', '.delete', function() {
-            if (!confirm('Hapus jenis buah ini?')) return;
+        $(document).on('click', '.delete', function () {
             const tr = $(this).closest('tr');
             const id = tr.data('id');
-            $.ajax({
-                    url: `/backend/fruit-types/${id}`,
-                    type: 'DELETE',
-                    data: {
-                        _token: token
-                    },
-                })
-                .done(() => tr.remove())
-                .fail((err) => alert(err.responseJSON?.message ?? 'Gagal menghapus'));
+
+            Swal.fire({
+                // 🔄 diganti dari confirm()
+                title: 'Apakah kamu yakin?',
+                text: 'Jenis buah ini akan dihapus permanen!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `/backend/fruit-types/${id}`,
+                        type: 'DELETE',
+                        data: { _token: token },
+                    })
+                        .done(() => {
+                            tr.remove();
+                            Swal.fire('Terhapus!', 'Jenis buah berhasil dihapus.', 'success');
+                        })
+                        .fail((err) => {
+                            Swal.fire('Gagal!', err.responseJSON?.message ?? 'Gagal menghapus', 'error');
+                        });
+                }
+            });
         });
     </script>
 </x-app-layout>

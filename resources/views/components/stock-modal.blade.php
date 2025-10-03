@@ -35,7 +35,11 @@
         function submitStock() {
             const qty = document.getElementById('stockQuantity').value;
             if (!qty || qty <= 0) {
-                alert('Masukkan jumlah stock yang valid');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Oops...',
+                    text: 'Masukkan jumlah stock yang valid',
+                });
                 return;
             }
 
@@ -49,13 +53,22 @@
             })
                 .then((res) => res.json())
                 .then((data) => {
-                    alert(data.message || 'Stock berhasil ditambahkan');
-                    closeStockModal();
-                    window.location.reload();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: data.message || 'Stock berhasil ditambahkan',
+                    }).then(() => {
+                        closeStockModal();
+                        window.location.reload();
+                    });
                 })
                 .catch((err) => {
                     console.error(err);
-                    alert('Terjadi kesalahan');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Terjadi Kesalahan',
+                        text: 'Gagal menambahkan stock',
+                    });
                 });
         }
     </script>
