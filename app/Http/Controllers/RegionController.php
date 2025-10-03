@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-namespace App\Http\Controllers;
-
 use App\Models\Province;
 use App\Models\Regency;
 use App\Models\District;
@@ -12,33 +10,53 @@ use App\Models\Village;
 
 class RegionController extends Controller
 {
-    public function provinces()
+    public function provinces(Request $request)
     {
-        return Province::select('id','name')->orderBy('name')->get();
+        $query = Province::select('id', 'name')->orderBy('name');
+
+        if ($request->filled('q')) {
+            $query->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($request->q) . '%']);
+        }
+
+        return $query->get();
     }
 
-    public function regencies($provinceId)
+    public function regencies(Request $request, $provinceId)
     {
-        return Regency::where('province_id', $provinceId)
-            ->select('id','name')
-            ->orderBy('name')
-            ->get();
+        $query = Regency::where('province_id', $provinceId)
+            ->select('id', 'name')
+            ->orderBy('name');
+
+        if ($request->filled('q')) {
+            $query->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($request->q) . '%']);
+        }
+
+        return $query->get();
     }
 
-    public function districts($regencyId)
+    public function districts(Request $request, $regencyId)
     {
-        return District::where('regency_id', $regencyId)
-            ->select('id','name')
-            ->orderBy('name')
-            ->get();
+        $query = District::where('regency_id', $regencyId)
+            ->select('id', 'name')
+            ->orderBy('name');
+
+        if ($request->filled('q')) {
+            $query->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($request->q) . '%']);
+        }
+
+        return $query->get();
     }
 
-    public function villages($districtId)
+    public function villages(Request $request, $districtId)
     {
-        return Village::where('district_id', $districtId)
-            ->select('id','name')
-            ->orderBy('name')
-            ->get();
+        $query = Village::where('district_id', $districtId)
+            ->select('id', 'name')
+            ->orderBy('name');
+
+        if ($request->filled('q')) {
+            $query->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($request->q) . '%']);
+        }
+
+        return $query->get();
     }
 }
-

@@ -15,7 +15,7 @@
         {{-- ============= USER DETAILS ============= --}}
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-                <x-input-label for="first_name" :value="__('First Name')" />
+                <x-input-label for="first_name" :value="__('Nama Awal')" />
                 <x-text-input
                     id="first_name"
                     name="first_name"
@@ -27,7 +27,7 @@
                 <x-input-error class="mt-2" :messages="$errors->get('first_name')" />
             </div>
             <div>
-                <x-input-label for="last_name" :value="__('Last Name')" />
+                <x-input-label for="last_name" :value="__('Nama Terakhir')" />
                 <x-text-input
                     id="last_name"
                     name="last_name"
@@ -54,7 +54,7 @@
                 <x-input-error class="mt-2" :messages="$errors->get('email')" />
             </div>
             <div>
-                <x-input-label for="phone" :value="__('Phone')" />
+                <x-input-label for="phone" :value="__('No Telp')" />
                 <x-text-input
                     id="phone"
                     name="phone"
@@ -65,7 +65,7 @@
                 <x-input-error class="mt-2" :messages="$errors->get('phone')" />
             </div>
             <div>
-                <x-input-label for="age" :value="__('Age')" />
+                <x-input-label for="age" :value="__('Umur')" required />
                 <x-text-input
                     id="age"
                     name="age"
@@ -84,7 +84,7 @@
 
         <div class="grid grid-cols-1 gap-4">
             <div>
-                <x-input-label for="address1" :value="__('Address Line 1')" />
+                <x-input-label for="address1" :value="__('Alamat Rumah (Pengiriman)')" />
                 <x-text-input
                     id="address1"
                     name="address1"
@@ -96,32 +96,51 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
             <div>
-                <x-input-label for="province_id" :value="__('Province')" />
-                <select id="province_id" name="province_id" class="form-control js-select2"></select>
+                <x-input-label for="province_id" :value="__('Provinsi')" />
+                <select
+                    id="province_id"
+                    name="province_id"
+                    class="js-select2 w-full rounded-md border border-gray-300 bg-white text-sm shadow-sm"
+                ></select>
                 <x-input-error class="mt-2" :messages="$errors->get('province_id')" />
             </div>
+
             <div>
-                <x-input-label for="regency_id" :value="__('Regency')" />
-                <select id="regency_id" name="regency_id" class="form-control js-select2"></select>
+                <x-input-label for="regency_id" :value="__('Kab / Kota')" />
+                <select
+                    id="regency_id"
+                    name="regency_id"
+                    class="js-select2 w-full rounded-md border border-gray-300 bg-white text-sm shadow-sm"
+                ></select>
                 <x-input-error class="mt-2" :messages="$errors->get('regency_id')" />
             </div>
+
             <div>
-                <x-input-label for="district_id" :value="__('District')" />
-                <select id="district_id" name="district_id" class="form-control js-select2"></select>
+                <x-input-label for="district_id" :value="__('Kecamatan')" />
+                <select
+                    id="district_id"
+                    name="district_id"
+                    class="js-select2 w-full rounded-md border border-gray-300 bg-white text-sm shadow-sm"
+                ></select>
                 <x-input-error class="mt-2" :messages="$errors->get('district_id')" />
             </div>
+
             <div>
-                <x-input-label for="village_id" :value="__('Village')" />
-                <select id="village_id" name="village_id" class="form-control js-select2"></select>
+                <x-input-label for="village_id" :value="__('Kelurahan')" />
+                <select
+                    id="village_id"
+                    name="village_id"
+                    class="js-select2 w-full rounded-md border border-gray-300 bg-white text-sm shadow-sm"
+                ></select>
                 <x-input-error class="mt-2" :messages="$errors->get('village_id')" />
             </div>
         </div>
 
         <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-                <x-input-label for="postcode" :value="__('Postcode')" />
+                <x-input-label for="postcode" :value="__('Kode Pos')" />
                 <x-text-input
                     id="postcode"
                     name="postcode"
