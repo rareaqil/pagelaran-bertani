@@ -1,148 +1,148 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use UniSharp\LaravelFilemanager\Lfm;
 
+use App\Http\Controllers\FrontendController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderProductController;
+use App\Http\Controllers\StockMovementController;
+use App\Http\Controllers\LearnController;
+use App\Http\Controllers\ContactController;
+
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\FruitTypeController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\VoucherController;
-use App\Http\Controllers\StockMovementController;
-use App\Http\Controllers\FrontendController;
-use App\Http\Controllers\OrderProductController;
-use App\Http\Controllers\LearnController;
-use App\Http\Controllers\ContactController;
 
-// Route::get('/dashboard', function () {
-//     return view('frontend.welcome');
-// })->middleware(['auth', 'verified'])->name('dashboard');
-Route::get('/', [FrontendController::class, 'home'])->name('home');
+/*
+|--------------------------------------------------------------------------
+| Public Routes (Frontend)
+|--------------------------------------------------------------------------
+*/
 Route::get('/', [ProductController::class, 'home'])->name('home');
-// Route::get('/order-product', [ProductController::class, 'OrderProduct'])->name('products');
-
-//frontend-web
 Route::get('/order-product', [OrderProductController::class, 'index'])->name('order.product');
 Route::get('/contact-us', [FrontendController::class, 'contact'])->name('contact.us');
 Route::get('/order-history', [OrderController::class, 'OrderHistory'])->name('order.history');
 Route::get('/learn', [LearnController::class, 'index'])->name('learn.index');
 Route::post('/contact/send', [ContactController::class, 'send'])->name('contact.send');
 
+/*
+|--------------------------------------------------------------------------
+| Authenticated User Routes
+|--------------------------------------------------------------------------
+*/
 Route::middleware('auth')->group(function () {
-    //profile
+    // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/stock', [StockMovementController::class, 'index'])->name('stock.index');
-    Route::post('/stock/hold', [StockMovementController::class, 'hold'])->name('stock.hold');
-    Route::post('/stock/confirm-payment/{holdId}', [StockMovementController::class, 'confirmPayment'])->name('stock.confirmPayment');
-    Route::post('/stock/cancel-hold/{holdId}', [StockMovementController::class, 'cancelHold'])->name('stock.cancelHold');
-    Route::post('/stock/add', [StockMovementController::class, 'addStock'])->name('stock.add');
-    Route::post('/stock/min', [StockMovementController::class, 'minStock'])->name('stock.min');
+    // Stock Management
+    Route::prefix('stock')->name('stock.')->group(function () {
+        Route::get('/', [StockMovementController::class, 'index'])->name('index');
+        Route::post('/hold', [StockMovementController::class, 'hold'])->name('hold');
+        Route::post('/confirm-payment/{holdId}', [StockMovementController::class, 'confirmPayment'])->name('confirmPayment');
+        Route::post('/cancel-hold/{holdId}', [StockMovementController::class, 'cancelHold'])->name('cancelHold');
+        Route::post('/add', [StockMovementController::class, 'addStock'])->name('add');
+        Route::post('/min', [StockMovementController::class, 'minStock'])->name('min');
+    });
 
-
-    // Route::get('/cart', [CartController::class, 'index']);
-    // Route::post('/cart/add', [CartController::class, 'addItem']);
-    // Route::post('/cart/coupon', [CartController::class, 'applyCoupon']);
-    // Route::delete('/cart/clear', [CartController::class, 'clear']);
-
-Route::prefix('cart')->group(function () {
-    Route::get('/', [CartController::class, 'showPage'])->name('cart.show');
-    Route::post('/add', [CartController::class, 'addItem'])->name('cart.add');
-    Route::post('/coupon', [CartController::class, 'applyVoucher'])->name('cart.coupon');
-    Route::delete('/clear', [CartController::class, 'clear'])->name('cart.clear');
-    Route::delete('/item/remove/{id}', [CartController::class, 'removeItem'])->name('cart.item.remove');
-
-    Route::patch('/item/{id}', [CartController::class, 'updateItemQty'])->name('cart.item.update');
-    Route::post('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+    // Cart
+    Route::prefix('cart')->name('cart.')->group(function () {
+        Route::get('/', [CartController::class, 'showPage'])->name('show');
+        Route::post('/add', [CartController::class, 'addItem'])->name('add');
+        Route::post('/coupon', [CartController::class, 'applyVoucher'])->name('coupon');
+        Route::delete('/clear', [CartController::class, 'clear'])->name('clear');
+        Route::delete('/item/remove/{id}', [CartController::class, 'removeItem'])->name('item.remove');
+        Route::patch('/item/{id}', [CartController::class, 'updateItemQty'])->name('item.update');
+        Route::post('/checkout', [CartController::class, 'checkout'])->name('checkout');
+    });
 });
 
-
-});
-// Route::group(['middleware'=>'role:super admin,admin','prefix'=>'car', 'as'=>'car.'],function () {
-//     Route::group(['prefix'=>'car-type', 'as'=>'car-type.'],function () {
-//          return view('dashboard');
-//     });
-// });
-
-
-
-// Super Admin
+/*
+|--------------------------------------------------------------------------
+| Role-based Dashboards
+|--------------------------------------------------------------------------
+*/
 // Super Admin
 Route::middleware(['auth', 'role:super_admin'])->group(function () {
-    Route::get('/superadmin/dashboard', function () {
-        return 'Super Admin Dashboard';
-    })->name('superadmin.dashboard');
+    Route::get('/superadmin/dashboard', fn () => 'Super Admin Dashboard')
+        ->name('superadmin.dashboard');
 });
 
 // Admin
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/backend/dashboard', fn () => view('dashboard'))->name('dashboard');
 });
 
 // User
 Route::middleware(['auth', 'role:user'])->group(function () {
-    Route::get('/user/dashboard', function () {
-        return view('dashboard');
-    })->name('user.dashboard');
-
-    Route::get('/orders/{order}', [OrderController::class, 'showView'])->name('orders.showView');
+    Route::get('/user/dashboard', fn () => view('dashboard'))->name('user.dashboard');
+    Route::get('/orders/{order}', [OrderController::class, 'showView'])->name('orders.showUserView');
 });
 
+/*
+|--------------------------------------------------------------------------
+| Backend (Super Admin & Admin)
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'role:super_admin,admin'])
+    ->prefix('backend')
+    ->group(function () {
 
-Route::middleware(['auth', 'role:super_admin,admin'])->prefix('backend')->group(function() {
-    Route::resource('users', UserController::class);
-    Route::resource('posts', PostController::class);
-    Route::resource('products', ProductController::class);
+        // Users, Posts, Products (resource routes)
+        Route::resource('users', UserController::class);
+        Route::resource('posts', PostController::class);
+        Route::resource('products', ProductController::class);
 
+        // Fruit Types
+        Route::prefix('fruit-types')->name('fruit-types.')->group(function () {
+            Route::get('/', [FruitTypeController::class, 'index'])->name('index');
+            Route::post('/store', [FruitTypeController::class, 'store'])->name('store');
+            Route::post('/{fruitType}/toggle', [FruitTypeController::class, 'toggle'])->name('toggle');
+            Route::delete('/{fruitType}', [FruitTypeController::class, 'destroy'])->name('destroy');
+        });
 
-    Route::get('/fruit-types', [FruitTypeController::class, 'index'])->name('fruit-types.index');
-    Route::post('/fruit-types/store', [FruitTypeController::class, 'store'])->name('fruit-types.store');
-    Route::post('/fruit-types/{fruitType}/toggle', [FruitTypeController::class, 'toggle'])->name('fruit-types.toggle');
-    Route::delete('/fruit-types/{fruitType}', [FruitTypeController::class, 'destroy'])->name('fruit-types.destroy');
+        // Orders
+        Route::prefix('orders')->name('orders.')->group(function () {
+            Route::get('/', [OrderController::class, 'indexView'])->name('indexView');
+            Route::get('/{order}', [OrderController::class, 'showView'])->name('showView');
+            Route::post('/{order}/set-shipment', [OrderController::class, 'setShipment'])->name('setShipment');
+            Route::post('/{order}/confirm-received', [OrderController::class, 'confirmReceived'])->name('confirmReceived');
+            Route::patch('/{order}/cancel', [OrderController::class, 'orderReversal'])->name('orderReversal');
+        });
 
+        // Settings
+        Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+        Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
 
-    Route::get('/orders/{order}', [OrderController::class, 'showView'])->name('orders.showView');
-    Route::get('/orders', [OrderController::class, 'indexView'])->name('orders.indexView');
-    Route::post('/orders/{order}/set-shipment', [OrderController::class,'setShipment'])
-        ->name('orders.setShipment');
+        // Vouchers
+        Route::prefix('vouchers')->name('vouchers.')->group(function () {
+            Route::get('/', [VoucherController::class, 'index'])->name('index');
+            Route::post('/store', [VoucherController::class, 'store'])->name('store');
+            Route::post('/{voucher}/toggle', [VoucherController::class, 'toggle'])->name('toggle');
+            Route::delete('/{voucher}', [VoucherController::class, 'destroy'])->name('destroy');
+        });
+    });
 
-    Route::post('/orders/{order}/confirm-received', [OrderController::class,'confirmReceived'])
-        ->name('orders.confirmReceived');
-    Route::patch('/orders/{order}/cancel', [OrderController::class, 'orderReversal'])
-     ->name('orders.orderReversal');
-
-
-
-
-    Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
-    Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
-
-
-      Route::get('vouchers', [VoucherController::class, 'index'])->name('vouchers.index');
-    Route::post('vouchers/store', [VoucherController::class, 'store'])->name('vouchers.store');
-    Route::post('vouchers/{voucher}/toggle', [VoucherController::class, 'toggle'])->name('vouchers.toggle');
-    Route::delete('vouchers/{voucher}', [VoucherController::class, 'destroy'])->name('vouchers.destroy');
-
-
-});
-
-
-
-
-use UniSharp\LaravelFilemanager\Lfm;
-
+/*
+|--------------------------------------------------------------------------
+| File Manager
+|--------------------------------------------------------------------------
+*/
 Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web','auth']], function () {
     Lfm::routes();
 });
 
-
-require __DIR__.'/auth.php';
-
-require __DIR__.'/api.php';
+/*
+|--------------------------------------------------------------------------
+| Auth Routes
+|--------------------------------------------------------------------------
+*/
+require __DIR__ . '/auth.php';
+require __DIR__ . '/api.php';
