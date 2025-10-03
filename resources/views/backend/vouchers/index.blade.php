@@ -221,7 +221,11 @@
             const start = $('#start_date').val();
             const end = $('#end_date').val();
             if (end && start && end < start) {
-                alert('End Date tidak boleh lebih awal dari Start Date');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Tanggal tidak valid',
+                    text: 'End Date tidak boleh lebih awal dari Start Date',
+                });
                 return;
             }
 
@@ -251,6 +255,7 @@
                     }
                     resetForm();
                     window.dispatchEvent(new CustomEvent('close-modal'));
+                    Swal.fire('Berhasil', 'Status berhasil diubah', 'success');
                 },
                 error: function (xhr) {
                     let msg = 'Gagal menyimpan';
@@ -260,7 +265,12 @@
                     } catch (e) {
                         msg = xhr.responseText || msg;
                     }
-                    alert(msg);
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: msg,
+                    });
                 },
             });
         });
@@ -287,19 +297,42 @@
             const tr = $(this).closest('tr');
             $.post(`/backend/vouchers/${tr.data('id')}/toggle`, { _token: token })
                 .done((res) => updateStatus(tr, res.status))
-                .fail((err) => alert(err.responseJSON?.message ?? 'Gagal toggle'));
+                .fail((err) => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal Ubah Status',
+                        text: err.responseJSON?.message ?? 'Gagal ubah status voucher',
+                    });
+                });
         });
 
         // Delete
         $(document).on('click', '.delete', function () {
-            if (!confirm('Hapus voucher ini?')) return;
             const tr = $(this).closest('tr');
-            $.ajax({
-                url: `/backend/vouchers/${tr.data('id')}`,
-                type: 'DELETE',
-                data: { _token: token },
-                success: () => tr.remove(),
-                error: (err) => alert(err.responseJSON?.message ?? 'Gagal menghapus'),
+            Swal.fire({
+                title: 'Apakah kamu yakin?',
+                text: 'Voucher ini akan dihapus permanen!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: `/backend/vouchers/${tr.data('id')}`,
+                        type: 'DELETE',
+                        data: { _token: token },
+                        success: () => {
+                            tr.remove();
+                            Swal.fire('Terhapus!', 'Voucher berhasil dihapus.', 'success');
+                        },
+                        error: (err) => {
+                            Swal.fire('Gagal!', err.responseJSON?.message ?? 'Gagal menghapus', 'error');
+                        },
+                    });
+                }
             });
         });
     </script>

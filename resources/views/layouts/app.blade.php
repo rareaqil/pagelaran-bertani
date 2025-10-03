@@ -117,6 +117,11 @@
         </style>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+        <!-- GLightbox CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+
+        <!-- GLightbox JS -->
+        <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
         @stack('styles')
 
         {{-- untuk tambahan CSS seperti Select2 via CDN jika diperlukan --}}
