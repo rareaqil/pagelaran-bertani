@@ -264,6 +264,8 @@
                                                     d="M12 4v16m8-8H4"
                                                 />
                                             </svg>
+
+                                            <span>Tambah Produk</span>
                                         </button>
                                     @endif
                                 </div>
