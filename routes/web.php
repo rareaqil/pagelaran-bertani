@@ -26,7 +26,7 @@ use App\Http\Controllers\Admin\VoucherController;
 */
 Route::get('/', [ProductController::class, 'home'])->name('home');
 Route::get('/order-product', [OrderProductController::class, 'index'])->name('order.product');
-Route::get('/contact-us', [FrontendController::class, 'contact'])->name('contact.us');
+Route::get('/contact-us', [ContactController::class, 'index'])->name('contact.us');
 Route::get('/order-history', [OrderController::class, 'OrderHistory'])->name('order.history');
 Route::get('/learn', [LearnController::class, 'index'])->name('learn.index');
 Route::post('/contact/send', [ContactController::class, 'send'])->name('contact.send');
