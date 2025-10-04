@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\StockMovement;
+use App\Models\Setting;
 use App\Http\Controllers\StockMovementController;
 use App\Services\MidtransService;
 use Illuminate\Http\Request;
@@ -149,6 +150,15 @@ class OrderController extends Controller
             $snapToken = $payment->snap_token;
         }
 
+        // Normalisasi nomor telepon
+        $adminPhoneRaw = Setting::getValue('order_contact_whatsapp', '081234567890');
+        $adminPhone = $this->normalizePhone($adminPhoneRaw);
+
+        $userPhone = $this->normalizePhone($order->user->phone ?? '');
+
+        $waUrlAdmin = $this->generateWaUrl($adminPhone, $order, 'admin');
+        $waUrlUser  = $this->generateWaUrl($userPhone, $order, 'user');
+
 
         // Pilih view sesuai role
         $view = auth()->user()->isAdmin()
@@ -164,10 +174,94 @@ class OrderController extends Controller
             'holdMovements',
             'snapToken',
             'adminFee',
+            'waUrlAdmin',
+            'waUrlUser'
         ));
     }
 
 
+    private function generateWaUrl(string $phone, Order $order, string $type): string
+            {
+                if (!$phone) return '#';
+
+                // Hitung subtotal & total
+                $subtotal = $order->items->sum(fn($i) => $i->price * $i->quantity);
+                $discount = $order->voucher ? $order->voucher->getDiscountOnly($subtotal) : 0;
+                $adminFee = $order->admin_fee ?? 2000;
+                $total = $subtotal - $discount + $adminFee;
+
+                // Format Rupiah
+                $subtotalFormatted = number_format($subtotal, 0, ',', '.');
+                $discountFormatted = number_format($discount, 0, ',', '.');
+                $adminFeeFormatted = number_format($adminFee, 0, ',', '.');
+                $totalFormatted = number_format($total, 0, ',', '.');
+
+                // Format item list
+                $itemsText = "";
+                foreach ($order->items as $item) {
+                    $itemName = $item->product->name ?? $item->name;
+                    $itemPrice = number_format($item->price, 0, ',', '.');
+                    $itemsText .= "- {$itemName} x{$item->quantity} (Rp{$itemPrice})\n";
+                }
+
+                if ($type === 'admin') {
+                    $message = <<<MSG
+                    Halo Admin
+
+                    Saya sudah melakukan pembayaran untuk Order #{$order->order_id}.
+
+                    Nama Pemesan: {$order->user->first_name}
+                    Email: {$order->user->email }
+                    No Telp: {$order->user->phone}
+                    Alamat: {$order->user->primaryAddress->address1}
+
+                    Pesanan:
+                    $itemsText
+                    Subtotal: Rp$subtotalFormatted
+                    Discount: -Rp$discountFormatted
+                    Admin Fee: Rp$adminFeeFormatted
+                    Total: Rp$totalFormatted
+
+                    Mohon konfirmasi pesanan saya. Terima kasih!
+                    MSG;
+                } else { // user
+                    $message = <<<MSG
+                    Halo {$order->user->first_name},
+
+                    Pesanan #{$order->order_id} Anda telah dikonfirmasi oleh Admin.
+
+                    Pesanan Anda:
+                    $itemsText
+                    Subtotal: Rp$subtotalFormatted
+                    Discount: -Rp$discountFormatted
+                    Admin Fee: Rp$adminFeeFormatted
+                    Total: Rp$totalFormatted
+
+                    Terima kasih telah berbelanja di kami!
+                    MSG;
+                }
+
+        return "https://wa.me/{$phone}?text=" . urlencode($message);
+    }
+
+
+    private function normalizePhone(string $phone): string
+    {
+        // Hapus karakter non-digit
+        $phone = preg_replace('/\D+/', '', $phone);
+
+        // Jika diawali 0 → ganti dengan 62
+        if (str_starts_with($phone, '0')) {
+            $phone = '62' . substr($phone, 1);
+        }
+
+        // Jika diawali 620 → kemungkinan double 62
+        if (str_starts_with($phone, '620')) {
+            $phone = '62' . substr($phone, 2);
+        }
+
+        return $phone;
+    }
 
 
    public function setShipment(Request $request, Order $order)

@@ -126,76 +126,90 @@
             {{-- @if ($order->status_payment === 'success' && $order->status === 'paid') --}}
             @if ($order->status === 'Paid')
                 <div class="mt-8 border-t pt-6">
-                    {{-- USER: Tombol WhatsApp ke Admin --}}
-                    @unless (auth()->user()->isAdmin())
-                        <div x-data="{ open: false, targetUrl: '' }">
-                            <p class="mb-2 text-sm text-gray-700">
-                                Hubungi Admin via WhatsApp untuk konfirmasi pesanan Anda.
-                            </p>
+                    {{-- USER: Tombol WhatsApp --}}
+                    @php
+                        $waUrl = auth()
+                            ->user()
+                            ->isAdmin()
+                            ? $waUrlUser
+                            : $waUrlAdmin;
+                    @endphp
 
-                            <!-- Tombol WhatsApp -->
-                            <a
-                                href="https://wa.me/62XXXXXXXXXX?text={{ urlencode("Halo Admin, saya sudah bayar Order #{$order->order_id}") }}"
-                                @click.prevent="targetUrl = 'https://wa.me/62XXXXXXXXXX?text={{ urlencode("Halo Admin, saya sudah bayar Order #{$order->order_id}") }}'; open = true"
-                                class="cursor-pointer rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700"
-                            >
+                    <div x-data="{ open: false, targetUrl: '{{ $waUrl }}' }">
+                        <p class="mb-2 text-sm text-gray-700">
+                            @if (auth()->user()->isAdmin())
+                                Hubungi User via WhatsApp untuk konfirmasi pesanan.
+                            @else
+                                    Hubungi Admin via WhatsApp untuk konfirmasi pesanan Anda.
+                            @endif
+                        </p>
+
+                        <!-- Tombol WhatsApp -->
+                        <a
+                            href="{{ $waUrl }}"
+                            @click.prevent="targetUrl = '{{ $waUrl }}'; open = true"
+                            class="cursor-pointer rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700"
+                        >
+                            @if (auth()->user()->isAdmin())
+                                Chat User via WhatsApp
+                            @else
                                 Chat Admin via WhatsApp
-                            </a>
+                            @endif
+                        </a>
 
-                            <!-- Modal Konfirmasi -->
+                        <!-- Modal Konfirmasi -->
+                        <div
+                            x-show="open"
+                            x-cloak
+                            @keydown.escape.window="open = false"
+                            @click.self="open = false"
+                            class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 transition"
+                            x-transition:enter="transition duration-300 ease-out"
+                            x-transition:enter-start="opacity-0"
+                            x-transition:enter-end="opacity-100"
+                            x-transition:leave="transition duration-200 ease-in"
+                            x-transition:leave-start="opacity-100"
+                            x-transition:leave-end="opacity-0"
+                        >
+                            <!-- Box Modal -->
                             <div
-                                x-show="open"
-                                x-cloak
-                                @keydown.escape.window="open = false"
-                                @click.self="open = false"
-                                class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 transition"
+                                class="relative mx-4 w-full max-w-md transform rounded-2xl bg-white p-6 shadow-2xl transition"
                                 x-transition:enter="transition duration-300 ease-out"
-                                x-transition:enter-start="opacity-0"
-                                x-transition:enter-end="opacity-100"
+                                x-transition:enter-start="scale-90 opacity-0"
+                                x-transition:enter-end="scale-100 opacity-100"
                                 x-transition:leave="transition duration-200 ease-in"
-                                x-transition:leave-start="opacity-100"
-                                x-transition:leave-end="opacity-0"
+                                x-transition:leave-start="scale-100 opacity-100"
+                                x-transition:leave-end="scale-90 opacity-0"
                             >
-                                <!-- Box Modal -->
-                                <div
-                                    class="relative mx-4 w-full max-w-md transform rounded-2xl bg-white p-6 shadow-2xl transition"
-                                    x-transition:enter="transition duration-300 ease-out"
-                                    x-transition:enter-start="scale-90 opacity-0"
-                                    x-transition:enter-end="scale-100 opacity-100"
-                                    x-transition:leave="transition duration-200 ease-in"
-                                    x-transition:leave-start="scale-100 opacity-100"
-                                    x-transition:leave-end="scale-90 opacity-0"
+                                <!-- Tombol Close -->
+                                <button
+                                    @click="open = false"
+                                    class="absolute right-3 top-3 text-gray-400 transition hover:text-gray-600"
                                 >
-                                    <!-- Tombol Close -->
+                                    ✖
+                                </button>
+
+                                <h3 class="mb-4 text-lg font-semibold text-green-600">Konfirmasi</h3>
+                                <p class="mb-4 text-gray-700">Kamu yakin ingin membuka link ini?</p>
+                                <p class="mb-6 break-all text-sm text-gray-500" x-text="targetUrl"></p>
+
+                                <div class="flex justify-center space-x-4">
                                     <button
                                         @click="open = false"
-                                        class="absolute right-3 top-3 text-gray-400 transition hover:text-gray-600"
+                                        class="rounded-lg bg-gray-300 px-4 py-2 transition hover:bg-gray-400"
                                     >
-                                        ✖
+                                        Batal
                                     </button>
-
-                                    <h3 class="mb-4 text-lg font-semibold text-green-600">Konfirmasi</h3>
-                                    <p class="mb-4 text-gray-700">Kamu yakin ingin membuka link ini?</p>
-                                    <p class="mb-6 break-all text-sm text-gray-500" x-text="targetUrl"></p>
-
-                                    <div class="flex justify-center space-x-4">
-                                        <button
-                                            @click="open = false"
-                                            class="rounded-lg bg-gray-300 px-4 py-2 transition hover:bg-gray-400"
-                                        >
-                                            Batal
-                                        </button>
-                                        <button
-                                            @click="window.open(targetUrl, '_blank'); open = false"
-                                            class="rounded-lg bg-green-600 px-4 py-2 text-white transition hover:bg-green-700"
-                                        >
-                                            Ya, Lanjutkan
-                                        </button>
-                                    </div>
+                                    <button
+                                        @click="window.open(targetUrl, '_blank'); open = false"
+                                        class="rounded-lg bg-green-600 px-4 py-2 text-white transition hover:bg-green-700"
+                                    >
+                                        Ya, Lanjutkan
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                    @endunless
+                    </div>
 
                     {{-- ADMIN: Form input pengiriman lengkap --}}
                     @if (auth()->user()->isAdmin())

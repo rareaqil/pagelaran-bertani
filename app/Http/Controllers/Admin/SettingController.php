@@ -15,6 +15,10 @@ class SettingController extends Controller
                 'description' => 'Biaya admin yang diterapkan untuk setiap transaksi (Rp).',
                 'rules' => 'required|numeric|min:0',
             ],
+            'order_contact_whatsapp' => [
+                'description' => 'Nomor WhatsApp untuk Order (gunakan format internasional, misal: 6281234567890)',
+                'rules' => 'required|string',
+            ],
         ],
         'Contact Us' => [
             'contact_email' => [
