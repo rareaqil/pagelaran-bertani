@@ -149,7 +149,14 @@ class OrderController extends Controller
             $snapToken = $payment->snap_token;
         }
 
-        return view('backend.orders.show', compact(
+
+        // Pilih view sesuai role
+        $view = auth()->user()->isAdmin()
+                ? 'backend.orders.showAdmin'
+                : 'backend.orders.showUser';
+
+
+        return view($view, compact(
             'order',
             'subtotal',
             'discountAmount',
