@@ -38,7 +38,7 @@
                         'total_amount'   => 'Total',
                         'discount_amount'=> 'Diskon',
                         'status'         => 'Status',
-                        'expires_at'     => 'Kedaluwarsa',
+                        // 'expires_at'     => 'Kedaluwarsa',
                         'created_at'     => 'Dibuat',
                         'updated_at'     => 'Diupdate'
                     ]"

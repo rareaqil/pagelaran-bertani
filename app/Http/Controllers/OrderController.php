@@ -63,7 +63,7 @@ class OrderController extends Controller
     public function update(Request $request, Order $order)
     {
         $validated = $request->validate([
-            'status'          => 'in:pending,paid,cancelled',
+            'status'          => 'in:' . implode(',', Order::statuses()),
             'total_amount'    => 'numeric|min:0',
             'discount_amount' => 'numeric|min:0',
         ]);
@@ -288,7 +288,7 @@ class OrderController extends Controller
             'tracking_link'     => $data['tracking_link'] ?? null,
             'courier'           => $data['courier'] ?? null,
             'estimated_arrival' => $estimatedArrival,
-            'status'            => 'Shipment', // opsional
+            'status'            => OrderStatus::Shipment->value
         ]);
 
         return back()->with('success', 'Detail pengiriman berhasil disimpan.');
@@ -297,7 +297,7 @@ class OrderController extends Controller
 
      public function orderReversal(Order $order){
          // Ubah status order menjadi cancelled
-        $order->update(['status' => 'Cancelled']);
+        $order->update(['status' => OrderStatus::Cancelled->value]);
 
         // Ambil semua hold yang terkait order ini
         $holds = StockMovement::where('reference_type', 'Order')
@@ -324,7 +324,7 @@ class OrderController extends Controller
         // Hanya user pemilik pesanan yang boleh konfirmasi atau admin
         abort_unless($order->user_id === auth()->id() || auth()->user()->isAdmin(), 403);
 
-        $order->update(['status' => 'Completed']);
+        $order->update(['status' => OrderStatus::Completed->value]);
         return back()->with('success', 'Terima kasih telah mengkonfirmasi penerimaan pesanan.');
     }
 }

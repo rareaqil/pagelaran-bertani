@@ -1,3 +1,7 @@
+@php
+    use App\Models\OrderStatus;
+@endphp
+
 <x-slot name="header">
     <h2 class="text-xl font-semibold leading-tight text-gray-800">Order #{{ $order->order_id }}</h2>
 </x-slot>
@@ -124,7 +128,7 @@
             {{-- untuk Admin | Add field untuk mengisi seperti estimasi pengiriman, link untuk lacak, kemudian ??? , jika sudah isi ubah status ke shipment --}}
 
             {{-- @if ($order->status_payment === 'success' && $order->status === 'paid') --}}
-            @if ($order->status === 'Paid')
+            @if ($order->status === OrderStatus::Paid->value)
                 <div class="mt-8 border-t pt-6">
                     {{-- USER: Tombol WhatsApp --}}
                     @php
@@ -285,7 +289,7 @@
             {{-- if status_payment = success && status = shipment --}}
             {{-- Add Tabel Detail Pengiriman | isinya After Paid yang telah diisi oleh Admin --}}
             {{-- USER: Detail Pengiriman --}}
-            @if ($order->payment?->status === 'PAID' && $order->status === 'Shipment')
+            @if ($order->payment?->status === 'PAID' && $order->status === OrderStatus::Shipment->value)
                 {{-- @if ($order->status === 'Paid') --}}
                 <div class="mt-8 border-t pt-6">
                     <h3 class="mb-2 text-lg font-semibold">Detail Pengiriman</h3>
@@ -381,7 +385,7 @@
                 @endforeach
             </div>
 
-            @if (in_array($order->status, ['Unpaid', 'Pending']))
+            @if ($order->status === OrderStatus::Pending->value)
                 <div class="mt-4 flex justify-end space-x-2">
                     {{-- Tombol Batalkan --}}
                     <form action="{{ route('orders.orderReversal', $order) }}" method="POST">

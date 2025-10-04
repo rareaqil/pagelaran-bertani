@@ -1,12 +1,12 @@
-@extends("frontend.layouts.main")
+@extends('frontend.layouts.main')
 
-@section("content")
+@section('content')
     <div class="mx-auto max-w-6xl space-y-6 px-6 py-10 md:px-12">
         <h2 class="mb-6 text-2xl font-bold text-green-700">Riwayat Pesanan</h2>
 
         {{-- Filter Status --}}
         <div class="mb-6">
-            <form method="GET" action="{{ route("order.history") }}" id="filterForm" class="flex items-center gap-3">
+            <form method="GET" action="{{ route('order.history') }}" id="filterForm" class="flex items-center gap-3">
                 <label for="status" class="font-medium text-gray-700">Filter Status:</label>
                 <select
                     name="status"
@@ -15,12 +15,14 @@
                     onchange="document.getElementById('filterForm').submit()"
                 >
                     <option value="">Semua</option>
-                    <option value="Paid" {{ request("status") == "Paid" ? "selected" : "" }}>Paid</option>
-                    <option value="Pending" {{ request("status") == "Pending" ? "selected" : "" }}>Pending</option>
-                    <option value="Shipped" {{ request("status") == "Shipped" ? "selected" : "" }}>Shipped</option>
-                    <option value="Cancelled" {{ request("status") == "Cancelled" ? "selected" : "" }}>
-                        Cancelled
-                    </option>
+                    @foreach (\App\Models\OrderStatus::cases() as $status)
+                        <option
+                            value="{{ $status->value }}"
+                            {{ request('status') === $status->value ? 'selected' : '' }}
+                        >
+                            {{ $status->value }}
+                        </option>
+                    @endforeach
                 </select>
             </form>
         </div>
@@ -34,20 +36,8 @@
                         Order ID:
                         <span class="font-medium">#{{ $order->id }}</span>
                     </p>
-                    <p
-                        class="@if ($order->status === "Paid")
-                            text-green-600
-                        @elseif ($order->status === "Pending")
-                            text-yellow-600
-                        @elseif ($order->status === "Shipped")
-                            text-blue-600
-                        @elseif ($order->status === "Cancelled")
-                            text-red-600
-                        @else
-                            text-gray-600
-                        @endif text-sm font-semibold"
-                    >
-                        Status: {{ $order->status }}
+                    <p class="{{ $order->status->color() }} text-sm font-semibold">
+                        Status: {{ $order->status->value }}
                     </p>
                 </div>
 
@@ -55,19 +45,19 @@
                 <div class="grid grid-cols-2 gap-4 text-sm">
                     <p>
                         Total:
-                        <span class="font-semibold">Rp {{ number_format($order->total_amount, 0, ",", ".") }}</span>
+                        <span class="font-semibold">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</span>
                     </p>
                     <p>
                         Voucher:
-                        <span class="font-semibold">{{ $order->voucher_id ?? "-" }}</span>
+                        <span class="font-semibold">{{ $order->voucher_id ?? '-' }}</span>
                     </p>
                     <p>
                         Diskon:
-                        <span class="font-semibold">Rp {{ number_format($order->discount_amount, 0, ",", ".") }}</span>
+                        <span class="font-semibold">Rp {{ number_format($order->discount_amount, 0, ',', '.') }}</span>
                     </p>
                     <p>
                         Biaya Admin:
-                        <span class="font-semibold">Rp {{ number_format($order->admin_fee, 0, ",", ".") }}</span>
+                        <span class="font-semibold">Rp {{ number_format($order->admin_fee, 0, ',', '.') }}</span>
                     </p>
                 </div>
 
@@ -116,7 +106,7 @@
                 {{-- Tombol Aksi --}}
                 <div class="flex flex-wrap justify-end gap-2 border-t pt-4">
                     <a
-                        href="{{ auth()->user()->isAdmin() ? route("orders.showView", $order->order_id) : route("orders.showUserView", $order->order_id) }}"
+                        href="{{ auth()->user()->isAdmin() ? route('orders.showView', $order->order_id) : route('orders.showUserView', $order->order_id) }}"
                         class="rounded-lg bg-green-600 px-4 py-2 font-medium text-white hover:bg-green-700"
                     >
                         Lihat Detail

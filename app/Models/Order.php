@@ -6,6 +6,27 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
+enum OrderStatus: string
+{
+    case Pending   = 'Pending';
+    case Paid      = 'Paid';
+    case Shipment  = 'Shipment';
+    case Completed = 'Completed';
+    case Cancelled = 'Cancelled';
+
+
+     public function color(): string
+    {
+        return match($this) {
+            self::Paid => 'text-green-600',
+            self::Pending => 'text-yellow-600',
+            self::Shipment => 'text-blue-600',
+            self::Cancelled => 'text-red-600',
+            self::Completed => 'text-gray-600',
+        };
+    }
+}
+
 class Order extends Model
 {
     use SoftDeletes;
@@ -37,7 +58,10 @@ class Order extends Model
     protected $casts = [
         'scheduled_at'     => 'datetime',
         'estimated_arrival'=> 'datetime',
+        'status' => OrderStatus::class,
     ];
+
+
 
      protected static function booted()
     {
@@ -81,6 +105,16 @@ class Order extends Model
         return $this->hasOne(Payment::class);
     }
 
+
+    public static function statuses(): array
+    {
+        return array_map(fn($status) => $status->value, OrderStatus::cases());
+    }
+
+    public function isStatus(OrderStatus $status): bool
+    {
+        return $this->status === $status->value;
+    }
 
 
     public function getRouteKeyName()

@@ -6,6 +6,7 @@ use App\Http\Controllers\StockMovementController;
 
 use App\Models\Product;
 use App\Models\Order;
+use App\Models\OrderStatus;
 use App\Models\Voucher;
 use App\Models\Setting;
 use Illuminate\Http\Request;
@@ -309,7 +310,7 @@ class CartController extends Controller
         $order = Order::create([
             'user_id'         => $userId,
             'total_amount'    => $subtotal - $discount + $adminFee,
-            'status'          => 'Unpaid',
+            'status' => OrderStatus::Pending->value,
             'voucher_id'      => $voucherId,
             'discount_amount' => $discount,
             'admin_fee'       => $adminFee,
