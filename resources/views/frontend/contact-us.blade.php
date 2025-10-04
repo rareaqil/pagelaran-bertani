@@ -69,43 +69,43 @@
 
                 <!-- WhatsApp -->
                 <p>
-                    <span class="font-semibold text-green-600">WhatsApp:</span>
                     @if (!empty($settings['contact_whatsapp']->value))
+                        <span class="font-semibold text-green-600">WhatsApp:</span>
                         <a href="https://wa.me/{{ ltrim($settings['contact_whatsapp']->value, '0') }}"
                             @click.prevent="targetUrl = 'https://wa.me/{{ ltrim($settings['contact_whatsapp']->value, '0') }}'; open = true"
                             class="text-amber-600 underline hover:text-amber-700">
                             {{ $settings['contact_whatsapp']->value }}
                         </a>
                     @else
-                        <span class="text-gray-400">Tidak tersedia</span>
+                        <span class="text-gray-400"></span>
                     @endif
                 </p>
 
                 <!-- Instagram -->
                 <p>
-                    <span class="font-semibold text-green-600">Instagram:</span>
                     @if (!empty($settings['contact_instagram']->value))
+                        <span class="font-semibold text-green-600">Instagram:</span>
                         <a href="https://instagram.com/{{ $settings['contact_instagram']->value }}"
                             @click.prevent="targetUrl = 'https://instagram.com/{{ $settings['contact_instagram']->value }}'; open = true"
                             class="text-amber-600 underline hover:text-amber-700">
                             {{ '@' . $settings['contact_instagram']->value }}
                         </a>
                     @else
-                        <span class="text-gray-400">Tidak tersedia</span>
+                        <span class="text-gray-400"></span>
                     @endif
                 </p>
 
                 <!-- Email -->
                 <p>
-                    <span class="font-semibold text-green-600">Email:</span>
                     @if (!empty($settings['contact_email']->value))
+                        <span class="font-semibold text-green-600">Email:</span>
                         <a href="mailto:{{ $settings['contact_email']->value }}"
                             @click.prevent="targetUrl = 'mailto:{{ $settings['contact_email']->value }}'; open = true"
                             class="text-amber-600 underline hover:text-amber-700">
                             {{ $settings['contact_email']->value }}
                         </a>
                     @else
-                        <span class="text-gray-400">Tidak tersedia</span>
+                        <span class="text-gray-400"></span>
                     @endif
                 </p>
 
