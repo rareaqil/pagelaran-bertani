@@ -4,6 +4,18 @@
 
 <div class="py-12">
     <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+        @if (session('success'))
+            <div class="mb-4 rounded bg-green-100 p-4 text-green-800">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="mb-4 rounded bg-red-100 p-4 text-red-800">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <div class="overflow-hidden bg-white p-6 shadow-sm sm:rounded-lg">
             {{-- Order Info --}}
             <div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -262,9 +274,9 @@
                         <form action="{{ route('orders.confirmReceived', $order) }}" method="POST" class="mt-4">
                             @csrf
                             <button
-                                type="submit"
+                                type="button"
                                 class="rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700"
-                                onclick="return confirm('Konfirmasi bahwa pesanan telah diterima?')"
+                                onclick="confirmAction(this.form, 'Konfirmasi bahwa pesanan telah diterima?')"
                             >
                                 Konfirmasi Pesanan Diterima
                             </button>
@@ -274,8 +286,14 @@
             @endif
 
             {{-- Back button --}}
+
+            @php
+                $previous = url()->previous(); // URL lengkap sebelumnya
+                $basePrevious = preg_replace('#/[^/]+$#', '', $previous); // hapus segmen terakhir
+            @endphp
+
             <div class="mt-6">
-                <a href="{{ url()->previous() }}" class="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400">Kembali</a>
+                <a href="{{ $basePrevious }}" class="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400">Kembali</a>
             </div>
             <div class="mt-6">
                 @foreach ($holdMovements as $movement)
@@ -299,9 +317,9 @@
                         @csrf
                         @method('PATCH')
                         <button
-                            type="submit"
+                            type="button"
                             class="rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700"
-                            onclick="return confirm('Yakin batalkan pesanan ini?')"
+                            onclick="confirmAction(this.form, 'Yakin batalkan pesanan ini?')"
                         >
                             Batalkan Pesanan
                         </button>
@@ -318,6 +336,24 @@
 </div>
 
 @push('scripts')
+    <script>
+        function confirmAction(form, message) {
+            Swal.fire({
+                title: 'Apakah kamu yakin?',
+                text: message,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, batalkan!',
+                cancelButtonText: 'Batal',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        }
+    </script>
     {{-- Midtrans Snap JS --}}
     <script
         src="https://app.sandbox.midtrans.com/snap/snap.js"

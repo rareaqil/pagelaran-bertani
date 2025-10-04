@@ -12,6 +12,12 @@
                 </div>
             @endif
 
+            @if (session('error'))
+                <div class="mb-4 rounded bg-red-100 p-4 text-red-800">
+                    {{ session('error') }}
+                </div>
+            @endif
+
             {{-- Tombol tambah order (opsional, tergantung alur bisnis) --}}
             <div class="mb-4 flex items-center justify-between p-4">
                 <a

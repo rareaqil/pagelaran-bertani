@@ -203,7 +203,7 @@ class OrderController extends Controller
 
      public function orderReversal(Order $order){
          // Ubah status order menjadi cancelled
-        $order->update(['status' => 'cancelled']);
+        $order->update(['status' => 'Cancelled']);
 
         // Ambil semua hold yang terkait order ini
         $holds = StockMovement::where('reference_type', 'Order')
