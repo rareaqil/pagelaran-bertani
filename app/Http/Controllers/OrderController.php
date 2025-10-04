@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\StockMovement;
+use App\Models\Setting;
 use App\Http\Controllers\StockMovementController;
 use App\Services\MidtransService;
 use Illuminate\Http\Request;
@@ -62,7 +63,7 @@ class OrderController extends Controller
     public function update(Request $request, Order $order)
     {
         $validated = $request->validate([
-            'status'          => 'in:pending,paid,cancelled',
+            'status'          => 'in:' . implode(',', Order::statuses()),
             'total_amount'    => 'numeric|min:0',
             'discount_amount' => 'numeric|min:0',
         ]);
@@ -88,18 +89,33 @@ class OrderController extends Controller
 
     public function indexView(Request $request)
     {
-        // Bisa ditambahkan pagination & search
         $sort      = $request->query('sort', 'created_at');
         $direction = $request->query('direction', 'desc');
         $perPage   = $request->query('perPage', 10);
+        $page      = $request->query('page', 1);
+        $status    = $request->query('status');
+
+        // Hitung total items (dengan filter status kalau ada)
+        $totalItems = Order::when($status, function ($query) use ($status) {
+            $query->where('status', $status);
+        })->count();
+
+        $totalPages = ceil($totalItems / $perPage);
+        if ($page > $totalPages) {
+            $page = 1; // reset ke halaman 1
+        }
 
         $orders = Order::with(['user','voucher','items','payment'])
+            ->when($status, function ($query) use ($status) {
+                $query->where('status', $status);
+            })
             ->orderBy($sort, $direction)
-            ->paginate($perPage)
+            ->paginate($perPage, ['*'], 'page', $page)
             ->withQueryString();
 
         return view('backend.orders.index', compact('orders'));
     }
+
 
 
 
@@ -149,6 +165,15 @@ class OrderController extends Controller
             $snapToken = $payment->snap_token;
         }
 
+        // Normalisasi nomor telepon
+        $adminPhoneRaw = Setting::getValue('order_contact_whatsapp', '081234567890');
+        $adminPhone = $this->normalizePhone($adminPhoneRaw);
+
+        $userPhone = $this->normalizePhone($order->user->phone ?? '');
+
+        $waUrlAdmin = $this->generateWaUrl($adminPhone, $order, 'admin');
+        $waUrlUser  = $this->generateWaUrl($userPhone, $order, 'user');
+
 
         // Pilih view sesuai role
         $view = auth()->user()->isAdmin()
@@ -164,10 +189,94 @@ class OrderController extends Controller
             'holdMovements',
             'snapToken',
             'adminFee',
+            'waUrlAdmin',
+            'waUrlUser'
         ));
     }
 
 
+    private function generateWaUrl(string $phone, Order $order, string $type): string
+            {
+                if (!$phone) return '#';
+
+                // Hitung subtotal & total
+                $subtotal = $order->items->sum(fn($i) => $i->price * $i->quantity);
+                $discount = $order->voucher ? $order->voucher->getDiscountOnly($subtotal) : 0;
+                $adminFee = $order->admin_fee ?? 2000;
+                $total = $subtotal - $discount + $adminFee;
+
+                // Format Rupiah
+                $subtotalFormatted = number_format($subtotal, 0, ',', '.');
+                $discountFormatted = number_format($discount, 0, ',', '.');
+                $adminFeeFormatted = number_format($adminFee, 0, ',', '.');
+                $totalFormatted = number_format($total, 0, ',', '.');
+
+                // Format item list
+                $itemsText = "";
+                foreach ($order->items as $item) {
+                    $itemName = $item->product->name ?? $item->name;
+                    $itemPrice = number_format($item->price, 0, ',', '.');
+                    $itemsText .= "- {$itemName} x{$item->quantity} (Rp{$itemPrice})\n";
+                }
+
+                if ($type === 'admin') {
+                    $message = <<<MSG
+                    Halo Admin
+
+                    Saya sudah melakukan pembayaran untuk Order #{$order->order_id}.
+
+                    Nama Pemesan: {$order->user->first_name}
+                    Email: {$order->user->email }
+                    No Telp: {$order->user->phone}
+                    Alamat: {$order->user->primaryAddress->address1}
+
+                    Pesanan:
+                    $itemsText
+                    Subtotal: Rp$subtotalFormatted
+                    Discount: -Rp$discountFormatted
+                    Admin Fee: Rp$adminFeeFormatted
+                    Total: Rp$totalFormatted
+
+                    Mohon konfirmasi pesanan saya. Terima kasih!
+                    MSG;
+                } else { // user
+                    $message = <<<MSG
+                    Halo {$order->user->first_name},
+
+                    Pesanan #{$order->order_id} Anda telah dikonfirmasi oleh Admin.
+
+                    Pesanan Anda:
+                    $itemsText
+                    Subtotal: Rp$subtotalFormatted
+                    Discount: -Rp$discountFormatted
+                    Admin Fee: Rp$adminFeeFormatted
+                    Total: Rp$totalFormatted
+
+                    Terima kasih telah berbelanja di kami!
+                    MSG;
+                }
+
+        return "https://wa.me/{$phone}?text=" . urlencode($message);
+    }
+
+
+    private function normalizePhone(string $phone): string
+    {
+        // Hapus karakter non-digit
+        $phone = preg_replace('/\D+/', '', $phone);
+
+        // Jika diawali 0 → ganti dengan 62
+        if (str_starts_with($phone, '0')) {
+            $phone = '62' . substr($phone, 1);
+        }
+
+        // Jika diawali 620 → kemungkinan double 62
+        if (str_starts_with($phone, '620')) {
+            $phone = '62' . substr($phone, 2);
+        }
+
+        return $phone;
+    }
 
 
    public function setShipment(Request $request, Order $order)
@@ -194,7 +303,7 @@ class OrderController extends Controller
             'tracking_link'     => $data['tracking_link'] ?? null,
             'courier'           => $data['courier'] ?? null,
             'estimated_arrival' => $estimatedArrival,
-            'status'            => 'Shipment', // opsional
+            'status'            => OrderStatus::Shipment->value
         ]);
 
         return back()->with('success', 'Detail pengiriman berhasil disimpan.');
@@ -203,7 +312,7 @@ class OrderController extends Controller
 
      public function orderReversal(Order $order){
          // Ubah status order menjadi cancelled
-        $order->update(['status' => 'cancelled']);
+        $order->update(['status' => OrderStatus::Cancelled->value]);
 
         // Ambil semua hold yang terkait order ini
         $holds = StockMovement::where('reference_type', 'Order')
@@ -230,7 +339,7 @@ class OrderController extends Controller
         // Hanya user pemilik pesanan yang boleh konfirmasi atau admin
         abort_unless($order->user_id === auth()->id() || auth()->user()->isAdmin(), 403);
 
-        $order->update(['status' => 'Completed']);
+        $order->update(['status' => OrderStatus::Completed->value]);
         return back()->with('success', 'Terima kasih telah mengkonfirmasi penerimaan pesanan.');
     }
 }

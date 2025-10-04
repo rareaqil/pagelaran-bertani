@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 use App\Models\Order;
+use App\Models\OrderStatus;
 
 use App\Services\MidtransService;
 
@@ -151,9 +152,7 @@ class PaymentController extends Controller
          ]);
         switch ($status) {
             case 'success':
-                $order->update([
-                    'status'  => 'Paid',
-                ]);
+                $order->update(['status' => OrderStatus::Paid->value]);
 
                 // Update atau buat Payment (ONE TO ONE)
                 $order->payment()->updateOrCreate(
@@ -187,7 +186,7 @@ class PaymentController extends Controller
                 break;
 
             case 'pending':
-                $order->update(['status' => 'Pending']);
+                $order->update(['status' => OrderStatus::Pending->value]);
                 $order->payment()->updateOrCreate(
                     ['order_id' => $order->id],
                     ['status' => 'PENDING', 'transaction_id' => $notif->transaction_id]
@@ -205,7 +204,7 @@ class PaymentController extends Controller
             case 'expire':
             case 'cancel':
             case 'failed':
-                $order->update(['status' => Str::ucfirst($status)]);
+                $order->update(['status' => OrderStatus::Cancelled->value]);
                 $order->payment()->updateOrCreate(
                     ['order_id' => $order->id],
                     ['status' => strtoupper($status), 'transaction_id' => $notif->transaction_id]

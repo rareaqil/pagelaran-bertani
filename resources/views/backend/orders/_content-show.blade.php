@@ -1,9 +1,25 @@
+@php
+    use App\Models\OrderStatus;
+@endphp
+
 <x-slot name="header">
     <h2 class="text-xl font-semibold leading-tight text-gray-800">Order #{{ $order->order_id }}</h2>
 </x-slot>
 
 <div class="py-12">
     <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+        @if (session('success'))
+            <div class="mb-4 rounded bg-green-100 p-4 text-green-800">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="mb-4 rounded bg-red-100 p-4 text-red-800">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <div class="overflow-hidden bg-white p-6 shadow-sm sm:rounded-lg">
             {{-- Order Info --}}
             <div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -18,7 +34,7 @@
                     </p>
                     <p>
                         <strong>Status:</strong>
-                        {{ ucfirst($order->status) }}
+                        {{ $order->status }}
                     </p>
                 </div>
                 <div>
@@ -112,106 +128,160 @@
             {{-- untuk Admin | Add field untuk mengisi seperti estimasi pengiriman, link untuk lacak, kemudian ??? , jika sudah isi ubah status ke shipment --}}
 
             {{-- @if ($order->status_payment === 'success' && $order->status === 'paid') --}}
-            @if ($order->status === 'Paid')
+            @if ($order->status === OrderStatus::Paid->value)
                 <div class="mt-8 border-t pt-6">
-                    {{-- USER: Tombol WhatsApp ke Admin --}}
-                    @unless (auth()->user()->isAdmin())
-                        <div x-data="{ open: false, targetUrl: '' }">
-                            <p class="mb-2 text-sm text-gray-700">
-                                Hubungi Admin via WhatsApp untuk konfirmasi pesanan Anda.
-                            </p>
+                    {{-- USER: Tombol WhatsApp --}}
+                    @php
+                        $waUrl = auth()
+                            ->user()
+                            ->isAdmin()
+                            ? $waUrlUser
+                            : $waUrlAdmin;
+                    @endphp
 
-                            <!-- Tombol WhatsApp -->
-                            <a href="https://wa.me/62XXXXXXXXXX?text={{ urlencode("Halo Admin, saya sudah bayar Order #{$order->order_id}") }}"
-                                @click.prevent="targetUrl = 'https://wa.me/62XXXXXXXXXX?text={{ urlencode("Halo Admin, saya sudah bayar Order #{$order->order_id}") }}'; open = true"
-                                class="rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700 cursor-pointer">
+                    <div x-data="{ open: false, targetUrl: '{{ $waUrl }}' }">
+                        <p class="mb-2 text-sm text-gray-700">
+                            @if (auth()->user()->isAdmin())
+                                Hubungi User via WhatsApp untuk konfirmasi pesanan.
+                            @else
+                                    Hubungi Admin via WhatsApp untuk konfirmasi pesanan Anda.
+                            @endif
+                        </p>
+
+                        <!-- Tombol WhatsApp -->
+                        <a
+                            href="{{ $waUrl }}"
+                            @click.prevent="targetUrl = '{{ $waUrl }}'; open = true"
+                            class="cursor-pointer rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700"
+                        >
+                            @if (auth()->user()->isAdmin())
+                                Chat User via WhatsApp
+                            @else
                                 Chat Admin via WhatsApp
-                            </a>
+                            @endif
+                        </a>
 
-                            <!-- Modal Konfirmasi -->
-                            <div x-show="open" x-cloak @keydown.escape.window="open = false" @click.self="open = false"
-                                class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 transition"
-                                x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
-                                x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200"
-                                x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+                        <!-- Modal Konfirmasi -->
+                        <div
+                            x-show="open"
+                            x-cloak
+                            @keydown.escape.window="open = false"
+                            @click.self="open = false"
+                            class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 transition"
+                            x-transition:enter="transition duration-300 ease-out"
+                            x-transition:enter-start="opacity-0"
+                            x-transition:enter-end="opacity-100"
+                            x-transition:leave="transition duration-200 ease-in"
+                            x-transition:leave-start="opacity-100"
+                            x-transition:leave-end="opacity-0"
+                        >
+                            <!-- Box Modal -->
+                            <div
+                                class="relative mx-4 w-full max-w-md transform rounded-2xl bg-white p-6 shadow-2xl transition"
+                                x-transition:enter="transition duration-300 ease-out"
+                                x-transition:enter-start="scale-90 opacity-0"
+                                x-transition:enter-end="scale-100 opacity-100"
+                                x-transition:leave="transition duration-200 ease-in"
+                                x-transition:leave-start="scale-100 opacity-100"
+                                x-transition:leave-end="scale-90 opacity-0"
+                            >
+                                <!-- Tombol Close -->
+                                <button
+                                    @click="open = false"
+                                    class="absolute right-3 top-3 text-gray-400 transition hover:text-gray-600"
+                                >
+                                    ✖
+                                </button>
 
-                                <!-- Box Modal -->
-                                <div class="bg-white p-6 rounded-2xl shadow-2xl max-w-md w-full mx-4 relative transform transition"
-                                    x-transition:enter="transition ease-out duration-300"
-                                    x-transition:enter-start="scale-90 opacity-0"
-                                    x-transition:enter-end="scale-100 opacity-100"
-                                    x-transition:leave="transition ease-in duration-200"
-                                    x-transition:leave-start="scale-100 opacity-100"
-                                    x-transition:leave-end="scale-90 opacity-0">
+                                <h3 class="mb-4 text-lg font-semibold text-green-600">Konfirmasi</h3>
+                                <p class="mb-4 text-gray-700">Kamu yakin ingin membuka link ini?</p>
+                                <p class="mb-6 break-all text-sm text-gray-500" x-text="targetUrl"></p>
 
-                                    <!-- Tombol Close -->
-                                    <button @click="open = false"
-                                        class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition">
-                                        ✖
+                                <div class="flex justify-center space-x-4">
+                                    <button
+                                        @click="open = false"
+                                        class="rounded-lg bg-gray-300 px-4 py-2 transition hover:bg-gray-400"
+                                    >
+                                        Batal
                                     </button>
-
-                                    <h3 class="text-lg font-semibold mb-4 text-green-600">Konfirmasi</h3>
-                                    <p class="mb-4 text-gray-700">Kamu yakin ingin membuka link ini?</p>
-                                    <p class="mb-6 text-sm text-gray-500 break-all" x-text="targetUrl"></p>
-
-                                    <div class="flex justify-center space-x-4">
-                                        <button @click="open = false"
-                                            class="px-4 py-2 rounded-lg bg-gray-300 hover:bg-gray-400 transition">
-                                            Batal
-                                        </button>
-                                        <button @click="window.open(targetUrl, '_blank'); open = false"
-                                            class="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition">
-                                            Ya, Lanjutkan
-                                        </button>
-                                    </div>
+                                    <button
+                                        @click="window.open(targetUrl, '_blank'); open = false"
+                                        class="rounded-lg bg-green-600 px-4 py-2 text-white transition hover:bg-green-700"
+                                    >
+                                        Ya, Lanjutkan
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                    @endunless
+                    </div>
 
                     {{-- ADMIN: Form input pengiriman lengkap --}}
                     @if (auth()->user()->isAdmin())
-                        <form {{-- action="#" --}} action="{{ route('orders.setShipment', $order) }}" method="POST"
-                            class="mt-4 space-y-4">
+                        <form
+                            {{-- action="#" --}}
+                            action="{{ route('orders.setShipment', $order) }}"
+                            method="POST"
+                            class="mt-4 space-y-4"
+                        >
                             @csrf
                             @method('POST')
 
                             {{-- Tanggal & Waktu Kirim --}}
                             <label class="block">
                                 <span class="text-gray-700">Tanggal & Waktu Kirim</span>
-                                <input type="datetime-local" name="scheduled_at"
+                                <input
+                                    type="datetime-local"
+                                    name="scheduled_at"
                                     class="mt-1 w-full rounded border-gray-300"
                                     value="{{ old('scheduled_at', optional($order->scheduled_at)->format('Y-m-d\TH:i')) }}"
-                                    required />
+                                    required
+                                />
                             </label>
 
                             {{-- Estimasi Durasi (menit) --}}
                             <label class="block">
                                 <span class="text-gray-700">Estimasi Durasi (menit)</span>
-                                <input type="number" name="estimate_minutes" min="1" step="1"
+                                <input
+                                    type="number"
+                                    name="estimate_minutes"
+                                    min="1"
+                                    step="1"
                                     class="mt-1 w-full rounded border-gray-300"
                                     value="{{ old('estimate_minutes', $order->estimate_minutes) }}"
-                                    placeholder="misal: 45" required />
+                                    placeholder="misal: 45"
+                                    required
+                                />
                                 <span class="text-sm text-gray-500">Lama perjalanan, contoh 45 untuk ±45 menit.</span>
                             </label>
 
                             {{-- Link Lacak --}}
                             <label class="block">
                                 <span class="text-gray-700">Link Lacak (Opsional)</span>
-                                <input type="url" name="tracking_link" class="mt-1 w-full rounded border-gray-300"
+                                <input
+                                    type="url"
+                                    name="tracking_link"
+                                    class="mt-1 w-full rounded border-gray-300"
                                     value="{{ old('tracking_link', $order->tracking_link) }}"
-                                    placeholder="https://kurir.example/track/ABC123" />
+                                    placeholder="https://kurir.example/track/ABC123"
+                                />
                             </label>
 
                             {{-- Kurir --}}
                             <label class="block">
                                 <span class="text-gray-700">Kurir</span>
-                                <input name="courier" class="mt-1 w-full rounded border-gray-300"
+                                <input
+                                    name="courier"
+                                    class="mt-1 w-full rounded border-gray-300"
                                     value="{{ old('courier', $order->courier) }}"
-                                    placeholder="Misal: Gojek Instant / Grab Express" />
+                                    placeholder="Misal: Gojek Instant / Grab Express"
+                                />
                             </label>
 
-                            <button type="submit" class="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+                            <button
+                                type="button"
+                                class="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                                onclick="confirmAction(this.form, 'Apakah kamu yakin ingin menyimpan detail pengiriman ini?')"
+                            >
                                 Set Shipment
                             </button>
                         </form>
@@ -223,7 +293,7 @@
             {{-- if status_payment = success && status = shipment --}}
             {{-- Add Tabel Detail Pengiriman | isinya After Paid yang telah diisi oleh Admin --}}
             {{-- USER: Detail Pengiriman --}}
-            @if ($order->payment?->status === 'PAID' && $order->status === 'Shipment')
+            @if ($order->payment?->status === 'PAID' && $order->status === OrderStatus::Shipment->value)
                 {{-- @if ($order->status === 'Paid') --}}
                 <div class="mt-8 border-t pt-6">
                     <h3 class="mb-2 text-lg font-semibold">Detail Pengiriman</h3>
@@ -264,8 +334,11 @@
                             <th class="border px-4 py-2 text-left">Link Lacak</th>
                             <td class="border px-4 py-2">
                                 @if ($order->tracking_link)
-                                    <a href="{{ $order->tracking_link }}" class="text-blue-600 hover:underline"
-                                        target="_blank">
+                                    <a
+                                        href="{{ $order->tracking_link }}"
+                                        class="text-blue-600 hover:underline"
+                                        target="_blank"
+                                    >
                                         Lacak Pengiriman
                                     </a>
                                 @else
@@ -276,12 +349,14 @@
                     </table>
 
                     {{-- Tombol Konfirmasi Pesanan Diterima (hanya untuk user, bukan admin) --}}
-                    @if ($order->user_id === auth()->id() || auth()->user()->isAdmin())
+                    @if ($order->user_id === auth()->id() ||auth()->user()->isAdmin())
                         <form action="{{ route('orders.confirmReceived', $order) }}" method="POST" class="mt-4">
                             @csrf
-                            <button type="submit"
+                            <button
+                                type="button"
                                 class="rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700"
-                                onclick="return confirm('Konfirmasi bahwa pesanan telah diterima?')">
+                                onclick="confirmAction(this.form, 'Konfirmasi bahwa pesanan telah diterima?')"
+                            >
                                 Konfirmasi Pesanan Diterima
                             </button>
                         </form>
@@ -290,29 +365,44 @@
             @endif
 
             {{-- Back button --}}
-            <div class="mt-6">
-                <a href="{{ url()->previous() }}" class="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400">Kembali</a>
-            </div>
-            <div class="mt-6">
-                @foreach ($holdMovements as $movement)
-                    <form action="{{ route('stock.confirmPayment', $movement->id) }}" method="POST"
-                        style="display: inline">
-                        @csrf
-                        <button type="submit" class="btn btn-success">
-                            Confirm Payment ({{ $movement->quantity }} pcs)
-                        </button>
-                    </form>
-                @endforeach
-            </div>
 
-            @if (in_array($order->status, ['Unpaid', 'Pending']))
+            @php
+                $current = url()->current(); // URL lengkap sebelumnya
+                $baseCurrent = preg_replace('#/[^/]+$#', '', $current); // hapus segmen terakhir
+            @endphp
+
+            <div class="mt-6">
+                <a href="{{ $baseCurrent }}" class="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400">Kembali</a>
+            </div>
+            {{-- Ditutup Sementara, Untuk Konfirmasi Stok --}}
+            {{--
+                <div class="mt-6">
+                @foreach ($holdMovements as $movement)
+                <form
+                action="{{ route('stock.confirmPayment', $movement->id) }}"
+                method="POST"
+                style="display: inline"
+                >
+                @csrf
+                <button type="submit" class="btn btn-success">
+                Confirm Payment ({{ $movement->quantity }} pcs)
+                </button>
+                </form>
+                @endforeach
+                </div>
+            --}}
+
+            @if ($order->status === OrderStatus::Pending->value)
                 <div class="mt-4 flex justify-end space-x-2">
                     {{-- Tombol Batalkan --}}
                     <form action="{{ route('orders.orderReversal', $order) }}" method="POST">
                         @csrf
                         @method('PATCH')
-                        <button type="submit" class="rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700"
-                            onclick="return confirm('Yakin batalkan pesanan ini?')">
+                        <button
+                            type="button"
+                            class="rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700"
+                            onclick="confirmAction(this.form, 'Yakin batalkan pesanan ini?')"
+                        >
                             Batalkan Pesanan
                         </button>
                     </form>
@@ -329,14 +419,34 @@
 <script src="//unpkg.com/alpinejs" defer></script>
 
 @push('scripts')
-    {{-- Midtrans Snap JS --}}
-    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ midtrans_config('client_key') }}">
+    <script>
+        function confirmAction(form, message) {
+            Swal.fire({
+                title: 'Apakah kamu yakin?',
+                text: message,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, batalkan!',
+                cancelButtonText: 'Batal',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        }
     </script>
+    {{-- Midtrans Snap JS --}}
+    <script
+        src="https://app.sandbox.midtrans.com/snap/snap.js"
+        data-client-key="{{ midtrans_config('client_key') }}"
+    ></script>
     <script type="module">
         let snapOpen = false;
 
         const payButton = document.getElementById('pay-button');
-        payButton.addEventListener('click', function(e) {
+        payButton.addEventListener('click', function (e) {
             e.preventDefault();
 
             if (snapOpen) return; // Jangan buka popup jika sudah terbuka
@@ -344,20 +454,20 @@
             snapOpen = true;
 
             snap.pay('{{ $snapToken }}', {
-                onSuccess: function(result) {
+                onSuccess: function (result) {
                     console.log('Success:', result);
                     snapOpen = false;
                     location.reload();
                 },
-                onPending: function(result) {
+                onPending: function (result) {
                     console.log('Pending:', result);
                     snapOpen = false;
                 },
-                onError: function(result) {
+                onError: function (result) {
                     console.log('Error:', result);
                     snapOpen = false;
                 },
-                onClose: function() {
+                onClose: function () {
                     console.log('Popup closed by user');
                     snapOpen = false;
                 },

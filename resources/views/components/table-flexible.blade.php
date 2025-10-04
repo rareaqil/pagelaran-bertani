@@ -97,6 +97,9 @@
                                     foreach (explode('.', $field) as $f) {
                                         $value = $value->{$f} ?? null;
                                     }
+                                    if ($value instanceof \BackedEnum) {
+                                        $value = $value->value;
+                                    }
                                 @endphp
 
                                 @php
