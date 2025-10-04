@@ -89,18 +89,33 @@ class OrderController extends Controller
 
     public function indexView(Request $request)
     {
-        // Bisa ditambahkan pagination & search
         $sort      = $request->query('sort', 'created_at');
         $direction = $request->query('direction', 'desc');
         $perPage   = $request->query('perPage', 10);
+        $page      = $request->query('page', 1);
+        $status    = $request->query('status');
+
+        // Hitung total items (dengan filter status kalau ada)
+        $totalItems = Order::when($status, function ($query) use ($status) {
+            $query->where('status', $status);
+        })->count();
+
+        $totalPages = ceil($totalItems / $perPage);
+        if ($page > $totalPages) {
+            $page = 1; // reset ke halaman 1
+        }
 
         $orders = Order::with(['user','voucher','items','payment'])
+            ->when($status, function ($query) use ($status) {
+                $query->where('status', $status);
+            })
             ->orderBy($sort, $direction)
-            ->paginate($perPage)
+            ->paginate($perPage, ['*'], 'page', $page)
             ->withQueryString();
 
         return view('backend.orders.index', compact('orders'));
     }
+
 
 
 

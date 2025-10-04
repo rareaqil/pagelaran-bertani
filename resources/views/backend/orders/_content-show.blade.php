@@ -34,7 +34,7 @@
                     </p>
                     <p>
                         <strong>Status:</strong>
-                        {{ ucfirst($order->status) }}
+                        {{ $order->status }}
                     </p>
                 </div>
                 <div>
@@ -277,7 +277,11 @@
                                 />
                             </label>
 
-                            <button type="submit" class="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+                            <button
+                                type="button"
+                                class="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                                onclick="confirmAction(this.form, 'Apakah kamu yakin ingin menyimpan detail pengiriman ini?')"
+                            >
                                 Set Shipment
                             </button>
                         </form>
@@ -363,27 +367,30 @@
             {{-- Back button --}}
 
             @php
-                $previous = url()->previous(); // URL lengkap sebelumnya
-                $basePrevious = preg_replace('#/[^/]+$#', '', $previous); // hapus segmen terakhir
+                $current = url()->current(); // URL lengkap sebelumnya
+                $baseCurrent = preg_replace('#/[^/]+$#', '', $current); // hapus segmen terakhir
             @endphp
 
             <div class="mt-6">
-                <a href="{{ $basePrevious }}" class="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400">Kembali</a>
+                <a href="{{ $baseCurrent }}" class="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400">Kembali</a>
             </div>
-            <div class="mt-6">
+            {{-- Ditutup Sementara, Untuk Konfirmasi Stok --}}
+            {{--
+                <div class="mt-6">
                 @foreach ($holdMovements as $movement)
-                    <form
-                        action="{{ route('stock.confirmPayment', $movement->id) }}"
-                        method="POST"
-                        style="display: inline"
-                    >
-                        @csrf
-                        <button type="submit" class="btn btn-success">
-                            Confirm Payment ({{ $movement->quantity }} pcs)
-                        </button>
-                    </form>
+                <form
+                action="{{ route('stock.confirmPayment', $movement->id) }}"
+                method="POST"
+                style="display: inline"
+                >
+                @csrf
+                <button type="submit" class="btn btn-success">
+                Confirm Payment ({{ $movement->quantity }} pcs)
+                </button>
+                </form>
                 @endforeach
-            </div>
+                </div>
+            --}}
 
             @if ($order->status === OrderStatus::Pending->value)
                 <div class="mt-4 flex justify-end space-x-2">
