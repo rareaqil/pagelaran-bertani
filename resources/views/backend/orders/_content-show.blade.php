@@ -376,22 +376,21 @@
                 <a href="{{ $baseCurrent }}" class="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400">Kembali</a>
             </div>
             {{-- Ditutup Sementara, Untuk Konfirmasi Stok --}}
-            {{--
-                <div class="mt-6">
+
+            <div class="mt-6">
                 @foreach ($holdMovements as $movement)
-                <form
-                action="{{ route('stock.confirmPayment', $movement->id) }}"
-                method="POST"
-                style="display: inline"
-                >
-                @csrf
-                <button type="submit" class="btn btn-success">
-                Confirm Payment ({{ $movement->quantity }} pcs)
-                </button>
-                </form>
+                    <form
+                        action="{{ route('stock.confirmPayment', $movement->id) }}"
+                        method="POST"
+                        style="display: inline"
+                    >
+                        @csrf
+                        <button type="submit" class="btn btn-success">
+                            Confirm Payment ({{ $movement->quantity }} pcs)
+                        </button>
+                    </form>
                 @endforeach
-                </div>
-            --}}
+            </div>
 
             {{-- @if ($order->status->value === OrderStatus::Pending->value) --}}
             <div class="mt-4 flex justify-end space-x-2">
