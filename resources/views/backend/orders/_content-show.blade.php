@@ -127,8 +127,8 @@
             {{-- untuk User | Add Penjelasan untuk mengirimkan chat ke whatsaap Admin berupa detail order dan lain lain dalam bentuk button menggunaan wa.me --}}
             {{-- untuk Admin | Add field untuk mengisi seperti estimasi pengiriman, link untuk lacak, kemudian ??? , jika sudah isi ubah status ke shipment --}}
 
-            {{-- @if ($order->status_payment === 'success' && $order->status === 'paid') --}}
-            @if ($order->status === OrderStatus::Paid->value)
+            {{-- @if ($order->status_payment === 'success' && $order->status->value === 'paid') --}}
+            @if ($order->status->value === OrderStatus::Paid->value)
                 <div class="mt-8 border-t pt-6">
                     {{-- USER: Tombol WhatsApp --}}
                     @php
@@ -293,8 +293,9 @@
             {{-- if status_payment = success && status = shipment --}}
             {{-- Add Tabel Detail Pengiriman | isinya After Paid yang telah diisi oleh Admin --}}
             {{-- USER: Detail Pengiriman --}}
-            @if ($order->payment?->status === 'PAID' && $order->status === OrderStatus::Shipment->value)
-                {{-- @if ($order->status === 'Paid') --}}
+            {{-- @dd($order->status->value, '', OrderStatus::Pending->value) --}}
+            @if ($order->payment?->status === 'PAID' && $order->status->value === OrderStatus::Shipment->value)
+                {{-- @if ($order->status->value === 'Paid') --}}
                 <div class="mt-8 border-t pt-6">
                     <h3 class="mb-2 text-lg font-semibold">Detail Pengiriman</h3>
 
@@ -392,27 +393,27 @@
                 </div>
             --}}
 
-            @if ($order->status === OrderStatus::Pending->value)
-                <div class="mt-4 flex justify-end space-x-2">
-                    {{-- Tombol Batalkan --}}
-                    <form action="{{ route('orders.orderReversal', $order) }}" method="POST">
-                        @csrf
-                        @method('PATCH')
-                        <button
-                            type="button"
-                            class="rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700"
-                            onclick="confirmAction(this.form, 'Yakin batalkan pesanan ini?')"
-                        >
-                            Batalkan Pesanan
-                        </button>
-                    </form>
-
-                    {{-- Tombol Lakukan Pembayaran --}}
-                    <button id="pay-button" class="rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700">
-                        Lakukan Pembayaran
+            {{-- @if ($order->status->value === OrderStatus::Pending->value) --}}
+            <div class="mt-4 flex justify-end space-x-2">
+                {{-- Tombol Batalkan --}}
+                <form action="{{ route('orders.orderReversal', $order) }}" method="POST">
+                    @csrf
+                    @method('PATCH')
+                    <button
+                        type="button"
+                        class="rounded bg-red-600 px-4 py-2 text-white hover:bg-red-700"
+                        onclick="confirmAction(this.form, 'Yakin batalkan pesanan ini?')"
+                    >
+                        Batalkan Pesanan
                     </button>
-                </div>
-            @endif
+                </form>
+
+                {{-- Tombol Lakukan Pembayaran --}}
+                <button id="pay-button" class="rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700">
+                    Lakukan Pembayaran
+                </button>
+            </div>
+            {{-- @endif --}}
         </div>
     </div>
 </div>
@@ -474,4 +475,12 @@
             });
         });
     </script>
+
+    @if ($order->status->value === OrderStatus::Pending->value)
+        <script type="module">
+            window.addEventListener('load', function () {
+                document.getElementById('pay-button').click();
+            });
+        </script>
+    @endif
 @endpush
