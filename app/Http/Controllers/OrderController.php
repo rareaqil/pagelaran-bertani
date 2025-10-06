@@ -106,12 +106,18 @@ class OrderController extends Controller
         }
 
         $orders = Order::with(['user','voucher','items','payment'])
-            ->when($status, function ($query) use ($status) {
-                $query->where('status', $status);
-            })
-            ->orderBy($sort, $direction)
-            ->paginate($perPage, ['*'], 'page', $page)
-            ->withQueryString();
+        ->when($status, function ($query) use ($status) {
+            $query->where('status', $status);
+        })
+        ->when($sort === 'user.first_name', function ($query) use ($direction) {
+            $query->join('users', 'users.id', '=', 'orders.user_id')
+                ->orderBy('users.first_name', $direction)
+                ->select('orders.*'); // penting supaya tidak bentrok kolom
+        }, function ($query) use ($sort, $direction) {
+            $query->orderBy($sort, $direction);
+        })
+        ->paginate($perPage, ['*'], 'page', $page)
+        ->withQueryString();
 
         return view('backend.orders.index', compact('orders'));
     }
