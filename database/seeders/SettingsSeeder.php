@@ -10,7 +10,7 @@ class SettingsSeeder extends Seeder
 {
     public function run(): void
     {
-        // Cek dulu jika sudah ada
+        // Cek dulu jika sudah ada TEST
         if (!DB::table('settings')->where('key', 'admin_fee')->exists()) {
             DB::table('settings')->insert([
                 'key'        => 'admin_fee',
