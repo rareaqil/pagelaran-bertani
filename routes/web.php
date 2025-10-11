@@ -15,6 +15,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\FruitTypeController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\VoucherController;
@@ -24,7 +25,7 @@ use App\Http\Controllers\Admin\VoucherController;
 | Public Routes (Frontend)
 |--------------------------------------------------------------------------
 */
-Route::get('/', [ProductController::class, 'home'])->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/order-product', [OrderProductController::class, 'index'])->name('order.product');
 Route::get('/contact-us', [ContactController::class, 'index'])->name('contact.us');
 Route::get('/order-history', [OrderController::class, 'OrderHistory'])->name('order.history');

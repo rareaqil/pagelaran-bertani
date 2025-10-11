@@ -25,6 +25,110 @@
             </div>
         </div>
 
+        <!-- Tentang Kami -->
+        <div class="bg-white py-16">
+            <div class="max-w-6xl mx-auto px-6 md:px-12">
+                <!-- Judul -->
+                <h2 class="text-4xl font-extrabold text-center text-green-700 mb-6">
+                    Tentang Kami
+                </h2>
+                <p class="text-center text-gray-600 max-w-3xl mx-auto mb-12">
+                    Dari desa sejuk di Malang, kami menanam bukan hanya buah, tetapi juga harapan dan masa depan pertanian
+                    Indonesia.
+                </p>
+
+                <!-- Bagian Deskripsi -->
+                <div class="space-y-8 text-gray-700 leading-relaxed">
+                    <p>
+                        <span class="font-semibold text-green-700">CV Pagelaran Bertani</span> lahir dari semangat gotong
+                        royong dan cita-cita besar untuk membangun pertanian berkelanjutan di Indonesia.
+                        Berdiri sejak <span class="font-semibold text-amber-600">tahun 2023</span>, dua kakak beradik yang
+                        tumbuh di desa berhawa sejuk di Malang, Jawa Timur,
+                        berkolaborasi membangun usaha pertanian yang tidak sekadar berorientasi pada hasil, tetapi juga pada
+                        <span class="italic">nilai, keberlanjutan, dan kesejahteraan bersama.</span>
+                    </p>
+
+                    <div class="border-l-4 border-amber-500 pl-4 italic text-gray-600">
+                        “Pertanian bagi kami bukan hanya tentang tanam dan panen, tetapi tentang membangun ekosistem yang
+                        sehat, kompetitif, dan terpercaya.”
+                    </div>
+
+                    <p>
+                        Kami memilih <span class="font-semibold text-amber-600">melon premium</span> sebagai fokus utama
+                        bukan karena tren,
+                        melainkan karena maknanya yang mendalam. Melon bagi kami adalah simbol keseimbangan—antara sains dan
+                        seni bercocok tanam,
+                        antara kerja keras dan hasil manis yang dinikmati bersama.
+                        Melalui praktik <span class="font-semibold">Good Agricultural Practices</span> di sistem <span
+                            class="italic">screen house</span>,
+                        kami menjaga kualitas buah sekaligus keberlanjutan lingkungan.
+                    </p>
+
+                    <p>
+                        Dengan semangat gotong royong, kami berkomitmen menciptakan rantai pasok buah premium yang memberi
+                        manfaat bagi semua pihak—petani, konsumen, dan mitra usaha.
+                        Visi kami adalah menjadi penyedia buah segar unggulan yang tumbuh dari desa, untuk kemajuan
+                        pertanian nasional.
+                    </p>
+                </div>
+
+                <!-- Misi -->
+                <div class="mt-12">
+                    <h3 class="text-2xl font-bold text-green-700 mb-4">Visi & Misi Kami</h3>
+                    <ul class="list-disc pl-6 space-y-2 text-gray-700">
+                        <li>Menerapkan praktik budidaya yang baik dan berkelanjutan.</li>
+                        <li>Menghadirkan produk melon premium berkualitas tinggi seperti <span
+                                class="font-semibold">Inthanon, Honey Globe, The Blues</span>, serta inovasi baru yaitu
+                            <span class="italic">Melon Premium Typical Negeri Ginseng</span>.</li>
+                        <li>Mendorong kesejahteraan petani lokal melalui kolaborasi dan pemberdayaan.</li>
+                        <li>Menjadi bagian dari gerakan pertanian yang lebih hijau, sehat, dan berdaya saing.</li>
+                    </ul>
+                </div>
+
+                <!-- Profil Pendiri -->
+                <div class="mt-16">
+                    <h3 class="text-2xl font-bold text-green-700 mb-8 text-center">Profil Pendiri</h3>
+                    <div class="grid md:grid-cols-2 gap-10">
+                        <!-- Founder -->
+                        <div class="bg-gray-50 p-6 rounded-xl shadow hover:shadow-lg transition">
+                            <h4 class="text-xl font-semibold text-amber-600">Handono Rakhmadi</h4>
+                            <p class="text-gray-600 mb-2">Founder</p>
+                            <p>
+                                Lahir pada Juni 1986, lulusan <span class="font-medium">S1 Teknik Kimia - Institut Teknologi
+                                    Sepuluh Nopember (ITS)</span> Surabaya.
+                                Berpengalaman di industri pupuk dan riset teknologi pertanian presisi, Handono membawa
+                                pendekatan ilmiah dan inovatif dalam setiap aspek budidaya.
+                            </p>
+                        </div>
+
+                        <!-- Co-Founder -->
+                        <div class="bg-gray-50 p-6 rounded-xl shadow hover:shadow-lg transition">
+                            <h4 class="text-xl font-semibold text-amber-600">Bagus Darnan Satriawan</h4>
+                            <p class="text-gray-600 mb-2">Co-Founder</p>
+                            <p>
+                                Lahir pada Agustus 1982, menempuh pendidikan <span class="font-medium">S1 dan S2 Ilmu Tanah
+                                    - Universitas Brawijaya</span>.
+                                Dengan keahliannya dalam manajemen tanah dan kesuburan lahan, Bagus berperan penting dalam
+                                pengembangan praktik budidaya melon yang efisien dan ramah lingkungan.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Penutup -->
+                <div class="text-center mt-16">
+                    <p class="text-gray-700 text-lg max-w-2xl mx-auto italic">
+                        “Kami percaya, dari desa kecil di Malang inilah, kami dapat menanam harapan besar bagi masa depan
+                        pertanian Indonesia.”
+                    </p>
+                    <p class="text-amber-600 font-semibold mt-4">
+                        Selamat datang di <span class="text-green-700">Pagelaran Bertani</span> — tempat di mana rasa, ilmu,
+                        dan kerja keras tumbuh menjadi kesejahteraan bersama.
+                    </p>
+                </div>
+            </div>
+        </div>
+
         <!-- Produk -->
         <div class="bg-green-600 py-12">
             <div class="max-w-7xl mx-auto px-6 md:px-20">
