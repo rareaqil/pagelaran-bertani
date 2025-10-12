@@ -15,7 +15,7 @@
         {{-- ============= USER DETAILS ============= --}}
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-                <x-input-label for="first_name" :value="__('Nama Awal')" />
+                <x-input-label for="first_name" required :value="__('Nama Awal')" />
                 <x-text-input
                     id="first_name"
                     name="first_name"
@@ -27,7 +27,7 @@
                 <x-input-error class="mt-2" :messages="$errors->get('first_name')" />
             </div>
             <div>
-                <x-input-label for="last_name" :value="__('Nama Terakhir')" />
+                <x-input-label for="last_name" required :value="__('Nama Terakhir')" />
                 <x-text-input
                     id="last_name"
                     name="last_name"
@@ -42,7 +42,7 @@
 
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-                <x-input-label for="email" :value="__('Email')" />
+                <x-input-label for="email" required :value="__('Email')" />
                 <x-text-input
                     id="email"
                     name="email"
@@ -54,7 +54,7 @@
                 <x-input-error class="mt-2" :messages="$errors->get('email')" />
             </div>
             <div>
-                <x-input-label for="phone" :value="__('No Telp')" />
+                <x-input-label for="phone" required :value="__('No Telp')" />
                 <x-text-input
                     id="phone"
                     name="phone"
@@ -65,7 +65,7 @@
                 <x-input-error class="mt-2" :messages="$errors->get('phone')" />
             </div>
             <div>
-                <x-input-label for="age" :value="__('Umur')" required />
+                <x-input-label for="age" required :value="__('Umur')" required />
                 <x-text-input
                     id="age"
                     name="age"
@@ -84,7 +84,7 @@
 
         <div class="grid grid-cols-1 gap-4">
             <div>
-                <x-input-label for="address1" :value="__('Alamat Rumah (Pengiriman)')" />
+                <x-input-label for="address1" required :value="__('Alamat Rumah (Pengiriman)')" />
                 <x-text-input
                     id="address1"
                     name="address1"
@@ -98,7 +98,7 @@
 
         <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
             <div>
-                <x-input-label for="province_id" :value="__('Provinsi')" />
+                <x-input-label for="province_id" required :value="__('Provinsi')" />
                 <select
                     id="province_id"
                     name="province_id"
@@ -108,7 +108,7 @@
             </div>
 
             <div>
-                <x-input-label for="regency_id" :value="__('Kab / Kota')" />
+                <x-input-label for="regency_id" required :value="__('Kab / Kota')" />
                 <select
                     id="regency_id"
                     name="regency_id"
@@ -118,7 +118,7 @@
             </div>
 
             <div>
-                <x-input-label for="district_id" :value="__('Kecamatan')" />
+                <x-input-label for="district_id" required :value="__('Kecamatan')" />
                 <select
                     id="district_id"
                     name="district_id"
@@ -128,7 +128,7 @@
             </div>
 
             <div>
-                <x-input-label for="village_id" :value="__('Kelurahan')" />
+                <x-input-label for="village_id" required :value="__('Kelurahan')" />
                 <select
                     id="village_id"
                     name="village_id"
@@ -140,7 +140,7 @@
 
         <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-                <x-input-label for="postcode" :value="__('Kode Pos')" />
+                <x-input-label for="postcode" required :value="__('Kode Pos')" />
                 <x-text-input
                     id="postcode"
                     name="postcode"
