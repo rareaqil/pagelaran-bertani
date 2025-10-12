@@ -145,6 +145,7 @@ class PaymentController extends Controller
         }
 
         $status = $midtrans->mapStatus($notif);
+        $stockMovementCtrl = new StockMovementController();
 
          Log::info('Midtrans mapped status', [
         'order_id' => $notif->order_id,
