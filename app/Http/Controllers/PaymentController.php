@@ -171,6 +171,7 @@ class PaymentController extends Controller
                     foreach($holdMovements as $hold) {
                         $stockMovementCtrl->confirmPayment($hold->id);
                     }
+                    Log::info('✅ Payment SUCCESS Triggered Logic');
                 }
                 break;
 
@@ -184,6 +185,7 @@ class PaymentController extends Controller
                         ['order_id' => $order->id],
                         ['status' => 'PENDING', 'transaction_id' => $notif->transaction_id]
                     );
+                    Log::info('⏳ Payment PENDING Triggered Logic');
                 }
                 break;
 
@@ -201,11 +203,12 @@ class PaymentController extends Controller
                     foreach($holdMovements as $hold) {
                         $stockMovementCtrl->cancelHold($hold->id);
                     }
+                    Log::info('🛑 Payment FAILED/CANCELED Triggered Logic');
                 }
                 break;
         }
 
-
+        Log::info('🎉 Callback Processed Successfully', ['order_id' => $notif->order_id]);
         return response()->json(['success' => true]);
     }
 
