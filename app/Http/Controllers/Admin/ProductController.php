@@ -32,16 +32,6 @@ class ProductController extends Controller
         return view('backend.products.index', compact('products'));
     }
 
-    public function home()
-    {
-        $products = Product::where('status_active', 1)
-            ->orderBy('id', 'desc')
-            ->take(4)
-            ->get();
-
-        return view('frontend.home', compact('products'));
-    }
-
     public function create()
     {
         $fruits = FruitType::where('is_active', 1)->get();
