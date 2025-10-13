@@ -1,5 +1,10 @@
 @extends('frontend.layouts.main')
 
+@section('styles')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+@endsection
+
+
 @section('content')
     {{-- Hero Section --}}
     <section class="relative h-[500px] bg-cover bg-center flex items-center"
@@ -144,76 +149,116 @@
 
     {{-- Testimoni Section --}}
     <section class="py-16 px-6 md:px-20 bg-white" x-data="{ openModal: false }">
-        <h2 class="text-xl md:text-2xl font-bold text-amber-500 mb-8">Testimoni Pelanggan</h2>
+        <h2 class="text-2xl md:text-3xl font-bold text-amber-500 mb-12 text-center">Testimoni Pelanggan</h2>
 
         @if ($testimonials->isNotEmpty())
-            <!-- Grid testimoni singkat -->
-            <div class="grid md:grid-cols-4 gap-8">
-                @foreach ($testimonials->take(4) as $testimonial)
-                    <div class="bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden">
-                        <img src="{{ $testimonial->product?->image ? asset($testimonial->product->image) : asset('/images/default.jpg') }}"
-                            alt="{{ $testimonial->product?->name ?? 'Produk Tidak Dikenal' }}"
-                            class="w-full h-48 object-cover">
+            <!-- Slider testimonial -->
+            <div class="swiper mySwiper mb-8">
+                <div class="swiper-wrapper">
+                    @foreach ($testimonials->take($take) as $testimonial)
+                        @php
+                            $images = explode(',', $testimonial->product?->image ?? '');
+                            $firstImage = trim($images[0] ?? '');
+                        @endphp
+                        <div class="swiper-slide">
+                            <div
+                                class="bg-white rounded-lg shadow-md hover:shadow-xl transition overflow-hidden group flex flex-col">
+                                <div class="relative h-48">
+                                    <img src="{{ $firstImage ?: asset('/images/default.jpg') }}"
+                                        alt="{{ $testimonial->product?->name ?? 'Produk Tidak Dikenal' }}"
+                                        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
+                                    <div
+                                        class="absolute top-2 left-2 bg-amber-500 text-white text-xs font-semibold px-2 py-1 rounded">
+                                        {{ $testimonial->product?->name ?? 'Produk' }}
+                                    </div>
+                                </div>
 
-                        <div class="bg-green-600 p-4 text-white">
-                            <p class="font-semibold">{{ $testimonial->user?->name ?? 'Anonim' }}</p>
-                            <p class="text-xs">
-                                {{ optional($testimonial->created_at)->format('d M Y') ?? 'Tanggal tidak diketahui' }}
-                            </p>
-                            <p class="mt-2 text-sm">
-                                {{ $testimonial->comment ?: 'Belum ada komentar yang diberikan.' }}
-                            </p>
+                                <div class="p-4 flex-1 flex flex-col">
+                                    <p class="font-semibold text-gray-800">{{ $testimonial->user?->full_name }}</p>
+                                    <p class="text-xs text-gray-500">
+                                        {{ optional($testimonial->created_at)->format('d M Y') ?? 'Tanggal tidak diketahui' }}
+                                    </p>
+
+                                    <div class="mt-2 flex items-center">
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            <svg class="w-4 h-4 @if ($i <= $testimonial->rating) text-yellow-400 @else text-gray-300 @endif"
+                                                fill="currentColor" viewBox="0 0 20 20">
+                                                <path
+                                                    d="M10 15l-5.878 3.09 1.123-6.545L.49 6.91l6.561-.955L10 0l2.949 5.955 6.561.955-4.755 4.635 1.123 6.545z" />
+                                            </svg>
+                                        @endfor
+                                    </div>
+
+                                    <p class="mt-2 text-gray-700 text-sm flex-1">
+                                        {{ $testimonial->comment ?: 'Belum ada komentar yang diberikan.' }}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                @endforeach
-            </div>
-
-            <!-- Button -->
-            @if ($testimonials->count() > 4)
-                <div class="mt-10 text-center">
-                    <button @click="openModal = true"
-                        class="bg-amber-500 text-white px-6 py-2 rounded shadow hover:bg-amber-600 hover:scale-105 transform transition duration-200 inline-block">
-                        See More
-                    </button>
+                    @endforeach
                 </div>
-            @endif
-        @else
-            <h1 class="text-lg text-center text-gray-500">Belum ada testimoni dari pelanggan.</h1>
+
+                <!-- Pagination -->
+                <div class="swiper-pagination mt-4"></div>
+
+                <!-- See More Button -->
+                @if ($testimonials->count() > $take)
+                    <div class="mt-10 text-center">
+                        <button @click="openModal = true"
+                            class="bg-amber-500 text-white px-6 py-2 rounded shadow hover:bg-amber-600 hover:scale-105 transform transition duration-200">
+                            See More
+                        </button>
+                    </div>
+                @endif
+            @else
+                <h1 class="text-lg text-center text-gray-500">Belum ada testimoni dari pelanggan.</h1>
         @endif
 
         <!-- Modal -->
         <div x-show="openModal" x-transition class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
             x-cloak>
             <div
-                class="bg-white w-11/12 md:w-3/4 lg:w-2/3 xl:w-1/2 rounded-lg shadow-lg overflow-y-auto max-h-[80vh] relative">
+                class="bg-white w-11/12 md:w-3/4 lg:w-2/3 xl:w-1/2 rounded-lg shadow-lg overflow-y-auto max-h-[80vh] relative p-6">
                 <!-- Close button -->
-                <button @click="openModal = false" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
+                <button @click="openModal = false"
+                    class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-lg font-bold">
                     ✕
                 </button>
 
-                <div class="p-6">
-                    <h3 class="text-lg font-bold text-amber-500 mb-4">Semua Testimoni</h3>
-                    @if ($testimonials->isNotEmpty())
-                        <div class="grid md:grid-cols-2 gap-6">
-                            @foreach ($testimonials as $testimonial)
-                                <div class="bg-green-600 p-4 text-white rounded-lg">
-                                    <p class="font-semibold">{{ $testimonial->user?->name ?? 'Anonim' }}</p>
-                                    <p class="text-xs">
-                                        {{ optional($testimonial->created_at)->format('d M Y') ?? 'Tanggal tidak diketahui' }}
-                                    </p>
-                                    <p class="mt-2 text-sm">
-                                        {{ $testimonial->comment ?: 'Belum ada komentar yang diberikan.' }}
-                                    </p>
+                <h3 class="text-xl font-bold text-amber-500 mb-6 text-center">Semua Testimoni</h3>
+
+                @if ($testimonials->isNotEmpty())
+                    <div class="grid md:grid-cols-2 gap-6">
+                        @foreach ($testimonials as $testimonial)
+                            <div class="bg-green-600 p-5 text-white rounded-lg shadow-md hover:shadow-lg transition">
+                                <p class="font-semibold text-lg">{{ $testimonial->user?->full_name }}</p>
+                                <p class="text-sm text-gray-200 mb-2">
+                                    {{ $testimonial->product?->name ?? 'Produk' }} •
+                                    {{ optional($testimonial->created_at)->format('d M Y') ?? 'Tanggal tidak diketahui' }}
+                                </p>
+
+                                {{-- Rating --}}
+                                <div class="flex items-center mb-2">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        <svg class="w-4 h-4 @if ($i <= $testimonial->rating) text-yellow-400 @else text-gray-300 @endif"
+                                            fill="currentColor" viewBox="0 0 20 20">
+                                            <path
+                                                d="M10 15l-5.878 3.09 1.123-6.545L.49 6.91l6.561-.955L10 0l2.949 5.955 6.561.955-4.755 4.635 1.123 6.545z" />
+                                        </svg>
+                                    @endfor
                                 </div>
-                            @endforeach
-                        </div>
-                    @else
-                        <p class="text-center text-gray-600">Belum ada testimoni untuk ditampilkan.</p>
-                    @endif
-                </div>
+
+                                <p class="text-sm">{{ $testimonial->comment ?: 'Belum ada komentar yang diberikan.' }}</p>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <p class="text-center text-gray-600">Belum ada testimoni untuk ditampilkan.</p>
+                @endif
             </div>
         </div>
     </section>
+
 
     {{-- Footer Section --}}
     <footer class="bg-green-600 text-white p-4">
@@ -287,4 +332,50 @@
     [x-cloak] {
         display: none !important;
     }
+
+    .mySwiper {
+        padding-bottom: 2.5rem !important;
+        /* setara pb-10 */
+    }
+
+    .swiper-pagination-bullet {
+        background-color: #f59e0b;
+        /* amber-500 */
+        opacity: 1;
+        /* default opacity biasanya 0.2 */
+    }
+
+    .swiper-pagination-bullet-active {
+        background-color: rgb(22, 163, 74) !important;
+        /* amber-700 misal */
+    }
 </style>
+
+@section('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <script>
+        var swiper = new Swiper(".mySwiper", {
+            slidesPerView: 1,
+            spaceBetween: 20,
+            // loop: true,
+            // loopedSlides: testimonialsCount,
+            autoHeight: true,
+            autoplay: {
+                delay: 3000,
+                disableOnInteraction: false
+            },
+            breakpoints: {
+                640: {
+                    slidesPerView: 2
+                },
+                1024: {
+                    slidesPerView: 4
+                }
+            },
+            pagination: {
+                el: ".swiper-pagination",
+                clickable: true,
+            },
+        });
+    </script>
+@endsection

@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Product;
-use App\Models\Testimonial;
 use App\Models\Setting;
+use App\Models\Testimonial;
 
 class HomeController extends Controller
 {
@@ -19,13 +18,23 @@ class HomeController extends Controller
             ->take(4)
             ->get();
 
-        $testimonials = Testimonial::with(['user', 'product'])
+        $allTestimonials = Testimonial::with(['user', 'product'])
             ->where('is_approved', true)
-            ->latest()
+            ->orderBy('rating', 'desc')
             ->get();
+
+        $take = 8;
+
+        $uniqueTestimonials = $allTestimonials->unique('product_id')->take($take);
+
+        // Sisanya tetap dipakai untuk modal See More
+        $remainingTestimonials = $allTestimonials->diff($uniqueTestimonials);
+
+        // Gabungkan supaya modal tetap menampilkan semua
+        $testimonials = $uniqueTestimonials->concat($remainingTestimonials);
 
         $email = Setting::where('key', 'contact_email')->value('value');
 
-        return view('frontend.home', compact('products', 'testimonials', 'email'));
+        return view('frontend.home', compact('products', 'testimonials', 'email', 'take'));
     }
 }

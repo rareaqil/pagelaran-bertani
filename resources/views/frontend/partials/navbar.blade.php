@@ -68,6 +68,11 @@
                     <ul x-cloak x-show="dropdown" @click.away="dropdown = false" x-transition
                         class="absolute right-0 mt-2 w-40 bg-white text-gray-700 shadow-lg rounded-lg py-2 z-50">
                         <li>
+                            <a href="{{ route('dashboard') }}" class="block px-4 py-2 hover:bg-gray-100">
+                                <i class="fa fa-tachometer-alt mr-2"></i> Dashboard
+                            </a>
+                        </li>
+                        <li>
                             <a href="{{ route('profile.edit') }}" class="block px-4 py-2 hover:bg-gray-100">
                                 <i class="fa fa-user-circle mr-2"></i> Profile
                             </a>
@@ -122,7 +127,15 @@
                 class="block hover:text-white {{ request()->is('login') ? 'underline text-white' : '' }}">Login</a>
         @else
             <div class="border-t border-green-500 pt-3">
-                <p class="font-semibold">{{ auth()->user()->first_name }}</p>
+                <p class="font-semibold mb-2">{{ auth()->user()->first_name }}</p>
+                @auth
+                    @if (auth()->user()->role !== 'user')
+                        <a href="{{ route('dashboard') }}"
+                            class="block hover:text-white {{ request()->is('backend/dashboard') ? 'underline text-white' : '' }}">
+                            Dashboard
+                        </a>
+                    @endif
+                @endauth
                 <a href="{{ route('profile.edit') }}" class="block hover:text-white mt-1">Profile</a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
