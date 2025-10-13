@@ -23,9 +23,7 @@ class User extends Authenticatable
     //     'password',
     // ];
 
-     protected $guarded = ['id', 'created_at', 'updated_at'];
-
-
+    protected $guarded = ['id', 'created_at', 'updated_at'];
 
     // Relasi ke alamat
     public function addresses()
@@ -44,6 +42,10 @@ class User extends Authenticatable
         return $this->role === 'admin';
     }
 
+    public function getFullNameAttribute()
+    {
+        return trim("{$this->first_name} {$this->last_name}") ?: 'Anonim';
+    }
 
     /**
      * The attributes that should be hidden for serialization.

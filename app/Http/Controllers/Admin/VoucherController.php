@@ -29,7 +29,7 @@ class VoucherController extends Controller
                 'min:0',
                 Rule::when($request->type === 'percentage', ['max:100']),
             ],
-            'min_order_amount' => 'nullable|numeric|min:0',
+            'min_order_amount' => 'required|numeric|min:0',
             'max_usage' => 'nullable|integer|min:0',
             'start_date' => 'required|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
@@ -38,16 +38,16 @@ class VoucherController extends Controller
 
         $data = array_merge($validated, [
             'is_active' => $request->boolean('is_active', true),
-            'used_count' => $id ? null : 0,
         ]);
 
-        if ($id) {
+        if (!$id) {
+            $data['used_count'] = 0; // hanya buat voucher baru
+            $voucher = Voucher::create($data);
+            $message = 'Voucher baru berhasil dibuat.';
+        } else {
             $voucher = Voucher::findOrFail($id);
             $voucher->update($data);
             $message = 'Voucher berhasil diperbarui.';
-        } else {
-            $voucher = Voucher::create($data);
-            $message = 'Voucher baru berhasil dibuat.';
         }
 
         // pastikan JSON selalu lengkap (tidak ada undefined)
@@ -68,6 +68,26 @@ class VoucherController extends Controller
             ],
         ]);
     }
+
+    public function show(Voucher $voucher)
+{
+    return response()->json([
+        'success' => true,
+        'data' => [
+            'id' => $voucher->id,
+            'code' => $voucher->code,
+            'type' => $voucher->type,
+            'value' => $voucher->value,
+            'min_order_amount' => $voucher->min_order_amount,
+            'max_usage' => $voucher->max_usage,
+            'used_count' => $voucher->used_count,
+            'start_date' => optional($voucher->start_date)->format('Y-m-d H:i:s'),
+            'end_date' => optional($voucher->end_date)->format('Y-m-d H:i:s'),
+            'is_active' => $voucher->is_active,
+        ],
+    ]);
+}
+
 
     public function toggle(Voucher $voucher)
     {
