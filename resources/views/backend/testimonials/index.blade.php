@@ -29,7 +29,7 @@
                         <tr data-id="{{ $t->id }}"
                             class="hover:bg-gray-50 md:table-row block border rounded-md mb-3 p-3 md:p-0 md:border-0">
                             <td class="px-3 py-2 md:table-cell block">{{ $loop->iteration }}</td>
-                            <td class="px-3 py-2 md:table-cell block">{{ $t->user->name ?? '—' }}</td>
+                            <td class="px-3 py-2 md:table-cell block">{{ $t->user->full_name ?? '—' }}</td>
                             <td class="px-3 py-2 md:table-cell block"><span
                                     class="inline-block bg-gray-100 text-gray-800 text-xs rounded-full px-2 py-0.5">{{ $t->product->name ?? '—' }}</span>
                             </td>
@@ -75,7 +75,7 @@
                         <select id="user_id" name="user_id" class="w-full rounded-md border-gray-300 mt-1">
                             <option value="">-- Pilih User --</option>
                             @foreach ($users as $u)
-                                <option value="{{ $u->id }}">{{ $u->name }} ({{ $u->email }})
+                                <option value="{{ $u->id }}">{{ $u->full_name }} ({{ $u->email }})
                                 </option>
                             @endforeach
                         </select>
@@ -239,7 +239,7 @@
                             const el = $(`#${field}`);
                             el.after(
                                 `<div class="text-red-600 text-sm input-error-message">${errors[field][0]}</div>`
-                                );
+                            );
                         }
                     } else {
                         Swal.fire('Error', 'Terjadi kesalahan!', 'error');
