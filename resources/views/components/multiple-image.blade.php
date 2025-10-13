@@ -3,6 +3,7 @@
     'label' => 'Gambar Produk',
     'value' => '',
     'max' => 5,
+    'required' => false,
 ])
 
 @php
@@ -12,7 +13,11 @@
 @endphp
 
 <div class="space-y-2">
-    <x-input-label :for="$name" :value="$label" />
+    @if ($required)
+        <x-input-label required  :for="$name" :value="$label" />
+    @else
+        <x-input-label   :for="$name" :value="$label" />
+    @endif
 
     <div class="flex gap-2">
         <input

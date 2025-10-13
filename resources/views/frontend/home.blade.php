@@ -18,26 +18,32 @@
     </section>
 
     {{-- About Section --}}
-    <section class="py-16 px-6 md:px-20 grid md:grid-cols-3 gap-10 items-center">
+    <section class="py-16 px-6 md:px-20 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
         <!-- Kiri (teks) -->
-        <div class="md:col-span-2">
-            <h2 class="text-2xl font-bold text-amber-500 uppercase">Pagelaran Bertani</h2>
-            <p class="mt-4 w-[600px] text-green-700 leading-relaxed">
-                Pagelaran Bertani menghadirkan agribisnis berbasis kualitas dengan fokus pada budidaya dan penjualan
-                buah segar. Kami menyediakan melon premium (Inthanon, Honey Globe, dan 2 varietas unggul lainnya)
-                serta jeruk pilihan (Siem Madu dan Siem Keprok) yang dikenal dengan rasa manis, bentuk sempurna, dan
-                kualitas lebih baik dibandingkan pasaran.
+        <div class="text-center md:text-left">
+            <h2 class="text-2xl md:text-3xl font-bold text-amber-500 uppercase">
+                Pagelaran Bertani
+            </h2>
+            <p class="mt-4 text-green-700 leading-relaxed max-w-xl mx-auto md:mx-0">
+                Kami memilih <span class="font-semibold text-amber-600">melon premium</span> sebagai fokus utama
+                bukan karena tren,
+                melainkan karena maknanya yang mendalam. Melon bagi kami adalah simbol keseimbangan—antara sains dan
+                seni bercocok tanam,
+                antara kerja keras dan hasil manis yang dinikmati bersama.
+                Melalui praktik <span class="font-semibold">Good Agricultural Practices</span> di sistem <span
+                    class="italic">screen house</span>,
+                kami menjaga kualitas buah sekaligus keberlanjutan lingkungan.
             </p>
             <a href="/learn"
-                class="mt-6 inline-block bg-amber-500 text-white px-5 py-2 rounded shadow hover:bg-amber-600 transition">
+                class="mt-6 inline-block bg-amber-500 text-white px-6 py-2 rounded-lg shadow hover:bg-amber-600 transition">
                 Learn More
             </a>
         </div>
 
         <!-- Kanan (gambar) -->
-        <div class="w-full h-[350px] [perspective:1000px]">
+        <div class="w-full h-[280px] sm:h-[320px] md:h-[350px] [perspective:1000px] flex justify-center md:justify-end">
             <div
-                class="relative w-full h-full transition-transform duration-500 transform group-hover:rotate-y-6 group-hover:-rotate-x-3 group-hover:scale-105 group-hover:shadow-2xl rounded-lg group">
+                class="relative w-full max-w-md h-full transition-transform duration-500 transform group-hover:rotate-y-6 group-hover:-rotate-x-3 group-hover:scale-105 group-hover:shadow-2xl rounded-lg group">
                 <img src="{{ asset('media/Photo_Melon/GH2/Inthanon Jelang Panen.jpg') }}" alt="Melon Segar"
                     class="w-full h-full object-cover rounded-lg shadow-lg transition duration-300 transform hover:-translate-y-2 hover:shadow-2xl">
             </div>
@@ -45,24 +51,34 @@
     </section>
 
     {{-- Product Section --}}
-    <section class="py-16 px-6 md:px-20 bg-green-600" x-data="{ openModal: false, product: {} }">
-        <h2 class="text-xl md:text-2xl font-bold text-amber-500 mb-8">Belanja Buah Segar Musim Ini</h2>
+    <section class="py-16 px-6 md:px-20 bg-green-600" x-data="{ openModal: false, product: {}, images: [] }">
 
-        <!-- Grid Product -->
-        <div class="grid md:grid-cols-4 gap-8">
+        <h2 class="text-xl md:text-2xl font-bold text-amber-500 mb-8">
+            Belanja Buah Segar Musim Ini
+        </h2>
+
+        <!-- Grid Produk -->
+        <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             @forelse($products as $product)
-                <div @click="openModal = true; product = {
-                    name: '{{ $product->name }}',
-                    description: '{{ $product->description }}',
-                    price: '{{ number_format($product->price, 0, ',', '.') }}',
-                    image: '{{ asset('storage/' . str_replace(' ', '%20', $product->image)) }}',
-                    weight: '{{ $product->weight }}',
-                    sku: '{{ $product->sku }}',
-                    stock: '{{ $product->stock }}'
-                }"
+                @php
+                    // Ambil array URL gambar dari field image
+                    $images = explode(',', $product->image);
+                    $firstImage = trim($images[0] ?? '');
+                @endphp
+
+                <div @click="openModal = true;
+                        product = {
+                            name: '{{ $product->name }}',
+                            description: '{{ $product->description }}',
+                            price: '{{ number_format($product->price, 0, ',', '.') }}',
+                            weight: '{{ $product->weight }}',
+                            sku: '{{ $product->sku }}',
+                            stock: '{{ $product->stock }}'
+                        };
+                        images = @js($images);
+                "
                     class="bg-white rounded-lg shadow-md hover:shadow-2xl transition transform hover:-translate-y-2 hover:scale-105 p-4 cursor-pointer">
-                    <img src="{{ $product->image }}" alt="{{ $product->name }}"
-                        class="w-full h-48 object-cover rounded-md">
+                    <img src="{{ $firstImage }}" alt="{{ $product->name }}" class="w-full h-48 object-cover rounded-md">
                     <h3 class="mt-4 text-lg font-semibold text-gray-800">{{ $product->name }}</h3>
                     <p class="text-gray-600">Rp {{ number_format($product->price, 0, ',', '.') }}/kg</p>
                 </div>
@@ -71,6 +87,7 @@
             @endforelse
         </div>
 
+        <!-- Tombol Order -->
         <div class="mt-10 text-center">
             <a href="/order-product"
                 class="bg-amber-500 text-white px-6 py-2 rounded shadow hover:bg-amber-600 hover:scale-105 transform transition duration-200 inline-block">
@@ -78,19 +95,35 @@
             </a>
         </div>
 
-        <!-- Modal Product (di luar grid, full screen) -->
+        <!-- Modal Produk -->
         <div x-show="openModal" x-transition x-cloak
-            class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto">
             <div class="bg-white w-11/12 md:w-3/4 lg:w-2/3 xl:w-1/2 rounded-lg shadow-lg relative p-6">
-                <!-- Close -->
+                <!-- Tombol Close -->
                 <button @click="openModal = false" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
                     ✕
                 </button>
 
-                <!-- Isi Modal -->
                 <div class="grid md:grid-cols-2 gap-6">
-                    <img src="{{ $product->image ?? '' }}" alt="{{ $product->name ?? '' }}"
-                        class="w-full h-64 object-cover">
+                    <!-- Gambar (carousel manual) -->
+                    <template x-if="images.length > 0">
+                        <div class="relative">
+                            <template x-for="(img, i) in images" :key="i">
+                                <img x-show="i === 0" :src="img.trim()" class="w-full h-64 object-cover rounded-md"
+                                    alt="Product Image">
+                            </template>
+
+                            <!-- Thumbnail list -->
+                            <div class="flex mt-4 gap-2 overflow-x-auto">
+                                <template x-for="(thumb, j) in images" :key="'thumb-' + j">
+                                    <img :src="thumb.trim()" @click="images.unshift(images.splice(j,1)[0])"
+                                        class="w-16 h-16 object-cover rounded cursor-pointer border-2 hover:border-amber-500 transition">
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- Detail Produk -->
                     <div>
                         <h3 class="text-2xl font-bold text-green-700" x-text="product.name"></h3>
                         <p class="text-gray-600 mt-2" x-text="'SKU: ' + product.sku"></p>

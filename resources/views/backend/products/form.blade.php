@@ -20,14 +20,14 @@
 
                 {{-- Nama Produk --}}
                 <div>
-                    <x-input-label for="name" :value="'Nama Produk'" />
+                    <x-input-label required for="name" :value="'Nama Produk'" />
                     <x-text-input
                         id="name"
                         name="name"
                         type="text"
                         class="mt-1 block w-full"
                         value="{{ old('name', $product->name ?? '') }}"
-                        required
+
                     />
                     <x-input-error class="mt-2" :messages="$errors->get('name')" />
                 </div>
@@ -50,15 +50,16 @@
                 <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                     {{-- Harga --}}
                     <div>
-                        <x-input-label for="price" :value="'Harga (Rp)'" />
+                        <x-input-label required for="price" :value="'Harga (Rp)'" />
                         <x-text-input
                             id="price"
                             name="price"
                             type="number"
-                            step="0.01"
+                            step="1"
+                            min="0"
                             class="mt-1 block w-full"
                             value="{{ old('price', $product->price ?? '') }}"
-                            required
+
                         />
                         <x-input-error class="mt-2" :messages="$errors->get('price')" />
                     </div>
@@ -152,7 +153,7 @@
 
                 {{-- Upload Gambar Produk --}}
 
-                <x-multiple-image name="image" :label="'Gambar Produk'" :value="$product->image ?? ''" :max="5" />
+                <x-multiple-image name="image" required :label="'Gambar Produk'" :value="$product->image ?? ''" :max="5" />
                 <div>
                     <x-primary-button>
                         {{ isset($product) ? 'Update' : 'Simpan' }}
