@@ -23,7 +23,9 @@ class HomeController extends Controller
             ->orderBy('rating', 'desc')
             ->get();
 
-        $uniqueTestimonials = $allTestimonials->unique('product_id')->take(4);
+        $take = 8;
+
+        $uniqueTestimonials = $allTestimonials->unique('product_id')->take($take);
 
         // Sisanya tetap dipakai untuk modal See More
         $remainingTestimonials = $allTestimonials->diff($uniqueTestimonials);
@@ -33,6 +35,6 @@ class HomeController extends Controller
 
         $email = Setting::where('key', 'contact_email')->value('value');
 
-        return view('frontend.home', compact('products', 'testimonials', 'email', 'uniqueTestimonials'));
+        return view('frontend.home', compact('products', 'testimonials', 'email', 'take'));
     }
 }
