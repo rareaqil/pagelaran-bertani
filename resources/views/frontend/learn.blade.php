@@ -4,23 +4,25 @@
     <div class="bg-white" x-data="{ filter: 'all', selected: null }">
         <!-- Hero -->
         <div class="max-w-7xl mx-auto px-6 py-12 grid md:grid-cols-2 gap-8 items-center">
-            <div>
-                <h2 class="text-xl md:text-6xl font-bold leading-snug">
+            <!-- Teks -->
+            <div class="text-center md:text-left">
+                <h2 class="text-3xl sm:text-4xl md:text-6xl font-bold leading-snug">
                     <span class="text-green-600">Kenali</span>
-                    <span class="text-amber-500"> Lebih Dekat</span><br>
-                    <span class="text-amber-500">Produk Unggulan Dari</span><br>
+                    <span class="text-amber-500"> Lebih Dekat</span><br class="hidden sm:block">
+                    <span class="text-amber-500">Produk Unggulan Dari</span><br class="hidden sm:block">
                     <span class="text-green-600">Kebun Kami</span>
                 </h2>
-                <p class="mt-4 text-amber-500 text-base leading-relaxed">
+                <p class="mt-4 text-amber-500 text-sm sm:text-base leading-relaxed max-w-md mx-auto md:mx-0">
                     Pagelaran Bertani menanam dengan teliti untuk menghadirkan melon dan jeruk segar, manis, dan
                     berkualitas.
                     Melon kami unggul dibanding pasaran dalam hal rasa, bentuk, dan kualitas.
                 </p>
             </div>
-            <div class="flex justify-end">
-                <img src="https://plus.unsplash.com/premium_photo-1678344177250-bfdbed89fc03?q=80&w=987&auto=format&fit=crop"
-                    alt="Kebun"
-                    class="rounded-xl w-[300px] h-[500px] object-cover shadow-xl 
+
+            <!-- Gambar -->
+            <div class="flex justify-center md:justify-end">
+                <img src="{{ asset('media/Photo_Melon/GH2/Inthanon Grade A-B-C.jpg') }}" alt="Kebun"
+                    class="rounded-xl w-[250px] sm:w-[300px] md:w-[400px] h-[350px] sm:h-[450px] md:h-[500px] object-cover shadow-xl
                    transition duration-300 transform hover:-translate-y-2 hover:shadow-2xl">
             </div>
         </div>
@@ -79,7 +81,8 @@
                         <li>Menerapkan praktik budidaya yang baik dan berkelanjutan.</li>
                         <li>Menghadirkan produk melon premium berkualitas tinggi seperti <span
                                 class="font-semibold">Inthanon, Honey Globe, The Blues</span>, serta inovasi baru yaitu
-                            <span class="italic">Melon Premium Typical Negeri Ginseng</span>.</li>
+                            <span class="italic">Melon Premium Typical Negeri Ginseng</span>.
+                        </li>
                         <li>Mendorong kesejahteraan petani lokal melalui kolaborasi dan pemberdayaan.</li>
                         <li>Menjadi bagian dari gerakan pertanian yang lebih hijau, sehat, dan berdaya saing.</li>
                     </ul>

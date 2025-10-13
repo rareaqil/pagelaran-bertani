@@ -73,7 +73,7 @@ class PostController extends Controller
     public function edit(Post $post)
     {
 
-        $fruits = FruitType::whereNull('deleted_at')->get();
+        $fruits = FruitType::where('is_active', 1)->get();
 
         return view('backend.posts.form', compact('post','fruits'));
     }

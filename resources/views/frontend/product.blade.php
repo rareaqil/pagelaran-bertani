@@ -6,6 +6,9 @@
         sort: 'asc',
         selectedProduct: null,
         products: @js($products),
+        openModal(product) {
+            this.selectedProduct = product;
+        },
         filteredAndSorted() {
             let items = this.filter === 'all' ?
                 this.products :
@@ -39,50 +42,62 @@
             </div>
         </div>
 
-        <!-- Grid Produk (pakai Alpine x-for, bukan Blade foreach) -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 overflow-y-auto max-h-[700px] pr-2">
+        <!-- Grid Produk -->
+        <div
+            class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 overflow-y-auto max-h-[80vh] pr-1 sm:pr-2">
             <template x-for="product in filteredAndSorted()" :key="product.id">
-                <div class="bg-orange-400 rounded-lg overflow-hidden flex flex-col hover:shadow-xl transition"
+                <div class="bg-orange-400 rounded-lg overflow-hidden flex flex-col hover:shadow-xl transition transform hover:-translate-y-1 hover:scale-[1.02] cursor-pointer"
                     @click="selectedProduct = product">
-
                     <!-- Gambar -->
-                    <img :src="product.image" :alt="product.name" class="h-48 w-full object-cover">
+                    <img :src="(product.image && product.image.includes(',')) ?
+                    product.image.split(',')[0].trim(): product.image"
+                        :alt="product.name" class="h-36 sm:h-44 md:h-48 w-full object-cover" loading="lazy">
 
                     <!-- Konten Card -->
-                    <div class="p-4 text-white flex-1 flex flex-col justify-between">
+                    <div class="p-3 sm:p-4 text-white flex-1 flex flex-col justify-between">
                         <div>
-                            <h4 class="font-semibold text-lg" x-text="product.name"></h4>
-                            <p class="text-sm">Rp <span x-text="Number(product.price).toLocaleString('id-ID')"></span> /Kg
+                            <h4 class="font-semibold text-base sm:text-lg truncate" x-text="product.name"></h4>
+                            <p class="text-xs sm:text-sm mt-1">
+                                Rp <span x-text="Number(product.price).toLocaleString('id-ID')"></span> /Kg
                             </p>
                         </div>
 
                         <!-- Form Qty + Add -->
-                        <!-- Form Qty + Add -->
-                        <div class="mt-3 flex items-center gap-2" @click.stop>
+                        <div class="mt-3 flex flex-wrap items-center gap-2" @click.stop>
                             @auth
-                                <button type="button" @click="changeQty(product.id, -1)"
-                                    class="rounded bg-gray-200 text-black px-2 py-1">-</button>
-                                <input type="number" :id="`qty-${product.id}`" value="1" min="1"
-                                    class="w-12 rounded border text-center text-black" readonly />
-                                <button type="button" @click="changeQty(product.id, 1)"
-                                    class="rounded bg-gray-200 text-black px-2 py-1">+</button>
+                                <!-- Tombol Quantity -->
+                                <div class="flex items-center gap-1">
+                                    <button type="button" @click="changeQty(product.id, -1)"
+                                        class="rounded bg-gray-200 text-black px-2 py-1 text-sm sm:text-base">−</button>
+                                    <input type="number" :id="`qty-${product.id}`" value="1" min="1"
+                                        class="w-10 sm:w-12 rounded border text-center text-black text-sm sm:text-base"
+                                        readonly />
+                                    <button type="button" @click="changeQty(product.id, 1)"
+                                        class="rounded bg-gray-200 text-black px-2 py-1 text-sm sm:text-base">+</button>
+                                </div>
+
+                                <!-- Tombol Add -->
                                 <button type="button" @click="addToCart(product.id)"
-                                    class="rounded bg-blue-600 px-3 py-1 text-white">Add</button>
-                                {{-- Info stok --}}
-                                <span class="text-sm text-gray-100 ml-2">
+                                    class="rounded bg-blue-600 px-3 sm:px-4 py-1 text-white text-sm sm:text-base font-medium">
+                                    Add
+                                </button>
+
+                                <span class="text-xs sm:text-sm text-gray-100 ml-auto block sm:inline">
                                     Stok: <span x-text="product.stock"></span>
                                 </span>
                             @endauth
 
                             @guest
                                 <button disabled
-                                    class="rounded bg-gray-300 text-gray-500 px-2 py-1 cursor-not-allowed">-</button>
+                                    class="rounded bg-gray-300 text-gray-500 px-2 py-1 text-xs sm:text-sm cursor-not-allowed">−</button>
                                 <input type="number" value="0" disabled
-                                    class="w-12 rounded border text-center text-gray-400 bg-gray-100" />
+                                    class="w-10 sm:w-12 rounded border text-center text-gray-400 bg-gray-100 text-xs sm:text-sm" />
                                 <button disabled
-                                    class="rounded bg-gray-300 text-gray-500 px-2 py-1 cursor-not-allowed">+</button>
-                                <button disabled class="rounded bg-gray-400 px-3 py-1 text-white cursor-not-allowed">Login
-                                    dulu</button>
+                                    class="rounded bg-gray-300 text-gray-500 px-2 py-1 text-xs sm:text-sm cursor-not-allowed">+</button>
+                                <button disabled
+                                    class="rounded bg-gray-400 px-3 sm:px-4 py-1 text-white cursor-not-allowed text-xs sm:text-sm">
+                                    Login dulu
+                                </button>
                             @endguest
                         </div>
                     </div>
@@ -90,35 +105,74 @@
             </template>
         </div>
 
-        <!-- Modal -->
-        <div x-show="selectedProduct" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50" x-transition>
-            <div class="bg-white rounded-xl max-w-lg w-full p-6 relative" @click.outside="selectedProduct = null">
-                <button class="absolute top-3 right-3 text-gray-500 hover:text-red-500"
-                    @click="selectedProduct = null">✖</button>
+        <!-- Modal Produk -->
+        <div x-show="selectedProduct"
+            class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-4 sm:px-6 md:px-0" x-transition>
+            <div class="bg-white rounded-2xl w-full max-w-lg md:max-w-2xl p-4 sm:p-6 relative overflow-y-auto max-h-[90vh]"
+                @click.outside="selectedProduct = null" x-data="{
+                    imgs: [],
+                    currentImage: '',
+                    init() {
+                        this.$watch('selectedProduct', (val) => {
+                            if (val && val.image) {
+                                this.imgs = val.image.split(',').map(i => i.trim());
+                                this.currentImage = this.imgs[0];
+                            }
+                        });
+                    }
+                }">
+                <!-- Close Button -->
+                <button class="absolute top-3 right-3 text-gray-500 hover:text-red-500 transition"
+                    @click="selectedProduct = null" aria-label="Tutup modal">
+                    ✖
+                </button>
 
-                <!-- Foto Produk -->
-                <img :src="selectedProduct.image" class="w-full h-64 object-cover rounded mb-4">
+                <!-- Gallery -->
+                <template x-if="selectedProduct && currentImage">
+                    <div>
+                        <!-- Main Image -->
+                        <img :src="currentImage"
+                            class="w-full max-h-[300px] sm:max-h-[400px] object-cover rounded-xl mb-4 shadow-md">
 
-                <!-- Info Produk -->
-                <h2 class="text-xl font-bold text-green-600" x-text="selectedProduct.name"></h2>
-                <p class="text-gray-700 mt-2" x-text="selectedProduct.description"></p>
+                        <!-- Thumbnail Row -->
+                        <div class="flex gap-2 mt-3 overflow-x-auto pb-2">
+                            <template x-for="(img, idx) in imgs" :key="idx">
+                                <img :src="img"
+                                    class="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg cursor-pointer border-2 flex-shrink-0 transition"
+                                    :class="currentImage === img ?
+                                        'border-amber-500 ring-2 ring-amber-300' :
+                                        'border-transparent hover:border-amber-400'"
+                                    @click="currentImage = img">
+                            </template>
+                        </div>
+                    </div>
+                </template>
 
-                <div class="mt-4 grid grid-cols-2 gap-3 text-sm">
-                    <p><span class="font-semibold">Harga:</span>
-                        <span x-text="'Rp ' + Number(selectedProduct.price).toLocaleString('id-ID')"></span>
-                    </p>
-                    <p><span class="font-semibold">Stok:</span>
-                        <span x-text="selectedProduct.stock"></span>
-                    </p>
-                    <p><span class="font-semibold">Berat:</span>
-                        <span x-text="selectedProduct.weight + ' kg'"></span>
-                    </p>
-                    <p><span class="font-semibold">SKU:</span>
-                        <span x-text="selectedProduct.sku"></span>
-                    </p>
-                    <p><span class="font-semibold">Jenis Buah:</span>
-                        <span x-text="selectedProduct.fruit_type?.name ?? '-'"></span>
-                    </p>
+                <!-- Product Info -->
+                <div class="mt-5">
+                    <h2 class="text-xl sm:text-2xl font-bold text-green-600 text-center sm:text-left"
+                        x-text="selectedProduct?.name"></h2>
+
+                    <p class="text-gray-700 mt-2 text-sm sm:text-base leading-relaxed"
+                        x-text="selectedProduct?.description"></p>
+
+                    <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm sm:text-base">
+                        <p><span class="font-semibold">Harga:</span>
+                            <span x-text="'Rp ' + Number(selectedProduct?.price).toLocaleString('id-ID')"></span>
+                        </p>
+                        <p><span class="font-semibold">Stok:</span>
+                            <span x-text="selectedProduct?.stock"></span>
+                        </p>
+                        <p><span class="font-semibold">Berat:</span>
+                            <span x-text="selectedProduct?.weight ? selectedProduct.weight + ' kg' : '-'"></span>
+                        </p>
+                        <p><span class="font-semibold">SKU:</span>
+                            <span x-text="selectedProduct?.sku ?? '-'"></span>
+                        </p>
+                        <p class="sm:col-span-2"><span class="font-semibold">Jenis Buah:</span>
+                            <span x-text="selectedProduct?.fruit_type?.name ?? '-'"></span>
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
