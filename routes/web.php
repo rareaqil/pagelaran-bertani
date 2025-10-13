@@ -131,6 +131,7 @@ Route::middleware(['auth', 'role:super_admin,admin'])
         // Testimonials
         Route::prefix('testimonials')->name('testimonials.')->group(function () {
             Route::get('/', [TestimonialController::class, 'index'])->name('index');
+            Route::get('/{testimonial}', [TestimonialController::class, 'show'])->name('show');
             Route::post('/store', [TestimonialController::class, 'store'])->name('store');
             Route::put('/{id}', [TestimonialController::class, 'store'])->name('update');
             Route::post('/{testimonial}/toggle', [TestimonialController::class, 'toggle'])->name('toggle');

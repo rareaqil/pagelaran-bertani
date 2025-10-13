@@ -17,12 +17,30 @@ class TestimonialController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // ambil product & user list untuk dropdown (simple)
         $products = Product::orderBy('name')->get();
         $users = User::orderBy('first_name')->get();
 
         return view('backend.testimonials.index', compact('testimonials', 'products', 'users'));
     }
+
+    public function show(Testimonial $testimonial)
+{
+    $testimonial->load(['user', 'product']);
+
+    return response()->json([
+        'data' => [
+            'id' => $testimonial->id,
+            'user_id' => $testimonial->user_id,
+            'user_name' => $testimonial->user->first_name ?? $testimonial->user->name ?? '-',
+            'product_id' => $testimonial->product_id,
+            'product_name' => $testimonial->product->name ?? '-',
+            'rating' => (int) $testimonial->rating,
+            'comment' => $testimonial->comment,
+            'is_approved' => (bool) $testimonial->is_approved,
+            'created_at' => $testimonial->created_at?->format('Y-m-d H:i:s'),
+        ]
+    ]);
+}
 
     /**
      * Create or Update (sama seperti gaya voucher controller: kalau id ada => update)
