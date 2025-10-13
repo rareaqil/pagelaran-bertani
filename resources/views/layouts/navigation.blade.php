@@ -28,10 +28,7 @@
                             <x-dropdown-link :href="route('users.index')" :active="request()->routeIs('users.index')">
                                 {{ __('List User') }}
                             </x-dropdown-link>
-                            <x-dropdown-link
-                                :href="route('users.create')"
-                                :active="request()->routeIs('users.create')"
-                            >
+                            <x-dropdown-link :href="route('users.create')" :active="request()->routeIs('users.create')">
                                 {{ __('Tambah User') }}
                             </x-dropdown-link>
                         </x-slot>
@@ -49,10 +46,7 @@
                             <x-dropdown-link :href="route('posts.index')" :active="request()->routeIs('posts.index')">
                                 {{ __('List Posts') }}
                             </x-dropdown-link>
-                            <x-dropdown-link
-                                :href="route('posts.create')"
-                                :active="request()->routeIs('posts.create')"
-                            >
+                            <x-dropdown-link :href="route('posts.create')" :active="request()->routeIs('posts.create')">
                                 {{ __('Tambah Post') }}
                             </x-dropdown-link>
                         </x-slot>
@@ -67,16 +61,10 @@
                         </x-slot>
 
                         <x-slot name="content">
-                            <x-dropdown-link
-                                :href="route('products.index')"
-                                :active="request()->routeIs('products.index')"
-                            >
+                            <x-dropdown-link :href="route('products.index')" :active="request()->routeIs('products.index')">
                                 {{ __('List Products') }}
                             </x-dropdown-link>
-                            <x-dropdown-link
-                                :href="route('products.create')"
-                                :active="request()->routeIs('products.create')"
-                            >
+                            <x-dropdown-link :href="route('products.create')" :active="request()->routeIs('products.create')">
                                 {{ __('Tambah Product') }}
                             </x-dropdown-link>
                         </x-slot>
@@ -89,15 +77,12 @@
                         </x-slot>
 
                         <x-slot name="content">
-                            <x-dropdown-link
-                                :href="route('orders.indexView')"
-                                :active="request()->routeIs('orders.indexView')"
-                            >
+                            <x-dropdown-link :href="route('orders.indexView')" :active="request()->routeIs('orders.indexView')">
                                 {{ __('Orders') }}
                             </x-dropdown-link>
                         </x-slot>
                     </x-nav-dropdown>
-                    <x-nav-dropdown :active="request()->routeIs('fruit-types.*')" align="left" width="w-30" top="36">
+                    <x-nav-dropdown :active="request()->routeIs('fruit-types.*')" align="left" width="w-30" top="20">
                         <x-slot name="trigger">
                             <span class="flex items-center">
                                 {{ __('Master Data') }}
@@ -105,22 +90,16 @@
                         </x-slot>
 
                         <x-slot name="content">
-                            <x-dropdown-link
-                                :href="route('fruit-types.index')"
-                                :active="request()->routeIs('fruit-types.*')"
-                            >
+                            <x-dropdown-link :href="route('fruit-types.index')" :active="request()->routeIs('fruit-types.*')">
                                 {{ __('Type Fruits') }}
                             </x-dropdown-link>
-                            <x-dropdown-link
-                                :href="route('vouchers.index')"
-                                :active="request()->routeIs('vouchers.*')"
-                            >
+                            <x-dropdown-link :href="route('vouchers.index')" :active="request()->routeIs('vouchers.*')">
                                 {{ __('Vouchers') }}
                             </x-dropdown-link>
-                            <x-dropdown-link
-                                :href="route('settings.index')"
-                                :active="request()->routeIs('settings.*')"
-                            >
+                            <x-dropdown-link :href="route('testimonials.index')" :active="request()->routeIs('testimonials.*')">
+                                {{ __('Testimonials') }}
+                            </x-dropdown-link>
+                            <x-dropdown-link :href="route('settings.index')" :active="request()->routeIs('settings.*')">
                                 {{ __('Settings') }}
                             </x-dropdown-link>
                         </x-slot>
@@ -133,21 +112,15 @@
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button
-                            class="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
-                        >
+                            class="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none">
                             <div>{{ Auth::user()->first_name }}</div>
 
                             <div class="ms-1">
-                                <svg
-                                    class="h-4 w-4 fill-current"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20"
-                                >
-                                    <path
-                                        fill-rule="evenodd"
+                                <svg class="h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
                                         d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                        clip-rule="evenodd"
-                                    />
+                                        clip-rule="evenodd" />
                                 </svg>
                             </div>
                         </button>
@@ -162,11 +135,9 @@
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
 
-                            <x-dropdown-link
-                                :href="route('logout')"
+                            <x-dropdown-link :href="route('logout')"
                                 onclick="event.preventDefault();
-                                                this.closest('form').submit();"
-                            >
+                                                this.closest('form').submit();">
                                 {{ __('Log Out') }}
                             </x-dropdown-link>
                         </form>
@@ -176,27 +147,14 @@
 
             <!-- Hamburger -->
             <div class="-me-2 flex items-center sm:hidden">
-                <button
-                    @click="open = ! open"
-                    class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none"
-                >
+                <button @click="open = ! open"
+                    class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path
-                            :class="{ 'hidden': open, 'inline-flex': !open }"
-                            class="inline-flex"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M4 6h16M4 12h16M4 18h16"
-                        />
-                        <path
-                            :class="{ 'hidden': !open, 'inline-flex': open }"
-                            class="hidden"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12"
-                        />
+                        <path :class="{ 'hidden': open, 'inline-flex': !open }" class="inline-flex"
+                            stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                        <path :class="{ 'hidden': !open, 'inline-flex': open }" class="hidden" stroke-linecap="round"
+                            stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
@@ -214,10 +172,8 @@
         <div x-data="{
             openMU: {{ request()->routeIs('users.*') ? 'true' : 'false' }},
         }">
-            <button
-                @click="openMU = ! openMU"
-                class="w-full px-4 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-100"
-            >
+            <button @click="openMU = ! openMU"
+                class="w-full px-4 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-100">
                 User
             </button>
             <div x-show="openMU" class="pl-4">
@@ -234,10 +190,8 @@
         <div x-data="{
             openMP: {{ request()->routeIs('users.*') ? 'true' : 'false' }},
         }">
-            <button
-                @click="openMP = ! openMP"
-                class="w-full px-4 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-100"
-            >
+            <button @click="openMP = ! openMP"
+                class="w-full px-4 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-100">
                 Posts
             </button>
             <div x-show="openMP" class="pl-4">
@@ -254,20 +208,15 @@
         <div x-data="{
             openMPr: {{ request()->routeIs('products.*') ? 'true' : 'false' }},
         }">
-            <button
-                @click="openMPr = ! openMPr"
-                class="w-full px-4 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-100"
-            >
+            <button @click="openMPr = ! openMPr"
+                class="w-full px-4 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-100">
                 Products
             </button>
             <div x-show="openMPr" class="pl-4">
                 <x-responsive-nav-link :href="route('products.index')" :active="request()->routeIs('products.index')">
                     List Products
                 </x-responsive-nav-link>
-                <x-responsive-nav-link
-                    :href="route('products.create')"
-                    :active="request()->routeIs('products.create')"
-                >
+                <x-responsive-nav-link :href="route('products.create')" :active="request()->routeIs('products.create')">
                     Tambah Product
                 </x-responsive-nav-link>
             </div>
@@ -289,11 +238,9 @@
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
 
-                    <x-responsive-nav-link
-                        :href="route('logout')"
+                    <x-responsive-nav-link :href="route('logout')"
                         onclick="event.preventDefault();
-                                        this.closest('form').submit();"
-                    >
+                                        this.closest('form').submit();">
                         {{ __('Log Out') }}
                     </x-responsive-nav-link>
                 </form>

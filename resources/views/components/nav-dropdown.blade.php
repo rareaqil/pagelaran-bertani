@@ -38,7 +38,7 @@
     @close.stop="open = false"
 >
     {{-- Trigger hanya jadi tombol polos --}}
-    <button type="button" @click="open = ! open" class="flex items-center focus:outline-none">
+    <button type="button" @click="open = ! open" class="flex items-center focus:outline-none" x-ref="trigger">
         {{ $trigger }}
         <svg class="ms-1 h-4 w-4 fill-current" viewBox="0 0 20 20">
             <path
@@ -59,9 +59,11 @@
         x-transition:leave="transition duration-75 ease-in"
         x-transition:leave-start="scale-100 opacity-100"
         x-transition:leave-end="scale-95 opacity-0"
-        class="{{ $width }} {{ $alignmentClasses }} {{ $marginTop }} absolute z-50 rounded-md shadow-lg"
+        :style="'top: ' +($refs.trigger.offsetHeight+ 45)  + 'px;'"
+        class="{{ $width }} {{ $alignmentClasses }} absolute z-50 rounded-md shadow-lg"
         style="display: none"
         @click="open = false"
+        x-ref="dropdown"
     >
         <div class="{{ $contentClasses }} rounded-md ring-1 ring-black ring-opacity-5">
             {{ $content }}
