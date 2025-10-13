@@ -123,7 +123,9 @@ Route::middleware(['auth', 'role:super_admin,admin'])
         // Vouchers
         Route::prefix('vouchers')->name('vouchers.')->group(function () {
             Route::get('/', [VoucherController::class, 'index'])->name('index');
+             Route::get('/{voucher}', [VoucherController::class, 'show'])->name('show');
             Route::post('/store', [VoucherController::class, 'store'])->name('store');
+            Route::put('/{id}', [VoucherController::class, 'store'])->name('update');
             Route::post('/{voucher}/toggle', [VoucherController::class, 'toggle'])->name('toggle');
             Route::delete('/{voucher}', [VoucherController::class, 'destroy'])->name('destroy');
         });
