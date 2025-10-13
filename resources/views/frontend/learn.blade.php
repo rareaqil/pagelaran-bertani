@@ -74,7 +74,7 @@
                     </p>
                 </div>
 
-                <!-- Misi -->
+                <!-- Visi & Misi -->
                 <div class="mt-12">
                     <h3 class="text-2xl font-bold text-green-700 mb-4">Visi & Misi Kami</h3>
                     <ul class="list-disc pl-6 space-y-2 text-gray-700">
@@ -92,7 +92,6 @@
                 <div class="mt-16">
                     <h3 class="text-2xl font-bold text-green-700 mb-8 text-center">Profil Pendiri</h3>
                     <div class="grid md:grid-cols-2 gap-10">
-                        <!-- Founder -->
                         <div class="bg-gray-50 p-6 rounded-xl shadow hover:shadow-lg transition">
                             <h4 class="text-xl font-semibold text-amber-600">Handono Rakhmadi</h4>
                             <p class="text-gray-600 mb-2">Founder</p>
@@ -104,7 +103,6 @@
                             </p>
                         </div>
 
-                        <!-- Co-Founder -->
                         <div class="bg-gray-50 p-6 rounded-xl shadow hover:shadow-lg transition">
                             <h4 class="text-xl font-semibold text-amber-600">Bagus Darnan Satriawan</h4>
                             <p class="text-gray-600 mb-2">Co-Founder</p>
@@ -118,8 +116,35 @@
                     </div>
                 </div>
 
+                <!-- Nilai Kami -->
+                <div class="mt-20">
+                    <h3 class="text-2xl font-bold text-green-700 mb-8 text-center">Nilai Kami</h3>
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div class="bg-green-50 p-6 rounded-2xl shadow hover:shadow-md transition">
+                            <div class="text-4xl mb-3">🌱</div>
+                            <h4 class="font-semibold text-amber-600 mb-2">Keberlanjutan</h4>
+                            <p class="text-gray-700">Kami menanam dengan hati, menjaga keseimbangan antara hasil dan
+                                kelestarian alam.</p>
+                        </div>
+
+                        <div class="bg-green-50 p-6 rounded-2xl shadow hover:shadow-md transition">
+                            <div class="text-4xl mb-3">🤝</div>
+                            <h4 class="font-semibold text-amber-600 mb-2">Gotong Royong</h4>
+                            <p class="text-gray-700">Kami tumbuh bersama petani, masyarakat, dan mitra untuk mencapai
+                                kesejahteraan bersama.</p>
+                        </div>
+
+                        <div class="bg-green-50 p-6 rounded-2xl shadow hover:shadow-md transition">
+                            <div class="text-4xl mb-3">💡</div>
+                            <h4 class="font-semibold text-amber-600 mb-2">Inovasi</h4>
+                            <p class="text-gray-700">Kami terus berinovasi dalam teknologi dan metode tanam untuk hasil yang
+                                lebih baik.</p>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Penutup -->
-                <div class="text-center mt-16">
+                <div class="text-center mt-20">
                     <p class="text-gray-700 text-lg max-w-2xl mx-auto italic">
                         “Kami percaya, dari desa kecil di Malang inilah, kami dapat menanam harapan besar bagi masa depan
                         pertanian Indonesia.”
