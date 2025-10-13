@@ -1,24 +1,22 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use UniSharp\LaravelFilemanager\Lfm;
-
-use App\Http\Controllers\FrontendController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\OrderProductController;
-use App\Http\Controllers\StockMovementController;
-use App\Http\Controllers\LearnController;
-use App\Http\Controllers\ContactController;
-
-use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\FruitTypeController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\Admin\FruitTypeController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\TestimonialController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\VoucherController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LearnController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderProductController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StockMovementController;
+use Illuminate\Support\Facades\Route;
+use UniSharp\LaravelFilemanager\Lfm;
 
 /*
 |--------------------------------------------------------------------------
@@ -129,6 +127,15 @@ Route::middleware(['auth', 'role:super_admin,admin'])
             Route::post('/{voucher}/toggle', [VoucherController::class, 'toggle'])->name('toggle');
             Route::delete('/{voucher}', [VoucherController::class, 'destroy'])->name('destroy');
         });
+
+        // Testimonials
+        Route::prefix('testimonials')->name('testimonials.')->group(function () {
+            Route::get('/', [TestimonialController::class, 'index'])->name('index');
+            Route::post('/store', [TestimonialController::class, 'store'])->name('store');
+            Route::put('/{id}', [TestimonialController::class, 'store'])->name('update');
+            Route::post('/{testimonial}/toggle', [TestimonialController::class, 'toggle'])->name('toggle');
+            Route::delete('/{testimonial}', [TestimonialController::class, 'destroy'])->name('destroy');
+        });
     });
 
 /*
@@ -136,7 +143,7 @@ Route::middleware(['auth', 'role:super_admin,admin'])
 | File Manager
 |--------------------------------------------------------------------------
 */
-Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web','auth']], function () {
+Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']], function () {
     Lfm::routes();
 });
 
@@ -145,5 +152,5 @@ Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web','auth']]
 | Auth Routes
 |--------------------------------------------------------------------------
 */
-require __DIR__ . '/auth.php';
-require __DIR__ . '/api.php';
+require __DIR__.'/auth.php';
+require __DIR__.'/api.php';
