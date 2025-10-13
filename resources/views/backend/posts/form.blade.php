@@ -20,7 +20,7 @@
 
                 {{-- Judul --}}
                 <div>
-                    <x-input-label for="name" :value="'Judul'" />
+                    <x-input-label for="name" required :value="'Judul'" />
                     <x-text-input
                         id="name"
                         name="name"
@@ -103,7 +103,7 @@
 
                 {{-- Konten --}}
                 <div>
-                    <x-input-label for="content" :value="'Konten'" />
+                    <x-input-label for="content" required :value="'Konten'" />
                     <textarea
                         id="content"
                         name="content"
@@ -118,7 +118,7 @@
 
                 {{-- Upload Gambar Header --}}
                 <div>
-                    <x-input-label for="image" :value="'Gambar Header'" />
+                    <x-input-label for="image" required :value="'Gambar Header'" />
                     <div class="mt-1 flex flex-col gap-4 md:flex-row md:items-center">
                         <div class="flex-1">
                             <div class="flex gap-2">

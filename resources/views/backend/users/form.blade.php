@@ -28,7 +28,7 @@
                     {{-- Nama --}}
                     <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div class="mb-4">
-                            <label class="block text-gray-700">First Name</label>
+                            <label class="block text-gray-700">First Name  <span class="text-red-500">*</span></label>
                             <input
                                 type="text"
                                 name="first_name"
@@ -38,7 +38,7 @@
                         </div>
 
                         <div class="mb-4">
-                            <label class="block text-gray-700">Last Name</label>
+                            <label class="block text-gray-700">Last Name  <span class="text-red-500">*</span></label>
                             <input
                                 type="text"
                                 name="last_name"
@@ -77,7 +77,7 @@
 
                     {{-- Email --}}
                     <div class="mb-4">
-                        <label class="block text-gray-700">Email</label>
+                        <label class="block text-gray-700">Email  <span class="text-red-500">*</span></label>
                         <input
                             type="email"
                             name="email"
@@ -88,11 +88,12 @@
 
                     {{-- Password --}}
                     <div class="mb-4">
-                        <label class="block text-gray-700">
+                        <label class="block text-gray-700" >
                             Password
                             @if (isset($user))
                                 (isi jika ingin ganti)
                             @endif
+                             <span class="text-red-500">*</span>
                         </label>
                         <input type="password" name="password" class="w-full rounded border px-3 py-2" />
                     </div>

@@ -30,8 +30,14 @@
                     <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                         @foreach ($fields as $key => $config)
                             <div>
-                                <x-input-label :for="$key" :value="$config['description']" />
-
+                                     @php
+                                        $isRequired = isset($config['rules']) && Str::contains($config['rules'], 'required');
+                                    @endphp
+                                <x-input-label
+                                    :for="$key"
+                                    :value="$config['description']"
+                                    :required="$isRequired"
+                                 />
                                 @if ($key === 'midtrans_is_production')
                                     <select
                                         name="{{ $key }}"

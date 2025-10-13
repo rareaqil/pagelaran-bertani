@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Setting;
-
+use Illuminate\Http\Request;
 
 class SettingController extends Controller
 {
@@ -37,7 +36,7 @@ class SettingController extends Controller
             ],
             'midtrans_client_key' => [
                 'description' => 'Client Key Midtrans',
-                'rules' => 'required|string',
+                'rules' => 'string',
             ],
             'midtrans_server_key' => [
                 'description' => 'Server Key Midtrans',
@@ -72,9 +71,9 @@ class SettingController extends Controller
         foreach ($this->sections as $section) {
             foreach ($section as $key => $config) {
                 // Kondisional untuk Midtrans production
-                if (in_array($key, ['midtrans_merchant_id','midtrans_server_key','midtrans_client_key'])) {
+                if (in_array($key, ['midtrans_merchant_id', 'midtrans_server_key', 'midtrans_client_key'])) {
                     $rules[$key] = function ($attribute, $value, $fail) use ($request) {
-                        if ($request->input('midtrans_is_production') && (!$value || trim($value) === '')) {
+                        if ($request->input('midtrans_is_production') && (! $value || trim($value) === '')) {
                             $fail("Field {$attribute} wajib diisi jika mode produksi aktif.");
                         }
                     };
@@ -88,7 +87,9 @@ class SettingController extends Controller
 
         foreach ($validated as $key => $value) {
             // Skip null atau kosong
-            if ($value === null || trim($value) === '') continue;
+            if ($value === null || trim($value) === '') {
+                continue;
+            }
             Setting::updateOrCreate(['key' => $key], ['value' => $value]);
         }
 
