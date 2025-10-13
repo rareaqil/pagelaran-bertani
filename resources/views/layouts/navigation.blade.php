@@ -127,6 +127,12 @@
                     </x-slot>
 
                     <x-slot name="content">
+                        <x-dropdown-link :href="route('home')" :active="request()->routeIs('home')">
+                            {{ __('Home Page') }}
+                        </x-dropdown-link>
+
+                        <div class="border-b border-gray-300 my-2"></div>
+
                         <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Profile') }}
                         </x-dropdown-link>
@@ -222,6 +228,41 @@
             </div>
         </div>
 
+        {{-- ===== Responsive Dropdown Transactions ===== --}}
+        <div x-data="{ openMT: {{ request()->routeIs('orders.*') ? 'true' : 'false' }} }">
+            <button @click="openMT = ! openMT"
+                class="w-full px-4 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-100">
+                Transactions
+            </button>
+            <div x-show="openMT" class="pl-4 space-y-1">
+                <x-responsive-nav-link :href="route('orders.indexView')" :active="request()->routeIs('orders.indexView')">
+                    Orders
+                </x-responsive-nav-link>
+            </div>
+        </div>
+
+        {{-- ===== Responsive Dropdown Master Data ===== --}}
+        <div x-data="{ openMMD: {{ request()->routeIs('fruit-types.*') || request()->routeIs('vouchers.*') || request()->routeIs('testimonials.*') || request()->routeIs('settings.*') ? 'true' : 'false' }} }">
+            <button @click="openMMD = ! openMMD"
+                class="w-full px-4 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-100">
+                Master Data
+            </button>
+            <div x-show="openMMD" class="pl-4 space-y-1">
+                <x-responsive-nav-link :href="route('fruit-types.index')" :active="request()->routeIs('fruit-types.*')">
+                    Type Fruits
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('vouchers.index')" :active="request()->routeIs('vouchers.*')">
+                    Vouchers
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('testimonials.index')" :active="request()->routeIs('testimonials.*')">
+                    Testimonials
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('settings.index')" :active="request()->routeIs('settings.*')">
+                    Settings
+                </x-responsive-nav-link>
+            </div>
+        </div>
+
         <!-- Responsive Settings Options -->
         <div class="border-t border-gray-200 pb-1 pt-4">
             <div class="px-4">
@@ -230,6 +271,11 @@
             </div>
 
             <div class="mt-3 space-y-1">
+                <x-responsive-nav-link :href="route('home')" :active="request()->routeIs('home')">
+                    {{ __('Home Page') }}
+                </x-responsive-nav-link>
+                <div class="border-b border-gray-300 my-2"></div>
+
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
