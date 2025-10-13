@@ -4,12 +4,8 @@
         <h2 class="text-xl font-semibold text-gray-800">Master Testimonial</h2>
     </x-slot>
 
-    <div
-        class="rounded-xl bg-white p-6 shadow-md"
-        x-data="{ openModal: false }"
-        @close-modal.window="openModal=false"
-        @open-modal.window="openModal=true"
-    >
+    <div class="rounded-xl bg-white p-6 shadow-md" x-data="{ openModal: false }" @close-modal.window="openModal=false"
+        @open-modal.window="openModal=true">
         <div class="mb-4 flex items-center justify-between">
             <x-primary-button @click="openModal=true; resetForm();">+ Tambah Testimonial</x-primary-button>
         </div>
@@ -80,7 +76,8 @@
                             {{-- Status --}}
                             <td class="px-3 py-2 text-center md:table-cell block">
                                 <span class="md:hidden font-semibold text-gray-600">Status: </span>
-                                <span class="{{ $t->is_approved ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-700' }} inline-block rounded-full px-2 py-0.5 text-xs font-semibold status-badge">
+                                <span
+                                    class="{{ $t->is_approved ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-700' }} inline-block rounded-full px-2 py-0.5 text-xs font-semibold status-badge">
                                     {{ $t->is_approved ? 'Published' : 'Hidden' }}
                                 </span>
                             </td>
@@ -100,11 +97,8 @@
         </div>
 
         {{-- === Modal === --}}
-        <div
-            x-show="openModal"
-            x-cloak
-            class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
-        >
+        <div x-show="openModal" x-cloak
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
             <div class="w-full max-w-md rounded-xl bg-white p-6 shadow-2xl">
                 <h3 class="mb-4 text-lg font-semibold" id="modal-title">Tambah Testimonial</h3>
 
@@ -155,7 +149,8 @@
                     {{-- Comment --}}
                     <div>
                         <x-input-label for="comment" value="Komentar" />
-                        <textarea id="comment" name="comment" rows="4" class="w-full mt-1 rounded-md border-gray-300" placeholder="Tulis komentar..."></textarea>
+                        <textarea id="comment" name="comment" rows="4" class="w-full mt-1 rounded-md border-gray-300"
+                            placeholder="Tulis komentar..."></textarea>
                         <x-input-error :messages="$errors->get('comment')" class="mt-1" />
                     </div>
 
@@ -164,8 +159,11 @@
                         <x-input-label for="is_approved" value="Published" class="mb-0" />
                         <label class="relative inline-flex items-center cursor-pointer">
                             <input type="checkbox" id="is_approved" name="is_approved" class="sr-only peer">
-                            <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-indigo-600 transition"></div>
-                            <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-full"></div>
+                            <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-indigo-600 transition">
+                            </div>
+                            <div
+                                class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-full">
+                            </div>
                         </label>
                     </div>
 
@@ -232,7 +230,7 @@
         }
 
         // Create / Update via AJAX
-        $('#testimonial-form').on('submit', function (e) {
+        $('#testimonial-form').on('submit', function(e) {
             e.preventDefault();
             const id = $('#testimonial-id').val();
             const payload = {
@@ -246,11 +244,11 @@
             };
 
             $.ajax({
-                url: id ? `/testimonials/${id}` : '{{ route('testimonials.store') }}',
+                url: id ? `/backend/testimonials/${id}` : '{{ route('testimonials.store') }}',
                 type: id ? 'PUT' : 'POST',
                 data: payload,
                 dataType: 'json',
-                success: function (res) {
+                success: function(res) {
                     const t = res.data ?? res;
                     if (id) {
                         // replace existing row
@@ -263,13 +261,15 @@
                     window.dispatchEvent(new CustomEvent('close-modal'));
                     Swal.fire('Berhasil', res.message || 'Sukses', 'success');
                 },
-                error: function (xhr) {
+                error: function(xhr) {
                     if (xhr.status === 422) {
                         const errors = xhr.responseJSON.errors;
                         $('.input-error-message').remove();
                         for (const field in errors) {
                             $(`#${field}`).addClass('border-red-500');
-                            $(`#${field}`).after(`<p class="text-red-500 text-xs input-error-message">${errors[field][0]}</p>`);
+                            $(`#${field}`).after(
+                                `<p class="text-red-500 text-xs input-error-message">${errors[field][0]}</p>`
+                                );
                         }
                     } else {
                         Swal.fire('Error', xhr.responseJSON?.message || 'Terjadi kesalahan', 'error');
@@ -279,13 +279,15 @@
         });
 
         // Edit: populate modal from server to get full comment (recommended)
-        $(document).on('click', '.edit', function () {
+        $(document).on('click', '.edit', function() {
             const tr = $(this).closest('tr');
             const id = tr.data('id');
 
             // Fetch detail from server (add route GET /testimonials/{id} if not present)
-            $.get(`/testimonials/${id}`, { _token: token })
-                .done(function (res) {
+            $.get(`/backend/testimonials/${id}`, {
+                    _token: token
+                })
+                .done(function(res) {
                     const t = res.data ?? res;
                     $('#testimonial-id').val(t.id);
                     $('#user_id').val(t.user_id);
@@ -298,13 +300,17 @@
                     $('#modal-title').text('Edit Testimonial');
                     window.dispatchEvent(new CustomEvent('open-modal'));
                 })
-                .fail(function () {
+                .fail(function() {
                     // fallback: try to parse from row (less reliable)
                     $('#testimonial-id').val(id);
                     const userText = tr.find('td:nth-child(2)').text().trim();
-                    $('#user_id option').filter(function() { return $(this).text().trim() === userText; }).prop('selected', true);
+                    $('#user_id option').filter(function() {
+                        return $(this).text().trim() === userText;
+                    }).prop('selected', true);
                     const productText = tr.find('td:nth-child(3) span').text().trim();
-                    $('#product_id option').filter(function() { return $(this).text().trim() === productText; }).prop('selected', true);
+                    $('#product_id option').filter(function() {
+                        return $(this).text().trim() === productText;
+                    }).prop('selected', true);
                     const ratingCount = tr.find('td:nth-child(4) .text-yellow-500').length;
                     $('#rating').val(ratingCount || 5);
                     const fullComment = tr.find('td:nth-child(5)').attr('title') || '';
@@ -319,18 +325,24 @@
         });
 
         // Toggle Publish/Hide
-        $(document).on('click', '.toggle', function () {
+        $(document).on('click', '.toggle', function() {
             const tr = $(this).closest('tr');
             const id = tr.data('id');
-            $.post(`/testimonials/${id}/toggle`, { _token: token })
+            $.post(`/backend/testimonials/${id}/toggle`, {
+                    _token: token
+                })
                 .done((res) => {
                     const badge = tr.find('.status-badge');
                     const btn = tr.find('.toggle');
                     if (res.status) {
-                        badge.text('Published').attr('class', 'bg-green-100 text-green-700 inline-block rounded-full px-2 py-0.5 text-xs font-semibold status-badge');
+                        badge.text('Published').attr('class',
+                            'bg-green-100 text-green-700 inline-block rounded-full px-2 py-0.5 text-xs font-semibold status-badge'
+                            );
                         btn.text('Hide');
                     } else {
-                        badge.text('Hidden').attr('class', 'bg-gray-200 text-gray-700 inline-block rounded-full px-2 py-0.5 text-xs font-semibold status-badge');
+                        badge.text('Hidden').attr('class',
+                            'bg-gray-200 text-gray-700 inline-block rounded-full px-2 py-0.5 text-xs font-semibold status-badge'
+                            );
                         btn.text('Publish');
                     }
                     Swal.fire('Berhasil', res.message || 'Status diperbarui', 'success');
@@ -341,7 +353,7 @@
         });
 
         // Delete
-        $(document).on('click', '.delete', function () {
+        $(document).on('click', '.delete', function() {
             const tr = $(this).closest('tr');
             const id = tr.data('id');
 
@@ -357,15 +369,18 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: `/testimonials/${id}`,
+                        url: `/backend/testimonials/${id}`,
                         type: 'DELETE',
-                        data: { _token: token },
+                        data: {
+                            _token: token
+                        },
                         success: () => {
                             tr.remove();
                             Swal.fire('Terhapus!', 'Testimonial berhasil dihapus.', 'success');
                         },
                         error: (err) => {
-                            Swal.fire('Gagal!', err.responseJSON?.message ?? 'Gagal menghapus', 'error');
+                            Swal.fire('Gagal!', err.responseJSON?.message ?? 'Gagal menghapus',
+                                'error');
                         },
                     });
                 }
