@@ -16,6 +16,11 @@
 
             <form method="POST" action="{{ route('login') }}" class="space-y-4">
                 @csrf
+                @if ($errors->any())
+                    <div class="bg-red-100 text-red-700 px-4 py-2 rounded mb-4">
+                        {{ $errors->first() }}
+                    </div>
+                @endif
                 <input id="email" type="email" name="email" placeholder="Email address" required autofocus
                     class="w-full rounded-md border-0 px-3 py-2 text-gray-900 shadow-sm placeholder-gray-400 focus:ring-2 focus:ring-yellow-400" />
 
@@ -54,7 +59,7 @@
             </div>
 
             <a href="{{ url('/') }}"
-                class="absolute top-6 right-6 bg-yellow-500 text-white px-4 py-2 bg-opacity-60 rounded-md shadow 
+                class="absolute top-6 right-6 bg-yellow-500 text-white px-4 py-2 bg-opacity-60 rounded-md shadow
           hover:bg-yellow-600 active:scale-95 transition transform duration-150 z-50">
                 Back to website →
             </a>
