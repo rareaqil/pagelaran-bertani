@@ -28,34 +28,35 @@
         </div>
 
         <!-- Tentang Kami -->
-        <div class="bg-white py-16">
-            <div class="max-w-6xl mx-auto px-6 md:px-12">
+        <div class="bg-gradient-to-b from-green-50 to-white py-16">
+            <div class="max-w-6xl mx-auto px-6 md:px-12 fade-section">
                 <!-- Judul -->
-                <h2 class="text-4xl font-extrabold text-center text-green-700 mb-6">
+                <h2 class="text-4xl font-extrabold text-center text-green-700 mb-6 fade-section">
                     Tentang Kami
                 </h2>
-                <p class="text-center text-gray-600 max-w-3xl mx-auto mb-12">
+                <p class="text-center text-gray-600 max-w-3xl mx-auto mb-12 fade-section">
                     Dari desa sejuk di Malang, kami menanam bukan hanya buah, tetapi juga harapan dan masa depan pertanian
                     Indonesia.
                 </p>
 
                 <!-- Bagian Deskripsi -->
-                <div class="space-y-8 text-gray-700 leading-relaxed">
+                <div class="space-y-8 text-gray-700 leading-relaxed fade-section ios-card p-8">
                     <p>
                         <span class="font-semibold text-green-700">CV Pagelaran Bertani</span> lahir dari semangat gotong
-                        royong dan cita-cita besar untuk membangun pertanian berkelanjutan di Indonesia.
+                        royong
+                        dan cita-cita besar untuk membangun pertanian berkelanjutan di Indonesia.
                         Berdiri sejak <span class="font-semibold text-amber-600">tahun 2023</span>, dua kakak beradik yang
                         tumbuh di desa berhawa sejuk di Malang, Jawa Timur,
                         berkolaborasi membangun usaha pertanian yang tidak sekadar berorientasi pada hasil, tetapi juga pada
                         <span class="italic">nilai, keberlanjutan, dan kesejahteraan bersama.</span>
                     </p>
 
-                    <div class="border-l-4 border-amber-500 pl-4 italic text-gray-600">
+                    <div class="border-l-4 border-amber-500 pl-4 italic text-gray-600 fade-section">
                         “Pertanian bagi kami bukan hanya tentang tanam dan panen, tetapi tentang membangun ekosistem yang
                         sehat, kompetitif, dan terpercaya.”
                     </div>
 
-                    <p>
+                    <p class="fade-section">
                         Kami memilih <span class="font-semibold text-amber-600">melon premium</span> sebagai fokus utama
                         bukan karena tren,
                         melainkan karena maknanya yang mendalam. Melon bagi kami adalah simbol keseimbangan—antara sains dan
@@ -66,7 +67,7 @@
                         kami menjaga kualitas buah sekaligus keberlanjutan lingkungan.
                     </p>
 
-                    <p>
+                    <p class="fade-section">
                         Dengan semangat gotong royong, kami berkomitmen menciptakan rantai pasok buah premium yang memberi
                         manfaat bagi semua pihak—petani, konsumen, dan mitra usaha.
                         Visi kami adalah menjadi penyedia buah segar unggulan yang tumbuh dari desa, untuk kemajuan
@@ -75,7 +76,7 @@
                 </div>
 
                 <!-- Visi & Misi -->
-                <div class="mt-12">
+                <div class="mt-16 fade-section ios-card p-8">
                     <h3 class="text-2xl font-bold text-green-700 mb-4">Visi & Misi Kami</h3>
                     <ul class="list-disc pl-6 space-y-2 text-gray-700">
                         <li>Menerapkan praktik budidaya yang baik dan berkelanjutan.</li>
@@ -89,10 +90,10 @@
                 </div>
 
                 <!-- Profil Pendiri -->
-                <div class="mt-16">
+                <div class="mt-16 fade-section">
                     <h3 class="text-2xl font-bold text-green-700 mb-8 text-center">Profil Pendiri</h3>
                     <div class="grid md:grid-cols-2 gap-10">
-                        <div class="bg-gray-50 p-6 rounded-xl shadow hover:shadow-lg transition">
+                        <div class="ios-card p-8 fade-section">
                             <h4 class="text-xl font-semibold text-amber-600">Handono Rakhmadi</h4>
                             <p class="text-gray-600 mb-2">Founder</p>
                             <p>
@@ -103,7 +104,7 @@
                             </p>
                         </div>
 
-                        <div class="bg-gray-50 p-6 rounded-xl shadow hover:shadow-lg transition">
+                        <div class="ios-card p-8 fade-section">
                             <h4 class="text-xl font-semibold text-amber-600">Bagus Darnan Satriawan</h4>
                             <p class="text-gray-600 mb-2">Co-Founder</p>
                             <p>
@@ -117,24 +118,24 @@
                 </div>
 
                 <!-- Nilai Kami -->
-                <div class="mt-20">
+                <div class="mt-20 fade-section">
                     <h3 class="text-2xl font-bold text-green-700 mb-8 text-center">Nilai Kami</h3>
                     <div class="grid md:grid-cols-3 gap-8">
-                        <div class="bg-green-50 p-6 rounded-2xl shadow hover:shadow-md transition">
+                        <div class="ios-card p-8 fade-section text-center">
                             <div class="text-4xl mb-3">🌱</div>
                             <h4 class="font-semibold text-amber-600 mb-2">Keberlanjutan</h4>
                             <p class="text-gray-700">Kami menanam dengan hati, menjaga keseimbangan antara hasil dan
                                 kelestarian alam.</p>
                         </div>
 
-                        <div class="bg-green-50 p-6 rounded-2xl shadow hover:shadow-md transition">
+                        <div class="ios-card p-8 fade-section text-center">
                             <div class="text-4xl mb-3">🤝</div>
                             <h4 class="font-semibold text-amber-600 mb-2">Gotong Royong</h4>
                             <p class="text-gray-700">Kami tumbuh bersama petani, masyarakat, dan mitra untuk mencapai
                                 kesejahteraan bersama.</p>
                         </div>
 
-                        <div class="bg-green-50 p-6 rounded-2xl shadow hover:shadow-md transition">
+                        <div class="ios-card p-8 fade-section text-center">
                             <div class="text-4xl mb-3">💡</div>
                             <h4 class="font-semibold text-amber-600 mb-2">Inovasi</h4>
                             <p class="text-gray-700">Kami terus berinovasi dalam teknologi dan metode tanam untuk hasil yang
@@ -144,7 +145,7 @@
                 </div>
 
                 <!-- Penutup -->
-                <div class="text-center mt-20">
+                <div class="text-center mt-20 fade-section ios-card p-8">
                     <p class="text-gray-700 text-lg max-w-2xl mx-auto italic">
                         “Kami percaya, dari desa kecil di Malang inilah, kami dapat menanam harapan besar bagi masa depan
                         pertanian Indonesia.”
@@ -243,5 +244,56 @@
     <script>
         dayjs.locale('id'); // bahasa Indonesia
     </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const fadeSections = document.querySelectorAll(".fade-section");
 
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, i) => {
+                    if (entry.isIntersecting) {
+                        // delay per elemen biar muncul bergelombang seperti animasi iOS
+                        setTimeout(() => entry.target.classList.add("show"), i * 100);
+                    }
+                });
+            }, {
+                threshold: 0.15
+            });
+
+            fadeSections.forEach(section => observer.observe(section));
+        });
+    </script>
+
+    <style>
+        .fade-section {
+            opacity: 0;
+            transform: translateY(40px) scale(0.98);
+            filter: blur(6px);
+            transition:
+                opacity 0.8s ease-out,
+                transform 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+                filter 0.6s ease-out;
+        }
+
+        .fade-section.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0);
+        }
+
+        /* Apple-like card visual style */
+        .ios-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            border-radius: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .ios-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 @endsection
