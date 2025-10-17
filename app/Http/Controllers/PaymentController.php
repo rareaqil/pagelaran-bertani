@@ -24,51 +24,53 @@ class PaymentController extends Controller
         // Config::$isSanitized  = config('midtrans.is_sanitized');
         // Config::$is3ds        = config('midtrans.is_3ds');
 
-        $this->serverKey   = midtrans_config('server_key');
-        $this->isProduction = (bool)midtrans_config('is_production');
+        $this->serverKey = midtrans_config('server_key');
+        $this->isProduction = (bool) midtrans_config('is_production');
         $this->isSanitized = config('midtrans.is_sanitized');
         $this->is3ds = config('midtrans.is_3ds');
 
         // ===> Ambil item detail dari order
-        $items = $order->items->map(function ($item) {
-            return [
-                'id'       => $item->id,
-                'price'    => $item->price,
-                'quantity' => $item->quantity,
-                'name'     => $item->product->name ?? $item->name,
-            ];
-        })->toArray();
+        $items = $order->items
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'price' => $item->price,
+                    'quantity' => $item->quantity,
+                    'name' => $item->product->name ?? $item->name,
+                ];
+            })
+            ->toArray();
 
         // ===> Body request Snap
         $params = [
-            "transaction_details" => [
-                "order_id"     => $order->order_id,   // gunakan order_id unik kita
-                "gross_amount" => $order->total,
+            'transaction_details' => [
+                'order_id' => $order->order_id, // gunakan order_id unik kita
+                'gross_amount' => $order->total,
             ],
-            "item_details"       => $items,
-            "customer_details"   => [
-                "first_name" => $order->user->first_name,
-                "last_name"  => $order->user->last_name,
-                "email"      => $order->user->email,
-                "phone"      => $order->user->phone,
-                "billing_address" => [
-                    "first_name"  => $order->user->first_name,
-                    "last_name"   => $order->user->last_name,
-                    "email"       => $order->user->email,
-                    "phone"       => $order->user->phone,
-                    "address"     => $order->user->primaryAddress->address1 ?? '',
-                    "city"        => $order->user->primaryAddress->city ?? '',
-                    "postal_code" => $order->user->primaryAddress->postal_code ?? '',
-                    "country_code"=> "IDN"
+            'item_details' => $items,
+            'customer_details' => [
+                'first_name' => $order->user->first_name,
+                'last_name' => $order->user->last_name,
+                'email' => $order->user->email,
+                'phone' => $order->user->phone,
+                'billing_address' => [
+                    'first_name' => $order->user->first_name,
+                    'last_name' => $order->user->last_name,
+                    'email' => $order->user->email,
+                    'phone' => $order->user->phone,
+                    'address' => $order->user->primaryAddress->address1 ?? '',
+                    'city' => $order->user->primaryAddress->city ?? '',
+                    'postal_code' => $order->user->primaryAddress->postal_code ?? '',
+                    'country_code' => 'IDN',
                 ],
             ],
             // contoh tambahan optional:
-            "enabled_payments" => ["gopay", "bca_va", "shopeepay"],
-            "expiry" => [
-                "unit"     => "hours",
-                "duration" => 2, // transaksi kadaluarsa 2 jam
+            'enabled_payments' => ['gopay', 'bca_va', 'shopeepay'],
+            'expiry' => [
+                'unit' => 'hours',
+                'duration' => 2, // transaksi kadaluarsa 2 jam
             ],
-            "custom_field1" => "Order from Laravel App",
+            'custom_field1' => 'Order from Laravel App',
         ];
 
         $snapToken = Snap::getSnapToken($params);
@@ -123,23 +125,21 @@ class PaymentController extends Controller
         return response()->noContent();
     }
 
-
     public function midtransCallback(Request $request, MidtransService $midtrans)
     {
-
         // Log::info('RAW INPUT', [file_get_contents('php://input')]);
         $notif = $midtrans->notification();
 
         Log::info('Midtrans raw callback', $request->all());
 
-        if (! $midtrans->isSignatureValid($notif)) {
-             Log::warning('Midtrans signature invalid', ['order_id' => $notif->order_id ?? null]);
+        if (!$midtrans->isSignatureValid($notif)) {
+            Log::warning('Midtrans signature invalid', ['order_id' => $notif->order_id ?? null]);
             return response()->json(['message' => 'Invalid signature'], 401);
         }
 
         $order = Order::where('order_id', $notif->order_id)->first();
-        if (! $order) {
-             Log::warning('Midtrans order_id not found', ['order_id' => $notif->order_id ?? null]);
+        if (!$order) {
+            Log::warning('Midtrans order_id not found', ['order_id' => $notif->order_id ?? null]);
 
             return response()->json(['message' => 'Order not found'], 404);
         }
@@ -147,29 +147,35 @@ class PaymentController extends Controller
         $status = $midtrans->mapStatus($notif);
         $stockMovementCtrl = new StockMovementController();
 
-         Log::info('Midtrans mapped status', [
-        'order_id' => $notif->order_id,
-        'status'   => $status,
-         ]);
+        $holdMovements = StockMovement::where('reference_type', 'Order')
+            ->where('reference_id', $order->order_id)
+            ->where('type', 'hold')
+            ->get();
+
+        Log::info('Midtrans mapped status', [
+            'order_id' => $notif->order_id,
+            'status' => $status,
+        ]);
         switch ($status) {
             case 'success':
                 // hanya update kalau order belum paid/cancelled
-                if ($order->status->value !== OrderStatus::Paid->value &&
-                    $order->status->value !== OrderStatus::Cancelled->value) {
-
+                if (
+                    $order->status->value !== OrderStatus::Paid->value &&
+                    $order->status->value !== OrderStatus::Cancelled->value
+                ) {
                     $order->update(['status' => OrderStatus::Paid->value]);
 
                     $order->payment()->updateOrCreate(
                         ['order_id' => $order->id],
                         [
-                            'status'         => 'PAID',
-                            'paid_at'        => now(),
+                            'status' => 'PAID',
+                            'paid_at' => now(),
                             'transaction_id' => $notif->transaction_id,
-                        ]
+                        ],
                     );
 
                     // Release stok hold → confirm
-                    foreach($holdMovements as $hold) {
+                    foreach ($holdMovements as $hold) {
                         $stockMovementCtrl->confirmPayment($hold->id);
                     }
                     Log::info('✅ Payment SUCCESS Triggered Logic');
@@ -178,14 +184,17 @@ class PaymentController extends Controller
 
             case 'pending':
                 // hanya update kalau status masih draft / belum paid
-                if ($order->status->value !== OrderStatus::Paid->value &&
-                    $order->status->value !== OrderStatus::Cancelled->value) {
-
+                if (
+                    $order->status->value !== OrderStatus::Paid->value &&
+                    $order->status->value !== OrderStatus::Cancelled->value
+                ) {
                     $order->update(['status' => OrderStatus::Pending->value]);
-                    $order->payment()->updateOrCreate(
-                        ['order_id' => $order->id],
-                        ['status' => 'PENDING', 'transaction_id' => $notif->transaction_id]
-                    );
+                    $order
+                        ->payment()
+                        ->updateOrCreate(
+                            ['order_id' => $order->id],
+                            ['status' => 'PENDING', 'transaction_id' => $notif->transaction_id],
+                        );
                     Log::info('⏳ Payment PENDING Triggered Logic');
                 }
                 break;
@@ -196,12 +205,14 @@ class PaymentController extends Controller
                 // hanya update kalau order belum paid
                 if ($order->status->value !== OrderStatus::Paid->value) {
                     $order->update(['status' => OrderStatus::Cancelled->value]);
-                    $order->payment()->updateOrCreate(
-                        ['order_id' => $order->id],
-                        ['status' => strtoupper($status), 'transaction_id' => $notif->transaction_id]
-                    );
+                    $order
+                        ->payment()
+                        ->updateOrCreate(
+                            ['order_id' => $order->id],
+                            ['status' => strtoupper($status), 'transaction_id' => $notif->transaction_id],
+                        );
 
-                    foreach($holdMovements as $hold) {
+                    foreach ($holdMovements as $hold) {
                         $stockMovementCtrl->cancelHold($hold->id);
                     }
                     Log::info('🛑 Payment FAILED/CANCELED Triggered Logic');
@@ -212,6 +223,4 @@ class PaymentController extends Controller
         Log::info('🎉 Callback Processed Successfully', ['order_id' => $notif->order_id]);
         return response()->json(['success' => true]);
     }
-
-
 }

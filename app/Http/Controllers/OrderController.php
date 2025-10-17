@@ -291,7 +291,7 @@ class OrderController extends Controller
         $data = $request->validate([
             'scheduled_at' => ['required', 'date'],
             'estimate_minutes' => ['required', 'integer', 'min:1'],
-            'tracking_link' => ['nullable', 'string'],
+            'tracking_link' => ['nullable', 'url'],
             'courier' => ['required', 'string', 'max:255'],
         ]);
 

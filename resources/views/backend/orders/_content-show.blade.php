@@ -233,7 +233,7 @@
 
                             {{-- Link Lacak --}}
                             <label class="block">
-                                <span class="text-gray-700">Link Lacak / Detail Kurir (Resi,No kurir, dll)</span>
+                                <span class="text-gray-700">Link Lacak</span>
                                 <input type="url" name="tracking_link" class="mt-1 w-full rounded border-gray-300"
                                     value="{{ old('tracking_link', $order->tracking_link) }}"
                                     placeholder="https://kurir.example/track/ABC123" />
@@ -346,14 +346,16 @@
 
             {{-- Back button --}}
 
-            @php
-                $current = url()->current(); // URL lengkap sebelumnya
-                $baseCurrent = preg_replace('#/[^/]+$#', '', $current); // hapus segmen terakhir
-            @endphp
-
             <div class="mt-6">
-                <a href="{{ $baseCurrent }}" class="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400">Kembali</a>
+                @if (auth()->user()->isAdmin())
+                    <a href="{{ route('orders.indexView') }}"
+                        class="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400">Kembali</a>
+                @else
+                    <a href="{{ route('order.history') }}"
+                        class="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400">Kembali</a>
+                @endif
             </div>
+
             {{-- Ditutup Sementara, Untuk Konfirmasi Stok --}}
 
             {{--
@@ -406,7 +408,7 @@
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Ya, batalkan!',
+                confirmButtonText: 'Ya, yakin',
                 cancelButtonText: 'Batal',
             }).then((result) => {
                 if (result.isConfirmed) {
