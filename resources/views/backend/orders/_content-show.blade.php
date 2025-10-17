@@ -346,14 +346,16 @@
 
             {{-- Back button --}}
 
-            @php
-                $current = url()->current(); // URL lengkap sebelumnya
-                $baseCurrent = preg_replace('#/[^/]+$#', '', $current); // hapus segmen terakhir
-            @endphp
-
             <div class="mt-6">
-                <a href="{{ $baseCurrent }}" class="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400">Kembali</a>
+                @if (auth()->user()->isAdmin())
+                    <a href="{{ route('orders.indexView') }}"
+                        class="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400">Kembali</a>
+                @else
+                    <a href="{{ route('order.history') }}"
+                        class="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400">Kembali</a>
+                @endif
             </div>
+
             {{-- Ditutup Sementara, Untuk Konfirmasi Stok --}}
 
             {{--
