@@ -199,9 +199,21 @@
                             @csrf
                             @method('POST')
 
+                            @if ($errors->any())
+                                <div class="bg-red-100 p-3 rounded">
+                                    <ul class="list-disc pl-5 text-red-600">
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+
+
                             {{-- Tanggal & Waktu Kirim --}}
                             <label class="block">
-                                <span class="text-gray-700">Tanggal & Waktu Kirim</span>
+                                <span class="text-gray-700">Tanggal & Waktu Kirim <span
+                                        class="text-red-500">*</span></span>
                                 <input type="datetime-local" name="scheduled_at"
                                     class="mt-1 w-full rounded border-gray-300"
                                     value="{{ old('scheduled_at', optional($order->scheduled_at)->format('Y-m-d\TH:i')) }}"
@@ -210,7 +222,8 @@
 
                             {{-- Estimasi Durasi (menit) --}}
                             <label class="block">
-                                <span class="text-gray-700">Estimasi Durasi (menit)</span>
+                                <span class="text-gray-700">Estimasi Durasi (menit) <span
+                                        class="text-red-500">*</span></span>
                                 <input type="number" name="estimate_minutes" min="1" step="1"
                                     class="mt-1 w-full rounded border-gray-300"
                                     value="{{ old('estimate_minutes', $order->estimate_minutes) }}"
@@ -220,7 +233,7 @@
 
                             {{-- Link Lacak --}}
                             <label class="block">
-                                <span class="text-gray-700">Link Lacak (Opsional)</span>
+                                <span class="text-gray-700">Link Lacak / Detail Kurir (Resi,No kurir, dll)</span>
                                 <input type="url" name="tracking_link" class="mt-1 w-full rounded border-gray-300"
                                     value="{{ old('tracking_link', $order->tracking_link) }}"
                                     placeholder="https://kurir.example/track/ABC123" />
@@ -228,11 +241,28 @@
 
                             {{-- Kurir --}}
                             <label class="block">
-                                <span class="text-gray-700">Kurir</span>
-                                <input name="courier" class="mt-1 w-full rounded border-gray-300"
-                                    value="{{ old('courier', $order->courier) }}"
-                                    placeholder="Misal: Gojek Instant / Grab Express" />
+                                <span class="text-gray-700">Kurir <span class="text-red-500">*</span></span>
+                                <select name="courier" class="mt-1 w-full rounded border-gray-300">
+                                    <option value="">-- Pilih Kurir --</option>
+                                    @php
+                                        $couriersSetting = \App\Models\Setting::where(
+                                            'key',
+                                            'available_couriers',
+                                        )->value('value');
+                                        $couriers = $couriersSetting
+                                            ? array_map('trim', explode(',', $couriersSetting))
+                                            : [];
+                                    @endphp
+
+                                    @foreach ($couriers as $courier)
+                                        <option value="{{ $courier }}"
+                                            {{ old('courier', $order->courier) == $courier ? 'selected' : '' }}>
+                                            {{ $courier }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </label>
+
 
                             <button type="button" class="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
                                 onclick="confirmAction(this.form, 'Apakah kamu yakin ingin menyimpan detail pengiriman ini?')">
