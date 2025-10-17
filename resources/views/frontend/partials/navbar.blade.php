@@ -67,11 +67,13 @@
 
                     <ul x-cloak x-show="dropdown" @click.away="dropdown = false" x-transition
                         class="absolute right-0 mt-2 w-40 bg-white text-gray-700 shadow-lg rounded-lg py-2 z-50">
-                        <li>
-                            <a href="{{ route('dashboard') }}" class="block px-4 py-2 hover:bg-gray-100">
-                                <i class="fa fa-tachometer-alt mr-2"></i> Dashboard
-                            </a>
-                        </li>
+                        @if (auth()->user()->role !== 'user')
+                            <li>
+                                <a href="{{ route('dashboard') }}" class="block px-4 py-2 hover:bg-gray-100">
+                                    <i class="fa fa-tachometer-alt mr-2"></i> Dashboard
+                                </a>
+                            </li>
+                        @endif
                         <li>
                             <a href="{{ route('profile.edit') }}" class="block px-4 py-2 hover:bg-gray-100">
                                 <i class="fa fa-user-circle mr-2"></i> Profile

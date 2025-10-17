@@ -17,14 +17,15 @@ class OrderController extends Controller
     // Menampilkan semua order
     public function index()
     {
-        $orders = Order::with(['user', 'voucher', 'items', 'payment'])->latest()->get();
+        $orders = Order::with(['user', 'voucher', 'items', 'payment'])
+            ->latest()
+            ->get();
         return response()->json($orders);
     }
 
     public function OrderHistory(Request $request)
     {
-        $query = Order::with(['voucher', 'items', 'payment'])
-        ->where('user_id', auth()->id());
+        $query = Order::with(['voucher', 'items', 'payment'])->where('user_id', auth()->id());
 
         if ($request->status) {
             $query->where('status', $request->status);
@@ -39,17 +40,17 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'user_id'        => 'required|exists:users,id',
-            'total_amount'   => 'required|numeric|min:0',
-            'voucher_id'     => 'nullable|exists:vouchers,id',
-            'discount_amount'=> 'nullable|numeric|min:0',
+            'user_id' => 'required|exists:users,id',
+            'total_amount' => 'required|numeric|min:0',
+            'voucher_id' => 'nullable|exists:vouchers,id',
+            'discount_amount' => 'nullable|numeric|min:0',
         ]);
 
         $order = Order::create($validated);
 
         return response()->json([
             'message' => 'Order created successfully',
-            'data'    => $order
+            'data' => $order,
         ]);
     }
 
@@ -64,8 +65,8 @@ class OrderController extends Controller
     public function update(Request $request, Order $order)
     {
         $validated = $request->validate([
-            'status'          => 'in:' . implode(',', Order::statuses()),
-            'total_amount'    => 'numeric|min:0',
+            'status' => 'in:' . implode(',', Order::statuses()),
+            'total_amount' => 'numeric|min:0',
             'discount_amount' => 'numeric|min:0',
         ]);
 
@@ -73,7 +74,7 @@ class OrderController extends Controller
 
         return response()->json([
             'message' => 'Order updated successfully',
-            'data'    => $order
+            'data' => $order,
         ]);
     }
 
@@ -85,16 +86,13 @@ class OrderController extends Controller
         return response()->json(['message' => 'Order deleted successfully']);
     }
 
-
-
-
     public function indexView(Request $request)
     {
-        $sort      = $request->query('sort', 'created_at');
+        $sort = $request->query('sort', 'created_at');
         $direction = $request->query('direction', 'desc');
-        $perPage   = $request->query('perPage', 10);
-        $page      = $request->query('page', 1);
-        $status    = $request->query('status');
+        $perPage = $request->query('perPage', 10);
+        $page = $request->query('page', 1);
+        $status = $request->query('status');
 
         // Hitung total items (dengan filter status kalau ada)
         $totalItems = Order::when($status, function ($query) use ($status) {
@@ -106,25 +104,27 @@ class OrderController extends Controller
             $page = 1; // reset ke halaman 1
         }
 
-        $orders = Order::with(['user','voucher','items','payment'])
-        ->when($status, function ($query) use ($status) {
-            $query->where('status', $status);
-        })
-        ->when($sort === 'user.first_name', function ($query) use ($direction) {
-            $query->join('users', 'users.id', '=', 'orders.user_id')
-                ->orderBy('users.first_name', $direction)
-                ->select('orders.*'); // penting supaya tidak bentrok kolom
-        }, function ($query) use ($sort, $direction) {
-            $query->orderBy($sort, $direction);
-        })
-        ->paginate($perPage, ['*'], 'page', $page)
-        ->withQueryString();
+        $orders = Order::with(['user', 'voucher', 'items', 'payment'])
+            ->when($status, function ($query) use ($status) {
+                $query->where('status', $status);
+            })
+            ->when(
+                $sort === 'user.first_name',
+                function ($query) use ($direction) {
+                    $query
+                        ->join('users', 'users.id', '=', 'orders.user_id')
+                        ->orderBy('users.first_name', $direction)
+                        ->select('orders.*'); // penting supaya tidak bentrok kolom
+                },
+                function ($query) use ($sort, $direction) {
+                    $query->orderBy($sort, $direction);
+                },
+            )
+            ->paginate($perPage, ['*'], 'page', $page)
+            ->withQueryString();
 
         return view('backend.orders.index', compact('orders'));
     }
-
-
-
 
     public function showView(MidtransService $midtransService, Order $order)
     {
@@ -142,14 +142,15 @@ class OrderController extends Controller
 
         // Hitung discount
         $discountAmount = 0;
-        if($order->voucher !== null) $discountAmount = $order->voucher->getDiscountOnly($subtotal);
+        if ($order->voucher !== null) {
+            $discountAmount = $order->voucher->getDiscountOnly($subtotal);
+        }
 
         //Admin Fee
         $adminFee = $order->admin_fee ?? 2000;
 
         // Total
         $total = $subtotal - $discountAmount;
-
 
         // --- Midtrans Snap Token ---
         $payment = $order->payment;
@@ -159,10 +160,10 @@ class OrderController extends Controller
             // dd($midtransData);
             // Simpan payment baru
             $order->payment()->create([
-                'raw_response'  => json_encode($midtransData['params']),
-                'snap_token'    => $snapToken,
-                'amount'        => $total, // total yang sudah dihitung
-                'status'        => 'PENDING',
+                'raw_response' => json_encode($midtransData['params']),
+                'snap_token' => $snapToken,
+                'amount' => $total, // total yang sudah dihitung
+                'status' => 'PENDING',
                 'payment_gateway' => 'midtrans',
             ]);
         } else {
@@ -179,93 +180,93 @@ class OrderController extends Controller
         $userPhone = $this->normalizePhone($order->user->phone ?? '');
 
         $waUrlAdmin = $this->generateWaUrl($adminPhone, $order, 'admin');
-        $waUrlUser  = $this->generateWaUrl($userPhone, $order, 'user');
-
+        $waUrlUser = $this->generateWaUrl($userPhone, $order, 'user');
 
         // Pilih view sesuai role
-        $view = auth()->user()->isAdmin()
-                ? 'backend.orders.showAdmin'
-                : 'backend.orders.showUser';
+        $view = auth()->user()->isAdmin() ? 'backend.orders.showAdmin' : 'backend.orders.showUser';
 
-
-        return view($view, compact(
-            'order',
-            'subtotal',
-            'discountAmount',
-            'total',
-            'holdMovements',
-            'snapToken',
-            'adminFee',
-            'waUrlAdmin',
-            'waUrlUser'
-        ));
+        return view(
+            $view,
+            compact(
+                'order',
+                'subtotal',
+                'discountAmount',
+                'total',
+                'holdMovements',
+                'snapToken',
+                'adminFee',
+                'waUrlAdmin',
+                'waUrlUser',
+            ),
+        );
     }
 
-
     private function generateWaUrl(string $phone, Order $order, string $type): string
-            {
-                if (!$phone) return '#';
+    {
+        if (!$phone) {
+            return '#';
+        }
 
-                // Hitung subtotal & total
-                $subtotal = $order->items->sum(fn($i) => $i->price * $i->quantity);
-                $discount = $order->voucher ? $order->voucher->getDiscountOnly($subtotal) : 0;
-                $adminFee = $order->admin_fee ?? 2000;
-                $total = $subtotal - $discount + $adminFee;
+        // Hitung subtotal & total
+        $subtotal = $order->items->sum(fn($i) => $i->price * $i->quantity);
+        $discount = $order->voucher ? $order->voucher->getDiscountOnly($subtotal) : 0;
+        $adminFee = $order->admin_fee ?? 2000;
+        $total = $subtotal - $discount + $adminFee;
 
-                // Format Rupiah
-                $subtotalFormatted = number_format($subtotal, 0, ',', '.');
-                $discountFormatted = number_format($discount, 0, ',', '.');
-                $adminFeeFormatted = number_format($adminFee, 0, ',', '.');
-                $totalFormatted = number_format($total, 0, ',', '.');
+        // Format Rupiah
+        $subtotalFormatted = number_format($subtotal, 0, ',', '.');
+        $discountFormatted = number_format($discount, 0, ',', '.');
+        $adminFeeFormatted = number_format($adminFee, 0, ',', '.');
+        $totalFormatted = number_format($total, 0, ',', '.');
 
-                // Format item list
-                $itemsText = "";
-                foreach ($order->items as $item) {
-                    $itemName = $item->product->name ?? $item->name;
-                    $itemPrice = number_format($item->price, 0, ',', '.');
-                    $itemsText .= "- {$itemName} x{$item->quantity} (Rp{$itemPrice})\n";
-                }
+        // Format item list
+        $itemsText = '';
+        foreach ($order->items as $item) {
+            $itemName = $item->product->name ?? $item->name;
+            $itemPrice = number_format($item->price, 0, ',', '.');
+            $itemsText .= "- {$itemName} x{$item->quantity} (Rp{$itemPrice})\n";
+        }
 
-                if ($type === 'admin') {
-                    $message = <<<MSG
-                    Halo Admin
+        if ($type === 'admin') {
+            $message = <<<MSG
+            Halo Admin
 
-                    Saya sudah melakukan pembayaran untuk Order #{$order->order_id}.
+            Saya sudah melakukan pembayaran untuk Order #{$order->order_id}.
 
-                    Nama Pemesan: {$order->user->first_name}
-                    Email: {$order->user->email }
-                    No Telp: {$order->user->phone}
-                    Alamat: {$order->user->primaryAddress->address1}
+            Nama Pemesan: {$order->user->first_name}
+            Email: {$order->user->email}
+            No Telp: {$order->user->phone}
+            Alamat: {$order->user->primaryAddress->address1}
 
-                    Pesanan:
-                    $itemsText
-                    Subtotal: Rp$subtotalFormatted
-                    Discount: -Rp$discountFormatted
-                    Admin Fee: Rp$adminFeeFormatted
-                    Total: Rp$totalFormatted
+            Pesanan:
+            $itemsText
+            Subtotal: Rp$subtotalFormatted
+            Discount: -Rp$discountFormatted
+            Admin Fee: Rp$adminFeeFormatted
+            Total: Rp$totalFormatted
 
-                    Mohon konfirmasi pesanan saya. Terima kasih!
-                    MSG;
-                } else { // user
-                    $message = <<<MSG
-                    Halo {$order->user->first_name},
+            Mohon konfirmasi pesanan saya. Terima kasih!
+            MSG;
+        } else {
+            // user
+            $message = <<<MSG
+            Halo {$order->user->first_name},
 
-                    Pesanan #{$order->order_id} Anda telah dikonfirmasi oleh Admin.
+            Pesanan #{$order->order_id} Anda telah dikonfirmasi oleh Admin.
 
-                    Pesanan Anda:
-                    $itemsText
-                    Subtotal: Rp$subtotalFormatted
-                    Discount: -Rp$discountFormatted
-                    Admin Fee: Rp$adminFeeFormatted
-                    Total: Rp$totalFormatted
+            Pesanan Anda:
+            $itemsText
+            Subtotal: Rp$subtotalFormatted
+            Discount: -Rp$discountFormatted
+            Admin Fee: Rp$adminFeeFormatted
+            Total: Rp$totalFormatted
 
-                    Terima kasih telah berbelanja di kami!
-                    MSG;
-                }
+            Terima kasih telah berbelanja di kami!
+            MSG;
+        }
 
         return "https://wa.me/{$phone}?text=" . urlencode($message);
     }
-
 
     private function normalizePhone(string $phone): string
     {
@@ -285,14 +286,13 @@ class OrderController extends Controller
         return $phone;
     }
 
-
-   public function setShipment(Request $request, Order $order)
-   {
+    public function setShipment(Request $request, Order $order)
+    {
         $data = $request->validate([
-            'scheduled_at'     => ['required', 'date'],
+            'scheduled_at' => ['required', 'date'],
             'estimate_minutes' => ['required', 'integer', 'min:1'],
-            'tracking_link'    => ['nullable', 'url'],
-            'courier'          => ['nullable', 'string', 'max:255'],
+            'tracking_link' => ['nullable', 'string'],
+            'courier' => ['required', 'string', 'max:255'],
         ]);
 
         // Pastikan tipe data integer
@@ -305,20 +305,20 @@ class OrderController extends Controller
         $estimatedArrival = $scheduledAt->copy()->addMinutes($estimateMinutes);
 
         $order->update([
-            'scheduled_at'      => $scheduledAt,
-            'estimate_minutes'  => $estimateMinutes,
-            'tracking_link'     => $data['tracking_link'] ?? null,
-            'courier'           => $data['courier'] ?? null,
+            'scheduled_at' => $scheduledAt,
+            'estimate_minutes' => $estimateMinutes,
+            'tracking_link' => $data['tracking_link'] ?? null,
+            'courier' => $data['courier'] ?? null,
             'estimated_arrival' => $estimatedArrival,
-            'status'            => OrderStatus::Shipment->value
+            'status' => OrderStatus::Shipment->value,
         ]);
 
         return back()->with('success', 'Detail pengiriman berhasil disimpan.');
     }
 
-
-     public function orderReversal(Order $order){
-         // Ubah status order menjadi cancelled
+    public function orderReversal(Order $order)
+    {
+        // Ubah status order menjadi cancelled
         $order->update(['status' => OrderStatus::Cancelled->value]);
 
         // Ambil semua hold yang terkait order ini
@@ -338,10 +338,9 @@ class OrderController extends Controller
         }
 
         return back()->with('success', 'Order dibatalkan dan stok yang di-hold telah dilepas.');
-     }
+    }
 
-
-     public function confirmReceived(Order $order)
+    public function confirmReceived(Order $order)
     {
         // Hanya user pemilik pesanan yang boleh konfirmasi atau admin
         abort_unless($order->user_id === auth()->id() || auth()->user()->isAdmin(), 403);

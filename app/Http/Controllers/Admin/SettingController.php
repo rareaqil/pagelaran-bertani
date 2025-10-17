@@ -19,6 +19,12 @@ class SettingController extends Controller
                 'rules' => 'required|string',
             ],
         ],
+        'Shipping' => [
+            'available_couriers' => [
+                'description' => 'Daftar Kurir (pisahkan dengan koma, contoh: JNE, TIKI, J&T Express)',
+                'rules' => 'required|string',
+            ],
+        ],
         'Contact Us' => [
             'contact_email' => [
                 'description' => 'Alamat email untuk kontak',
@@ -73,7 +79,7 @@ class SettingController extends Controller
                 // Kondisional untuk Midtrans production
                 if (in_array($key, ['midtrans_merchant_id', 'midtrans_server_key', 'midtrans_client_key'])) {
                     $rules[$key] = function ($attribute, $value, $fail) use ($request) {
-                        if ($request->input('midtrans_is_production') && (! $value || trim($value) === '')) {
+                        if ($request->input('midtrans_is_production') && (!$value || trim($value) === '')) {
                             $fail("Field {$attribute} wajib diisi jika mode produksi aktif.");
                         }
                     };
