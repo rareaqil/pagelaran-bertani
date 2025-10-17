@@ -71,6 +71,9 @@ Route::middleware('auth')->group(function () {
     Route::prefix('orders')
         ->name('orders.')
         ->group(function () {
+            Route::post('/{order}/confirm-received', [OrderController::class, 'confirmReceived'])->name(
+                'confirmReceived',
+            );
             Route::patch('/{order}/cancel', [OrderController::class, 'orderReversal'])->name('orderReversal');
         });
 });
@@ -126,9 +129,6 @@ Route::middleware(['auth', 'role:super_admin,admin'])
                 Route::get('/', [OrderController::class, 'indexView'])->name('indexView');
                 Route::get('/{order}', [OrderController::class, 'showView'])->name('showView');
                 Route::post('/{order}/set-shipment', [OrderController::class, 'setShipment'])->name('setShipment');
-                Route::post('/{order}/confirm-received', [OrderController::class, 'confirmReceived'])->name(
-                    'confirmReceived',
-                );
             });
 
         // Settings
