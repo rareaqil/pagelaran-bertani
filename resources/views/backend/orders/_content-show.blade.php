@@ -233,7 +233,7 @@
 
                             {{-- Link Lacak --}}
                             <label class="block">
-                                <span class="text-gray-700">Link Lacak / Detail Kurir (Resi,No kurir, dll)</span>
+                                <span class="text-gray-700">Link Lacak</span>
                                 <input type="url" name="tracking_link" class="mt-1 w-full rounded border-gray-300"
                                     value="{{ old('tracking_link', $order->tracking_link) }}"
                                     placeholder="https://kurir.example/track/ABC123" />
@@ -406,7 +406,7 @@
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Ya, batalkan!',
+                confirmButtonText: 'Ya, yakin',
                 cancelButtonText: 'Batal',
             }).then((result) => {
                 if (result.isConfirmed) {
