@@ -31,7 +31,7 @@ class CartController extends Controller
     // Tambah item ke cart (AJAX)
     public function addItem(Request $request)
     {
-       $userId = Auth::id() ?? redirect('/login')->send();
+        $userId = Auth::id() ?? redirect('/login')->send();
         $cart = Cart::firstOrCreate(['user_id' => $userId]);
 
         $product = Product::find($request->id);
@@ -39,9 +39,11 @@ class CartController extends Controller
             return response()->json(['success' => false, 'message' => 'Product not found']);
         }
 
-        $existing = $cart->items()->where('itemable_id', $product->id)
-                                  ->where('itemable_type', get_class($product))
-                                  ->first();
+        $existing = $cart
+            ->items()
+            ->where('itemable_id', $product->id)
+            ->where('itemable_type', get_class($product))
+            ->first();
 
         $newQty = ($existing->quantity ?? 0) + ($request->quantity ?? 1);
 
@@ -49,7 +51,7 @@ class CartController extends Controller
         if ($newQty > $product->available_stock) {
             return response()->json([
                 'success' => false,
-                'message' => "Stok tidak cukup, tersedia: {$product->available_stock}"
+                'message' => "Stok tidak cukup, tersedia: {$product->available_stock}",
             ]);
         }
 
@@ -59,14 +61,14 @@ class CartController extends Controller
         } else {
             $cart->storeItem([
                 'itemable' => $product,
-                'quantity' => $request->quantity ?? 1
+                'quantity' => $request->quantity ?? 1,
             ]);
         }
 
         return response()->json([
             'success' => true,
             'cart' => $this->formatCart($cart),
-            'voucher' => $this->recalcVoucher($cart)
+            'voucher' => $this->recalcVoucher($cart),
         ]);
     }
 
@@ -75,11 +77,13 @@ class CartController extends Controller
     {
         $cart = Cart::firstOrCreate(['user_id' => Auth::id() ?? redirect('/login')->send()]);
         $item = $cart->items()->where('id', $id)->first();
-        if ($item) $item->delete();
+        if ($item) {
+            $item->delete();
+        }
 
         return response()->json([
             'success' => true,
-            'cart' => $this->formatCart($cart)
+            'cart' => $this->formatCart($cart),
         ]);
     }
 
@@ -100,14 +104,14 @@ class CartController extends Controller
         if (!$voucher || !$voucher->isValid($total)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Voucher tidak valid atau tidak memenuhi syarat'
+                'message' => 'Voucher tidak valid atau tidak memenuhi syarat',
             ]);
         }
 
         if ($total < $voucher->min_order_amount) {
             return response()->json([
                 'success' => false,
-                'message' => 'Minimal order tidak terpenuhi'
+                'message' => 'Minimal order tidak terpenuhi',
             ]);
         }
 
@@ -123,8 +127,8 @@ class CartController extends Controller
             'voucher' => [
                 'id' => $voucher->id,
                 'code' => $voucher->code,
-                'discount' => $discount
-            ]
+                'discount' => $discount,
+            ],
         ]);
     }
 
@@ -146,9 +150,6 @@ class CartController extends Controller
     //     ]);
     // }
 
-
-
-
     // Hapus semua item (AJAX)
     public function clear()
     {
@@ -157,7 +158,7 @@ class CartController extends Controller
 
         return response()->json([
             'success' => true,
-            'cart' => $this->formatCart($cart)
+            'cart' => $this->formatCart($cart),
         ]);
     }
 
@@ -169,7 +170,7 @@ class CartController extends Controller
             $price = $item->itemable->getPrice() ?? 0;
             $qty = $item->quantity ?? 1;
             $discount = $item->discount ?? 0;
-            $total += ($price * $qty) * (1 - $discount);
+            $total += $price * $qty * (1 - $discount);
         }
         return $total;
     }
@@ -178,13 +179,13 @@ class CartController extends Controller
     protected function formatCart($cart)
     {
         $cart->load('items.itemable'); // pastikan itemable ter-load
-        $items = $cart->items->map(function($item) {
+        $items = $cart->items->map(function ($item) {
             return [
                 'id' => $item->id,
                 'name' => $item->itemable->name,
                 'price' => $item->itemable->getPrice(),
                 'quantity' => $item->quantity,
-                'discount' => $item->discount ?? 0
+                'discount' => $item->discount ?? 0,
             ];
         });
         return ['items' => $items];
@@ -200,13 +201,15 @@ class CartController extends Controller
         }
 
         $quantity = intval($request->quantity);
-        if ($quantity < 1) $quantity = 1;
+        if ($quantity < 1) {
+            $quantity = 1;
+        }
 
-         $availableStock = $item->itemable->available_stock; // method getAvailableStockAttribute
+        $availableStock = $item->itemable->available_stock; // method getAvailableStockAttribute
         if ($quantity > $availableStock) {
             return response()->json([
                 'success' => false,
-                'message' => "Quantity exceeds available stock ({$availableStock})"
+                'message' => "Quantity exceeds available stock ({$availableStock})",
             ]);
         }
 
@@ -216,7 +219,7 @@ class CartController extends Controller
         return response()->json([
             'success' => true,
             'cart' => $this->formatCart($cart),
-            'voucher' => $this->recalcVoucher($cart)
+            'voucher' => $this->recalcVoucher($cart),
         ]);
     }
 
@@ -230,7 +233,7 @@ class CartController extends Controller
             return [
                 'id' => $cart->voucher->id,
                 'code' => $cart->voucher->code,
-                'discount' => $voucherAmount
+                'discount' => $voucherAmount,
             ];
         }
         return null;
@@ -238,17 +241,14 @@ class CartController extends Controller
 
     public function checkout(Request $request)
     {
-
-
-       $userId = auth()->id(); // pasti ada
+        $userId = auth()->id(); // pasti ada
         if (!$userId) {
             return response()->json([
                 'success' => false,
                 'redirect' => url('/login'),
-                'message' => 'Silakan login untuk melanjutkan.'
+                'message' => 'Silakan login untuk melanjutkan.',
             ]);
         }
-
 
         $user = auth()->user();
         $address = $user->primaryAddress;
@@ -266,11 +266,11 @@ class CartController extends Controller
             return response()->json([
                 'success' => false,
                 'redirect' => url('/profile'),
-                'message' => 'Profil belum lengkap. Pastikan alamat dan nomor telepon sudah terisi.'
+                'message' => 'Profil belum lengkap. Pastikan alamat dan nomor telepon sudah terisi.',
             ]);
         }
-        $cart   = Cart::firstOrCreate(['user_id' => $userId]);
-        $items  = $cart->items;
+        $cart = Cart::firstOrCreate(['user_id' => $userId]);
+        $items = $cart->items;
 
         if ($items->isEmpty()) {
             return response()->json(['success' => false, 'message' => 'Cart kosong']);
@@ -284,7 +284,7 @@ class CartController extends Controller
             if ($product->available_stock < $item->quantity) {
                 return response()->json([
                     'success' => false,
-                    'message' => "Stok {$product->name} tidak cukup. Tersedia: {$product->available_stock}"
+                    'message' => "Stok {$product->name} tidak cukup. Tersedia: {$product->available_stock}",
                 ]);
             }
 
@@ -293,8 +293,8 @@ class CartController extends Controller
 
         // Ambil voucher dari request
         $voucherId = $request->voucher['id'] ?? null;
-        $discount  = $request->voucher['discount'] ?? 0;
-        $voucher   = $voucherId ? Voucher::find($voucherId) : null;
+        $discount = $request->voucher['discount'] ?? 0;
+        $voucher = $voucherId ? Voucher::find($voucherId) : null;
 
         // Cek voucher valid
         if ($voucher && !$voucher->isValid($subtotal)) {
@@ -308,12 +308,12 @@ class CartController extends Controller
 
         // Buat order
         $order = Order::create([
-            'user_id'         => $userId,
-            'total_amount'    => $subtotal - $discount + $adminFee,
+            'user_id' => $userId,
+            'total_amount' => $subtotal - $discount + $adminFee,
             'status' => OrderStatus::Pending->value,
-            'voucher_id'      => $voucherId,
+            'voucher_id' => $voucherId,
             'discount_amount' => $discount,
-            'admin_fee'       => $adminFee,
+            'admin_fee' => $adminFee,
         ]);
 
         // Simpan order_items & hold stock
@@ -323,16 +323,16 @@ class CartController extends Controller
 
             $order->items()->create([
                 'product_id' => $product->id,
-                'quantity'   => $item->quantity,
-                'price'      => $product->getPrice(),
+                'quantity' => $item->quantity,
+                'price' => $product->getPrice(),
             ]);
 
             // Stock Movement hold
             $holdRequest = new Request([
-                'product_id'     => $product->id,
-                'quantity'       => $item->quantity,
+                'product_id' => $product->id,
+                'quantity' => $item->quantity,
                 'reference_type' => 'Order',
-                'reference_id'   => $order->order_id,
+                'reference_id' => $order->order_id,
             ]);
 
             $stockController->hold($holdRequest);
@@ -341,21 +341,16 @@ class CartController extends Controller
         // Kosongkan cart
         $cart->emptyCart();
 
-         if ($user->role === 'admin' || $user->role === 'super_admin') {
+        if ($user->isAdmin()) {
             $redirectUrl = url('/backend/orders/' . $order->order_id);
         } else {
             $redirectUrl = url('/orders/' . $order->order_id);
         }
 
         return response()->json([
-            'success'  => true,
+            'success' => true,
             'order_id' => $order->order_id,
-             'redirect' => $redirectUrl,
+            'redirect' => $redirectUrl,
         ]);
     }
-
-
-
-
-
 }

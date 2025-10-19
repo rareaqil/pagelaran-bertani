@@ -18,26 +18,20 @@ class UserRequest extends FormRequest
 
         return [
             'first_name' => ['required', 'string', 'max:255'],
-            'last_name'  => ['required', 'string', 'max:255'],
-            'email'      => [
-                'required',
-                'string',
-                'email',
-                'max:255',
-                Rule::unique('users')->ignore($userId),
-            ],
-            'phone'       => ['nullable','string','max:20'],
-            'age'       => ['nullable','string','max:2'], 
-            'password'   => $userId ? ['nullable', 'string', 'min:6'] : ['required', 'string', 'min:6'],
-            'role'       => ['required', Rule::in(['super_admin','admin','user'])],
+            'last_name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($userId)],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'age' => ['nullable', 'string', 'max:2'],
+            'password' => $userId ? ['nullable', 'string', 'min:6'] : ['required', 'string', 'min:6'],
+            'role' => ['required', Rule::in(['super_admin', 'admin_toko', 'admin_kebun', 'user'])],
 
             // alamat
-            'address1'    => ['nullable','string','max:255'],
-            'postcode'    => ['nullable','string','max:10'],
-            'province_id' => ['nullable','integer'],
-            'regency_id'  => ['nullable','integer'],
-            'district_id' => ['nullable','integer'],
-            'village_id'  => ['nullable','integer'],
+            'address1' => ['nullable', 'string', 'max:255'],
+            'postcode' => ['nullable', 'string', 'max:10'],
+            'province_id' => ['nullable', 'integer'],
+            'regency_id' => ['nullable', 'integer'],
+            'district_id' => ['nullable', 'integer'],
+            'village_id' => ['nullable', 'integer'],
         ];
     }
 
@@ -45,7 +39,7 @@ class UserRequest extends FormRequest
     {
         return [
             'email.unique' => 'Email sudah digunakan.',
-            'role.in'      => 'Role harus salah satu dari super_admin, admin, atau user.',
+            'role.in' => 'Role harus salah satu dari super_admin, admin_kebun, admin_toko, atau user.',
             'password.min' => 'Password minimal 6 karakter.',
         ];
     }
