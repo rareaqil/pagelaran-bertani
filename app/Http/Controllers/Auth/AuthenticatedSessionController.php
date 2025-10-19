@@ -31,13 +31,14 @@ class AuthenticatedSessionController extends Controller
     //     return redirect()->intended(route('dashboard', absolute: false));
     // }
 
-    public function store(LoginRequest $request){
+    public function store(LoginRequest $request)
+    {
         $request->authenticate();
         $request->session()->regenerate();
         switch (Auth::user()->role) {
             case 'super_admin':
-                return redirect()->route('dashboard');
-            case 'admin':
+            case 'admin_toko':
+            case 'admin_kebun':
                 return redirect()->route('dashboard');
             case 'user':
                 return redirect()->route('home');

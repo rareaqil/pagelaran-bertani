@@ -15,20 +15,28 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-    User::create([
+        User::create([
             'first_name' => 'Super',
             'last_name' => 'Admin',
             'email' => 'superadmin@example.com',
             'password' => 'password123',
-            'role' => 'admin',
+            'role' => 'super_admin',
         ]);
 
         User::create([
-            'first_name' => 'Admin',
-            'last_name' => 'User',
-            'email' => 'admin@example.com',
-            'password' => 'password123',
-            'role' => 'admin',
+            'first_name' => 'Toko',
+            'last_name' => 'Admin',
+            'email' => 'admintoko@example.com',
+            'password' => bcrypt('password123'),
+            'role' => 'admin_toko',
+        ]);
+
+        User::create([
+            'first_name' => 'Kebun',
+            'last_name' => 'Admin',
+            'email' => 'adminkebun@example.com',
+            'password' => bcrypt('password123'),
+            'role' => 'admin_kebun',
         ]);
 
         User::create([
@@ -40,10 +48,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // --- Another Seeder ---
-        $this->call([
-            FruitTypeSeeder::class,
-            SettingsSeeder::class,
-            IndoRegionSeeder::class,
-        ]);
+        $this->call([FruitTypeSeeder::class, SettingsSeeder::class, IndoRegionSeeder::class]);
     }
 }

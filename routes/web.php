@@ -41,6 +41,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    Route::prefix('backend/orders')->group(function () {
+        Route::get('/export', [OrderController::class, 'export'])->name('orders.export');
+    });
     // Stock Management
     Route::prefix('stock')
         ->name('stock.')
@@ -83,15 +86,6 @@ Route::middleware('auth')->group(function () {
 | Role-based Dashboards
 |--------------------------------------------------------------------------
 */
-// Super Admin
-Route::middleware(['auth', 'role:super_admin'])->group(function () {
-    Route::get('/superadmin/dashboard', fn() => 'Super Admin Dashboard')->name('superadmin.dashboard');
-});
-
-// Admin
-Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/backend/dashboard', fn() => view('dashboard'))->name('dashboard');
-});
 
 // User
 Route::middleware(['auth', 'role:user'])->group(function () {
@@ -104,9 +98,11 @@ Route::middleware(['auth', 'role:user'])->group(function () {
 | Backend (Super Admin & Admin)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:super_admin,admin'])
+Route::middleware(['auth', 'role:super_admin,admin_toko,admin_kebun'])
     ->prefix('backend')
     ->group(function () {
+        Route::get('/dashboard', fn() => view('dashboard'))->name('dashboard');
+
         // Users, Posts, Products (resource routes)
         Route::resource('users', UserController::class);
         Route::resource('posts', PostController::class);
@@ -129,6 +125,7 @@ Route::middleware(['auth', 'role:super_admin,admin'])
                 Route::get('/', [OrderController::class, 'indexView'])->name('indexView');
                 Route::get('/{order}', [OrderController::class, 'showView'])->name('showView');
                 Route::post('/{order}/set-shipment', [OrderController::class, 'setShipment'])->name('setShipment');
+                // Route::get('/export', [OrderController::class, 'export'])->name('export');
             });
 
         // Settings

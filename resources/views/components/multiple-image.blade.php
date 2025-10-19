@@ -1,10 +1,4 @@
-@props([
-    'name',
-    'label' => 'Gambar Produk',
-    'value' => '',
-    'max' => 5,
-    'required' => false,
-])
+@props(['name', 'label' => 'Gambar Produk', 'value' => '', 'max' => 5, 'required' => false])
 
 @php
     // Pecah string jadi array untuk preview saja
@@ -14,35 +8,28 @@
 
 <div class="space-y-2">
     @if ($required)
-        <x-input-label required  :for="$name" :value="$label" />
+        <x-input-label required :for="$name" :value="$label" />
     @else
-        <x-input-label   :for="$name" :value="$label" />
+        <x-input-label :for="$name" :value="$label" />
     @endif
-
+    <span class="text-xs text-gray-500 italic">
+        Jika ingin update gambar, harus mengganti semua gambar yang ada.
+    </span>
     <div class="flex gap-2">
-        <input
-            id="{{ $name }}"
-            name="{{ $name }}"
-            type="text"
-            class="flex-1 rounded border-gray-300 p-2"
-            value="{{ old($name, $value ?? '') }}"
-            placeholder="Pilih gambar..."
-            readonly
-            hidden
-        />
-        <button
-            id="button-{{ $name }}"
-            type="button"
+
+        <input id="{{ $name }}" name="{{ $name }}" type="text" class="flex-1 rounded border-gray-300 p-2"
+            value="{{ old($name, $value ?? '') }}" placeholder="Pilih gambar..." readonly hidden />
+        <button id="button-{{ $name }}" type="button"
             class="btn btn-outline-info rounded border border-gray-300 px-4 py-2 text-gray-700"
-            data-input="{{ $name }}"
-        >
+            data-input="{{ $name }}">
             Browse
         </button>
     </div>
     <x-input-error class="mt-2" :messages="$errors->get($name)" />
 
     {{-- Preview --}}
-    <div id="preview-{{ $name }}" class="mt-3 flex flex-wrap gap-3 rounded-lg border border-gray-300 bg-gray-50 p-3">
+    <div id="preview-{{ $name }}"
+        class="mt-3 flex flex-wrap gap-3 rounded-lg border border-gray-300 bg-gray-50 p-3">
         @forelse ($urls as $u)
             <div class="h-24 w-24 overflow-hidden rounded border border-gray-300 bg-white shadow">
                 <a href="{{ $u }}" class="glightbox" data-gallery="gallery-{{ $name }}">
@@ -56,19 +43,21 @@
 </div>
 
 @pushOnce('scripts')
-<script type="module" src="{{ asset('vendor/laravel-filemanager/js/stand-alone-button.js') }}"></script>
+    <script type="module" src="{{ asset('vendor/laravel-filemanager/js/stand-alone-button.js') }}"></script>
 @endPushOnce
 
 @push('scripts')
     <script type="module">
-        $(function () {
+        $(function() {
             const input = $('#{{ $name }}');
             const preview = $('#preview-{{ $name }}');
             const max = {{ $max }};
 
-            $('#button-{{ $name }}').filemanager('image', { multiple: true });
+            $('#button-{{ $name }}').filemanager('image', {
+                multiple: true
+            });
 
-            input.on('change', function () {
+            input.on('change', function() {
                 let urls = (input.val() || '')
                     .split(',')
                     .map((u) => u.trim())
@@ -100,11 +89,15 @@
                     `);
                 });
                 // Re-init lightbox
-                const lightbox = GLightbox({ selector: '.glightbox' });
+                const lightbox = GLightbox({
+                    selector: '.glightbox'
+                });
             });
         });
     </script>
     <script>
-        const lightbox = GLightbox({ selector: '.glightbox' });
+        const lightbox = GLightbox({
+            selector: '.glightbox'
+        });
     </script>
 @endpush

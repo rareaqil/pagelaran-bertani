@@ -17,71 +17,79 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
-                    {{-- Users --}}
-                    <x-nav-dropdown :active="request()->routeIs('users.*')" align="left" width="w-30" top="36">
-                        <x-slot name="trigger">
-                            <span class="flex items-center">
-                                {{ __('User') }}
-                            </span>
-                        </x-slot>
-                        <x-slot name="content">
-                            <x-dropdown-link :href="route('users.index')" :active="request()->routeIs('users.index')">
-                                {{ __('List User') }}
-                            </x-dropdown-link>
-                            <x-dropdown-link :href="route('users.create')" :active="request()->routeIs('users.create')">
-                                {{ __('Tambah User') }}
-                            </x-dropdown-link>
-                        </x-slot>
-                    </x-nav-dropdown>
 
-                    {{-- Posts --}}
-                    <x-nav-dropdown :active="request()->routeIs('posts.*')" align="left" width="w-30" top="36">
-                        <x-slot name="trigger">
-                            <span class="flex items-center">
-                                {{ __('Posts') }}
-                            </span>
-                        </x-slot>
+                    @if (auth()->user()->role === 'super_admin')
+                        {{-- Users --}}
+                        <x-nav-dropdown :active="request()->routeIs('users.*')" align="left" width="w-30" top="36">
+                            <x-slot name="trigger">
+                                <span class="flex items-center">
+                                    {{ __('User') }}
+                                </span>
+                            </x-slot>
+                            <x-slot name="content">
+                                <x-dropdown-link :href="route('users.index')" :active="request()->routeIs('users.index')">
+                                    {{ __('List User') }}
+                                </x-dropdown-link>
+                                <x-dropdown-link :href="route('users.create')" :active="request()->routeIs('users.create')">
+                                    {{ __('Tambah User') }}
+                                </x-dropdown-link>
+                            </x-slot>
+                        </x-nav-dropdown>
+                    @endif
+                    @if (in_array(auth()->user()->role, ['super_admin', 'admin_kebun', 'admin_toko']))
+                        {{-- Posts --}}
+                        <x-nav-dropdown :active="request()->routeIs('posts.*')" align="left" width="w-30" top="36">
+                            <x-slot name="trigger">
+                                <span class="flex items-center">
+                                    {{ __('Posts') }}
+                                </span>
+                            </x-slot>
 
-                        <x-slot name="content">
-                            <x-dropdown-link :href="route('posts.index')" :active="request()->routeIs('posts.index')">
-                                {{ __('List Posts') }}
-                            </x-dropdown-link>
-                            <x-dropdown-link :href="route('posts.create')" :active="request()->routeIs('posts.create')">
-                                {{ __('Tambah Post') }}
-                            </x-dropdown-link>
-                        </x-slot>
-                    </x-nav-dropdown>
+                            <x-slot name="content">
+                                <x-dropdown-link :href="route('posts.index')" :active="request()->routeIs('posts.index')">
+                                    {{ __('List Posts') }}
+                                </x-dropdown-link>
+                                <x-dropdown-link :href="route('posts.create')" :active="request()->routeIs('posts.create')">
+                                    {{ __('Tambah Post') }}
+                                </x-dropdown-link>
+                            </x-slot>
+                        </x-nav-dropdown>
+                    @endif
 
-                    {{-- Products --}}
-                    <x-nav-dropdown :active="request()->routeIs('products.*')" align="left" width="w-30" top="36">
-                        <x-slot name="trigger">
-                            <span class="flex items-center">
-                                {{ __('Products') }}
-                            </span>
-                        </x-slot>
+                    @if (in_array(auth()->user()->role, ['super_admin', 'admin_toko']))
+                        {{-- Products --}}
+                        <x-nav-dropdown :active="request()->routeIs('products.*')" align="left" width="w-30" top="36">
+                            <x-slot name="trigger">
+                                <span class="flex items-center">
+                                    {{ __('Products') }}
+                                </span>
+                            </x-slot>
 
-                        <x-slot name="content">
-                            <x-dropdown-link :href="route('products.index')" :active="request()->routeIs('products.index')">
-                                {{ __('List Products') }}
-                            </x-dropdown-link>
-                            <x-dropdown-link :href="route('products.create')" :active="request()->routeIs('products.create')">
-                                {{ __('Tambah Product') }}
-                            </x-dropdown-link>
-                        </x-slot>
-                    </x-nav-dropdown>
-                    <x-nav-dropdown :active="request()->routeIs('orders.*')" align="left" width="w-30" top="36">
-                        <x-slot name="trigger">
-                            <span class="flex items-center">
-                                {{ __('Transactions') }}
-                            </span>
-                        </x-slot>
+                            <x-slot name="content">
+                                <x-dropdown-link :href="route('products.index')" :active="request()->routeIs('products.index')">
+                                    {{ __('List Products') }}
+                                </x-dropdown-link>
+                                <x-dropdown-link :href="route('products.create')" :active="request()->routeIs('products.create')">
+                                    {{ __('Tambah Product') }}
+                                </x-dropdown-link>
+                            </x-slot>
+                        </x-nav-dropdown>
 
-                        <x-slot name="content">
-                            <x-dropdown-link :href="route('orders.indexView')" :active="request()->routeIs('orders.indexView')">
-                                {{ __('Orders') }}
-                            </x-dropdown-link>
-                        </x-slot>
-                    </x-nav-dropdown>
+                        <x-nav-dropdown :active="request()->routeIs('orders.*')" align="left" width="w-30" top="36">
+                            <x-slot name="trigger">
+                                <span class="flex items-center">
+                                    {{ __('Transactions') }}
+                                </span>
+                            </x-slot>
+
+                            <x-slot name="content">
+                                <x-dropdown-link :href="route('orders.indexView')" :active="request()->routeIs('orders.indexView')">
+                                    {{ __('Orders') }}
+                                </x-dropdown-link>
+                            </x-slot>
+                        </x-nav-dropdown>
+                    @endif
+
                     <x-nav-dropdown :active="request()->routeIs('fruit-types.*')" align="left" width="w-30" top="20">
                         <x-slot name="trigger">
                             <span class="flex items-center">
@@ -90,18 +98,21 @@
                         </x-slot>
 
                         <x-slot name="content">
+
                             <x-dropdown-link :href="route('fruit-types.index')" :active="request()->routeIs('fruit-types.*')">
                                 {{ __('Type Fruits') }}
                             </x-dropdown-link>
-                            <x-dropdown-link :href="route('vouchers.index')" :active="request()->routeIs('vouchers.*')">
-                                {{ __('Vouchers') }}
-                            </x-dropdown-link>
-                            <x-dropdown-link :href="route('testimonials.index')" :active="request()->routeIs('testimonials.*')">
-                                {{ __('Testimonials') }}
-                            </x-dropdown-link>
-                            <x-dropdown-link :href="route('settings.index')" :active="request()->routeIs('settings.*')">
-                                {{ __('Settings') }}
-                            </x-dropdown-link>
+                            @if (in_array(auth()->user()->role, ['super_admin', 'admin_toko']))
+                                <x-dropdown-link :href="route('vouchers.index')" :active="request()->routeIs('vouchers.*')">
+                                    {{ __('Vouchers') }}
+                                </x-dropdown-link>
+                                <x-dropdown-link :href="route('testimonials.index')" :active="request()->routeIs('testimonials.*')">
+                                    {{ __('Testimonials') }}
+                                </x-dropdown-link>
+                                <x-dropdown-link :href="route('settings.index')" :active="request()->routeIs('settings.*')">
+                                    {{ __('Settings') }}
+                                </x-dropdown-link>
+                            @endif
                         </x-slot>
                     </x-nav-dropdown>
                 </div>
@@ -175,71 +186,80 @@
             </x-responsive-nav-link>
         </div>
         {{-- ===== Responsive Dropdown User ===== --}}
-        <div x-data="{
-            openMU: {{ request()->routeIs('users.*') ? 'true' : 'false' }},
-        }">
-            <button @click="openMU = ! openMU"
-                class="w-full px-4 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-100">
-                User
-            </button>
-            <div x-show="openMU" class="pl-4">
-                <x-responsive-nav-link :href="route('users.index')" :active="request()->routeIs('users.index')">
-                    List User
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('users.create')" :active="request()->routeIs('users.create')">
-                    Tambah User
-                </x-responsive-nav-link>
+        @if (auth()->user()->role === 'super_admin')
+            <div x-data="{
+                openMU: {{ request()->routeIs('users.*') ? 'true' : 'false' }},
+            }">
+                <button @click="openMU = ! openMU"
+                    class="w-full px-4 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-100">
+                    User
+                </button>
+                <div x-show="openMU" class="pl-4">
+                    <x-responsive-nav-link :href="route('users.index')" :active="request()->routeIs('users.index')">
+                        List User
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('users.create')" :active="request()->routeIs('users.create')">
+                        Tambah User
+                    </x-responsive-nav-link>
+                </div>
             </div>
-        </div>
+        @endif
 
-        {{-- ===== Responsive Dropdown Posts ===== --}}
-        <div x-data="{
-            openMP: {{ request()->routeIs('users.*') ? 'true' : 'false' }},
-        }">
-            <button @click="openMP = ! openMP"
-                class="w-full px-4 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-100">
-                Posts
-            </button>
-            <div x-show="openMP" class="pl-4">
-                <x-responsive-nav-link :href="route('posts.index')" :active="request()->routeIs('posts.index')">
-                    List Posts
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('posts.create')" :active="request()->routeIs('posts.create')">
-                    Tambah Post
-                </x-responsive-nav-link>
+        @if (auth()->user()->role === 'super_admin')
+            {{-- ===== Responsive Dropdown Posts ===== --}}
+            <div x-data="{
+                openMP: {{ request()->routeIs('users.*') ? 'true' : 'false' }},
+            }">
+                <button @click="openMP = ! openMP"
+                    class="w-full px-4 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-100">
+                    Posts
+                </button>
+                <div x-show="openMP" class="pl-4">
+                    <x-responsive-nav-link :href="route('posts.index')" :active="request()->routeIs('posts.index')">
+                        List Posts
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('posts.create')" :active="request()->routeIs('posts.create')">
+                        Tambah Post
+                    </x-responsive-nav-link>
+                </div>
             </div>
-        </div>
+        @endif
 
-        {{-- ===== Responsive Dropdown Products ===== --}}
-        <div x-data="{
-            openMPr: {{ request()->routeIs('products.*') ? 'true' : 'false' }},
-        }">
-            <button @click="openMPr = ! openMPr"
-                class="w-full px-4 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-100">
-                Products
-            </button>
-            <div x-show="openMPr" class="pl-4">
-                <x-responsive-nav-link :href="route('products.index')" :active="request()->routeIs('products.index')">
-                    List Products
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('products.create')" :active="request()->routeIs('products.create')">
-                    Tambah Product
-                </x-responsive-nav-link>
+        @if (in_array(auth()->user()->role, ['super_admin', 'admin_toko']))
+            {{-- ===== Responsive Dropdown Products ===== --}}
+            <div x-data="{
+                openMPr: {{ request()->routeIs('products.*') ? 'true' : 'false' }},
+            }">
+                <button @click="openMPr = ! openMPr"
+                    class="w-full px-4 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-100">
+                    Products
+                </button>
+                <div x-show="openMPr" class="pl-4">
+                    <x-responsive-nav-link :href="route('products.index')" :active="request()->routeIs('products.index')">
+                        List Products
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('products.create')" :active="request()->routeIs('products.create')">
+                        Tambah Product
+                    </x-responsive-nav-link>
+                </div>
             </div>
-        </div>
+        @endif
 
-        {{-- ===== Responsive Dropdown Transactions ===== --}}
-        <div x-data="{ openMT: {{ request()->routeIs('orders.*') ? 'true' : 'false' }} }">
-            <button @click="openMT = ! openMT"
-                class="w-full px-4 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-100">
-                Transactions
-            </button>
-            <div x-show="openMT" class="pl-4 space-y-1">
-                <x-responsive-nav-link :href="route('orders.indexView')" :active="request()->routeIs('orders.indexView')">
-                    Orders
-                </x-responsive-nav-link>
+        @if (in_array(auth()->user()->role, ['super_admin', 'admin_toko']))
+            {{-- ===== Responsive Dropdown Transactions ===== --}}
+            <div x-data="{ openMT: {{ request()->routeIs('orders.*') ? 'true' : 'false' }} }">
+                <button @click="openMT = ! openMT"
+                    class="w-full px-4 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-100">
+                    Transactions
+                </button>
+                <div x-show="openMT" class="pl-4 space-y-1">
+                    <x-responsive-nav-link :href="route('orders.indexView')" :active="request()->routeIs('orders.indexView')">
+                        Orders
+                    </x-responsive-nav-link>
+                </div>
             </div>
-        </div>
+        @endif
+
 
         {{-- ===== Responsive Dropdown Master Data ===== --}}
         <div x-data="{ openMMD: {{ request()->routeIs('fruit-types.*') || request()->routeIs('vouchers.*') || request()->routeIs('testimonials.*') || request()->routeIs('settings.*') ? 'true' : 'false' }} }">
@@ -251,15 +271,17 @@
                 <x-responsive-nav-link :href="route('fruit-types.index')" :active="request()->routeIs('fruit-types.*')">
                     Type Fruits
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('vouchers.index')" :active="request()->routeIs('vouchers.*')">
-                    Vouchers
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('testimonials.index')" :active="request()->routeIs('testimonials.*')">
-                    Testimonials
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('settings.index')" :active="request()->routeIs('settings.*')">
-                    Settings
-                </x-responsive-nav-link>
+                @if (in_array(auth()->user()->role, ['super_admin', 'admin_toko']))
+                    <x-responsive-nav-link :href="route('vouchers.index')" :active="request()->routeIs('vouchers.*')">
+                        Vouchers
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('testimonials.index')" :active="request()->routeIs('testimonials.*')">
+                        Testimonials
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('settings.index')" :active="request()->routeIs('settings.*')">
+                        Settings
+                    </x-responsive-nav-link>
+                @endif
             </div>
         </div>
 

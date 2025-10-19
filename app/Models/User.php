@@ -39,7 +39,12 @@ class User extends Authenticatable
 
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return $this->role !== 'user';
+    }
+
+    public function isUser(): bool
+    {
+        return $this->role === 'user';
     }
 
     public function getFullNameAttribute()
@@ -52,10 +57,7 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    protected $hidden = ['password', 'remember_token'];
 
     /**
      * Get the attributes that should be cast.

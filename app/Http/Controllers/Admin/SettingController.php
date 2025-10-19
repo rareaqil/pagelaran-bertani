@@ -64,8 +64,16 @@ class SettingController extends Controller
 
         $settings = Setting::whereIn('key', $allKeys)->get()->keyBy('key');
 
+        $filteredSections = [];
+        foreach ($this->sections as $sectionName => $fields) {
+            // Jika section Midtrans dan user bukan super_admin → skip
+            if ($sectionName === 'Midtrans' && auth()->user()->role !== 'super_admin') {
+                continue;
+            }
+            $filteredSections[$sectionName] = $fields;
+        }
         return view('backend.settings.index', [
-            'sections' => $this->sections,
+            'sections' => $filteredSections,
             'settings' => $settings,
         ]);
     }
@@ -74,7 +82,10 @@ class SettingController extends Controller
     {
         $rules = [];
 
-        foreach ($this->sections as $section) {
+        foreach ($this->sections as $sectionName => $section) {
+            if ($sectionName === 'Midtrans' && auth()->user()->role !== 'super_admin') {
+                continue;
+            }
             foreach ($section as $key => $config) {
                 // Kondisional untuk Midtrans production
                 if (in_array($key, ['midtrans_merchant_id', 'midtrans_server_key', 'midtrans_client_key'])) {
