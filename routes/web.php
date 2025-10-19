@@ -41,6 +41,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    Route::prefix('backend/orders')->group(function () {
+        Route::get('/export', [OrderController::class, 'export'])->name('orders.export');
+    });
     // Stock Management
     Route::prefix('stock')
         ->name('stock.')
@@ -122,6 +125,7 @@ Route::middleware(['auth', 'role:super_admin,admin_toko,admin_kebun'])
                 Route::get('/', [OrderController::class, 'indexView'])->name('indexView');
                 Route::get('/{order}', [OrderController::class, 'showView'])->name('showView');
                 Route::post('/{order}/set-shipment', [OrderController::class, 'setShipment'])->name('setShipment');
+                // Route::get('/export', [OrderController::class, 'export'])->name('export');
             });
 
         // Settings

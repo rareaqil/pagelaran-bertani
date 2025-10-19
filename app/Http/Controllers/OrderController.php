@@ -11,6 +11,8 @@ use App\Services\MidtransService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Exports\OrdersExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class OrderController extends Controller
 {
@@ -93,6 +95,8 @@ class OrderController extends Controller
         $perPage = $request->query('perPage', 10);
         $page = $request->query('page', 1);
         $status = $request->query('status');
+        $dateFrom = $request->query('date_from');
+        $dateTo = $request->query('date_to');
 
         // Hitung total items (dengan filter status kalau ada)
         $totalItems = Order::when($status, function ($query) use ($status) {
@@ -107,6 +111,12 @@ class OrderController extends Controller
         $orders = Order::with(['user', 'voucher', 'items', 'payment'])
             ->when($status, function ($query) use ($status) {
                 $query->where('status', $status);
+            })
+            ->when($dateFrom, function ($query) use ($dateFrom) {
+                $query->whereDate('created_at', '>=', $dateFrom);
+            })
+            ->when($dateTo, function ($query) use ($dateTo) {
+                $query->whereDate('created_at', '<=', $dateTo);
             })
             ->when(
                 $sort === 'user.first_name',
@@ -124,6 +134,24 @@ class OrderController extends Controller
             ->withQueryString();
 
         return view('backend.orders.index', compact('orders'));
+    }
+
+    public function export(Request $request)
+    {
+        $status = $request->query('status');
+        $dateFrom = $request->query('date_from');
+        $dateTo = $request->query('date_to');
+
+        $fileName = 'orders';
+        if ($dateFrom && $dateTo) {
+            $fileName .= "_{$dateFrom}_{$dateTo}";
+        }
+        if ($status) {
+            $fileName .= "_status_{$status}";
+        }
+        $fileName .= '.xlsx';
+
+        return Excel::download(new OrdersExport($status, $dateFrom, $dateTo), $fileName);
     }
 
     public function showView(MidtransService $midtransService, Order $order)
