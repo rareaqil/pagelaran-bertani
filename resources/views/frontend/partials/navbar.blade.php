@@ -2,8 +2,20 @@
     <div class="container mx-auto flex items-center justify-between py-4 px-6">
         <!-- Logo -->
         <a href="{{ url('/') }}" class="flex items-center space-x-2">
-            <img src="{{ asset('logo.png') }}" alt="Logo" class="h-10 w-10">
-            <span class="font-bold text-lg md:text-xl">PAGELARAN BERTANI</span>
+            <!-- Logo + Brand -->
+            <div class="flex items-center gap-3">
+                <div class="relative">
+                    <!-- Efek glow hijau -->
+                    <div class="absolute inset-0 rounded-full bg-green-600 blur-md opacity-60"></div>
+
+                    <!-- Logo -->
+                    <img src="{{ asset('media/Photo_Melon/logoPagelaranBertani.jpeg') }}" alt="Logo Pagelaran Bertani"
+                        class="relative h-10 w-10 rounded-full border-2 border-green-500 shadow-md object-cover" />
+                </div>
+                <span class="text-white font-extrabold text-lg tracking-wide">
+                    PAGELARAN BERTANI
+                </span>
+            </div>
         </a>
 
         <!-- Hamburger Menu (Mobile) -->

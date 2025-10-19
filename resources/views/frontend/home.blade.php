@@ -267,55 +267,121 @@
             class="bg-amber-500 text-white rounded-lg mx-6 md:mx-20 mt-10 p-8 grid md:grid-cols-3 text-center md:text-left divide-y md:divide-y-0 md:divide-x divide-white/40">
             <!-- Lokasi -->
             <div class="md:pr-6 pb-6 md:pb-0">
-                <h3 class="font-bold text-lg mb-3 border-b border-white/50 inline-block pb-1">📍 Lokasi</h3>
-                <p class="leading-relaxed mt-2">
-                    Jl. Imam Bonjol Desa Kademangan, Kec. Gondanglegi, Kab. Malang
-                </p>
-                <p class="mt-2 text-sm opacity-90 leading-relaxed">
-                    <span class="font-semibold">Kebun 1:</span> QJR4+47 Kademangan, Kabupaten Malang, Jawa Timur<br>
-                    <span class="font-semibold">Kebun 2:</span> QJR6+38H, Krajan, Suwaru, Kec. Pagelaran, Kabupaten Malang,
-                    Jawa Timur 65174
-                </p>
-                <p class="mt-3 text-sm">
-                    ✉️ <a href="mailto:{{ $email ?? '-' }}" class="underline hover:text-amber-100 transition">
-                        {{ $email ?? '-' }}
-                    </a>
-                </p>
+                <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-5 shadow-md">
+                    <h3 class="font-bold text-lg mb-3 border-b border-white/30 inline-block pb-1">
+                        📍 Lokasi
+                    </h3>
+
+                    <p class="leading-relaxed mt-2">
+                        Jl. Imam Bonjol, Desa Kademangan, Kec. Gondanglegi, Kab. Malang
+                    </p>
+
+                    <div class="mt-3 space-y-3 text-sm opacity-90 leading-relaxed">
+                        <a href="https://www.google.com/maps?q=QJR4%2B47+Kademangan,+Kabupaten+Malang,+Jawa+Timur"
+                            target="_blank"
+                            class="block transition transform hover:scale-[1.02] hover:text-amber-300 hover:drop-shadow-[0_0_5px_rgba(251,191,36,0.7)]">
+                            <span class="font-semibold">Kebun 1:</span> QJR4+47 Kademangan, Kabupaten Malang, Jawa Timur
+                        </a>
+
+                        <a href="https://www.google.com/maps?q=QJR6%2B38H+Suwaru,+Pagelaran,+Kabupaten+Malang,+Jawa+Timur+65174"
+                            target="_blank"
+                            class="block transition transform hover:scale-[1.02] hover:text-amber-300 hover:drop-shadow-[0_0_5px_rgba(251,191,36,0.7)]">
+                            <span class="font-semibold">Kebun 2:</span> QJR6+38H, Krajan, Suwaru, Kec. Pagelaran, Kabupaten
+                            Malang, Jawa Timur 65174
+                        </a>
+
+                        <a href="https://www.google.com/maps?q=Jl.+Kasuari+IX+Blok+HB+XI+No.13,+Bintaro+Sektor+9,+Pondok+Aren,+Tangerang+Selatan"
+                            target="_blank"
+                            class="block transition transform hover:scale-[1.02] hover:text-amber-300 hover:drop-shadow-[0_0_5px_rgba(251,191,36,0.7)]">
+                            <span class="font-semibold">Jakarta:</span> Jl. Kasuari IX Blok HB XI No.13, Bintaro Sektor 9,
+                            Kel. Pondok Aren, Kec. Pondok Pucung, Tangerang Selatan
+                        </a>
+                    </div>
+
+                    <p class="mt-4 text-sm">
+                        ✉️
+                        <a href="mailto:{{ $email ?? '-' }}" class="underline hover:text-amber-300 transition">
+                            {{ $email ?? '-' }}
+                        </a>
+                    </p>
+                </div>
             </div>
 
             <!-- Jam Operasional -->
             <div class="md:px-6 py-6 md:py-0">
-                <h3 class="font-bold text-lg mb-3 border-b border-white/50 inline-block pb-1">⏰ Jam Operasional</h3>
-                <ul class="space-y-1 text-sm opacity-90">
-                    <li><span class="font-medium">Minggu:</span> 09.00 – 17.00</li>
-                    <li><span class="font-medium">Senin:</span> Tutup</li>
-                    <li><span class="font-medium">Selasa:</span> 09.00 – 17.00</li>
-                    <li><span class="font-medium">Rabu:</span> Tutup</li>
-                    <li><span class="font-medium">Kamis:</span> Tutup</li>
-                    <li><span class="font-medium">Jumat:</span> Tutup</li>
-                    <li><span class="font-medium">Sabtu:</span> 15.00 – 17.00</li>
-                </ul>
+                <div class="bg-amber-400/30 backdrop-blur-sm rounded-3xl p-6 shadow-md border border-amber-300/40">
+                    <h3 class="font-bold text-lg text-white mb-4 border-b border-white/40 inline-flex items-center gap-2">
+                        <span>🕰️</span> Jam Operasional
+                    </h3>
+
+                    <div class="overflow-hidden rounded-2xl border border-white/20 bg-white/10 backdrop-blur-sm">
+                        <table class="w-full text-sm text-left text-white/90">
+                            <thead>
+                                <tr class="bg-white/10 text-amber-100">
+                                    <th class="py-3 px-4 font-semibold">Hari</th>
+                                    <th class="py-3 px-4 font-semibold">Waktu Operasional</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-white/10">
+                                <tr class="hover:bg-white/10 transition">
+                                    <td class="py-2 px-4 font-medium">Minggu</td>
+                                    <td class="py-2 px-4">09.00 – 17.00</td>
+                                </tr>
+                                <tr class="hover:bg-white/10 transition">
+                                    <td class="py-2 px-4 font-medium">Senin</td>
+                                    <td class="py-2 px-4">09.00 – 17.00</td>
+                                </tr>
+                                <tr class="hover:bg-white/10 transition">
+                                    <td class="py-2 px-4 font-medium">Selasa</td>
+                                    <td class="py-2 px-4">09.00 – 17.00</td>
+                                </tr>
+                                <tr class="hover:bg-white/10 transition">
+                                    <td class="py-2 px-4 font-medium">Rabu</td>
+                                    <td class="py-2 px-4">09.00 – 17.00</td>
+                                </tr>
+                                <tr class="hover:bg-white/10 transition">
+                                    <td class="py-2 px-4 font-medium">Kamis</td>
+                                    <td class="py-2 px-4">09.00 – 17.00</td>
+                                </tr>
+                                <tr class="hover:bg-white/10 transition">
+                                    <td class="py-2 px-4 font-medium">Jumat</td>
+                                    <td class="py-2 px-4">09.00 – 17.00</td>
+                                </tr>
+                                <tr class="hover:bg-white/10 transition">
+                                    <td class="py-2 px-4 font-medium">Sabtu</td>
+                                    <td class="py-2 px-4">09.00 – 17.00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p class="text-xs text-white/80 mt-3 italic">
+                        *Jam operasional dapat berubah pada hari libur nasional.
+                    </p>
+                </div>
             </div>
 
             <!-- Kontak -->
             <div class="md:pl-6 pt-6 md:pt-0">
-                <h3 class="font-bold text-lg mb-3 border-b border-white/50 inline-block pb-1">📞 Contact Person</h3>
-                <ul class="space-y-2 text-sm opacity-90">
-                    <li>
-                        Handono —
-                        <a href="https://wa.me/6282186641386" target="_blank"
-                            class="underline hover:text-amber-100 transition">
-                            0821-8664-1386
-                        </a>
-                    </li>
-                    <li>
-                        Bagus —
-                        <a href="https://wa.me/6281231034468" target="_blank"
-                            class="underline hover:text-amber-100 transition">
-                            0812-3103-4468
-                        </a>
-                    </li>
-                </ul>
+                <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-5 shadow-md">
+                    <h3 class="font-bold text-lg mb-3 border-b border-white/50 inline-block pb-1">📞 Contact Person</h3>
+                    <ul class="space-y-2 text-sm opacity-90">
+                        <li>
+                            Handono —
+                            <a href="https://wa.me/6282186641386" target="_blank"
+                                class="underline hover:text-amber-100 transition">
+                                0821-8664-1386
+                            </a>
+                        </li>
+                        <li>
+                            Bagus —
+                            <a href="https://wa.me/6281231034468" target="_blank"
+                                class="underline hover:text-amber-100 transition">
+                                0812-7292-6928
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
 
