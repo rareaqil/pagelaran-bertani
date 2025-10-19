@@ -10,38 +10,42 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use App\Models\FruitType;
 
-
 class PostController extends Controller
 {
-    public function index(Request  $request)
+    public function index(Request $request)
     {
-
         $sort = $request->query('sort', 'id'); // default sort by id
         $direction = $request->query('direction', 'asc'); // default ascending
-
-        // --- Pagination ---
         $perPage = $request->query('perPage', 10); // default 10
         $page = $request->query('page', 1);
 
+        $query = Post::with('fruitType');
+
+        // Sorting khusus relasi
+        if ($sort === 'fruitType.name') {
+            $query
+                ->join('fruit_types', 'fruit_types.id', '=', 'posts.fruit_type_id')
+                ->orderBy('fruit_types.name', $direction)
+                ->select('posts.*');
+        } else {
+            $query->orderBy($sort, $direction);
+        }
+
         // Hitung total items untuk reset page jika perlu
-        $totalItems = Post::count();
+        $totalItems = $query->count();
         $totalPages = ceil($totalItems / $perPage);
         if ($page > $totalPages) {
             $page = 1;
         }
 
-        // Ambil data dengan sort & paginate
-        $posts = Post::orderBy($sort, $direction)
-            ->paginate($perPage, ['*'], 'page', $page)
-            ->withQueryString();
+        $posts = $query->paginate($perPage, ['*'], 'page', $page)->withQueryString();
 
         return view('backend.posts.index', compact('posts'));
     }
 
     public function create()
     {
-
-           $fruits = FruitType::get();
+        $fruits = FruitType::get();
 
         return view('backend.posts.form', compact('fruits'));
     }
@@ -56,9 +60,9 @@ class PostController extends Controller
         $data['slug'] = $this->generateUniqueSlug($data['name']);
         $data['created_by'] = auth()->id();
         $data['created_by_name'] = auth()->user()->first_name . ' ' . auth()->user()->last_name;
-         if ($data['status'] === 'published' && empty($data['published_at'])) {
-                $data['published_at'] = now();
-            }
+        if ($data['status'] === 'published' && empty($data['published_at'])) {
+            $data['published_at'] = now();
+        }
 
         Post::create($data);
 
@@ -72,10 +76,9 @@ class PostController extends Controller
 
     public function edit(Post $post)
     {
-
         $fruits = FruitType::where('is_active', 1)->get();
 
-        return view('backend.posts.form', compact('post','fruits'));
+        return view('backend.posts.form', compact('post', 'fruits'));
     }
 
     public function update(PostRequest $request, Post $post)
@@ -115,7 +118,6 @@ class PostController extends Controller
         return redirect()->route('posts.index')->with('success', 'Post deleted successfully.');
     }
 
-
     // Hellper
 
     /**
@@ -124,21 +126,21 @@ class PostController extends Controller
      * $data['slug'] = $this->generateUniqueSlug($data['name']);
      *
      */
-private function generateUniqueSlug($name, $id = null)
-{
-    $slug = Str::slug($name);
-    $originalSlug = $slug;
-    $counter = 1;
+    private function generateUniqueSlug($name, $id = null)
+    {
+        $slug = Str::slug($name);
+        $originalSlug = $slug;
+        $counter = 1;
 
-    // cek apakah slug sudah ada
-    while (
-        Post::where('slug', $slug)
-            ->when($id, fn($q) => $q->where('id', '!=', $id)) // biar kalau update ga bentrok dengan dirinya sendiri
-            ->exists()
-    ) {
-        $slug = $originalSlug . '-' . $counter++;
+        // cek apakah slug sudah ada
+        while (
+            Post::where('slug', $slug)
+                ->when($id, fn($q) => $q->where('id', '!=', $id)) // biar kalau update ga bentrok dengan dirinya sendiri
+                ->exists()
+        ) {
+            $slug = $originalSlug . '-' . $counter++;
+        }
+
+        return $slug;
     }
-
-    return $slug;
-}
 }
