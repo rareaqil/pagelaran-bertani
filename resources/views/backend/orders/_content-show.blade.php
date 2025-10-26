@@ -120,6 +120,9 @@
                         </tr>
                     </tfoot>
                 </table>
+                <p class="text-sm text-gray-600 mt-2 italic">
+                    *Total transaksi tidak termasuk ongkir.
+                </p>
             </div>
 
             {{-- After Paid --}}
