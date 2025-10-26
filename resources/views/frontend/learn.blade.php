@@ -158,26 +158,28 @@
             </div>
         </div>
 
-        <!-- Produk -->
-        <div class="bg-green-600 py-12">
-            <div class="max-w-7xl mx-auto px-6 md:px-20">
-                <h3 class="text-center text-amber-500 text-3xl font-bold mb-8">
-                    Jenis Jenis Buah
-                </h3>
+        <!-- Produk Kami -->
+        <section class="bg-gradient-to-b from-green-700 to-green-600 py-16 text-white">
+            <div class="max-w-7xl mx-auto px-6 md:px-20 text-center">
+                <h3 class="text-4xl font-extrabold mb-4">Produk Kami</h3>
+                <p class="text-amber-200 max-w-2xl mx-auto mb-10 leading-relaxed">
+                    Temukan berbagai produk hasil kebun kami yang segar dan alami. Kami menanam dengan penuh perhatian agar
+                    setiap buah dan hasil panen memberikan manfaat terbaik bagi Anda.
+                </p>
 
                 <!-- Filter -->
                 @if ($fruitTypes->isNotEmpty())
-                    <div class="flex justify-center gap-4 mb-10">
+                    <div class="flex justify-center flex-wrap gap-3 mb-12">
                         <button @click="filter='all'"
-                            :class="filter === 'all' ? 'bg-amber-500 text-white' : 'bg-white text-amber-500'"
-                            class="px-4 py-2 rounded-lg shadow hover:scale-105 transition">
+                            :class="filter === 'all' ? 'bg-amber-500 text-white' : 'bg-white/20 text-amber-300'"
+                            class="px-5 py-2.5 rounded-full backdrop-blur-sm shadow hover:scale-105 transition font-medium">
                             Semua
                         </button>
                         @foreach ($fruitTypes as $fruitType)
                             <button @click="filter='{{ strtolower($fruitType->name) }}'"
                                 :class="filter === '{{ strtolower($fruitType->name) }}' ? 'bg-amber-500 text-white' :
-                                    'bg-white text-amber-500'"
-                                class="px-4 py-2 rounded-lg shadow hover:scale-105 transition">
+                                    'bg-white/20 text-amber-300'"
+                                class="px-5 py-2.5 rounded-full backdrop-blur-sm shadow hover:scale-105 transition font-medium">
                                 {{ $fruitType->name }}
                             </button>
                         @endforeach
@@ -186,12 +188,61 @@
 
                 <!-- Grid Produk -->
                 <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
-                    @foreach ($posts as $post)
+                    @foreach ($posts->where('type', 'product-kami') as $post)
                         <div x-show="filter==='all' || filter==='{{ strtolower($post->fruitType->name ?? '') }}'"
-                            class="bg-white rounded-xl shadow-lg hover:shadow-2xl transition transform hover:-translate-y-2 overflow-hidden cursor-pointer"
+                            class="bg-white text-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all cursor-pointer overflow-hidden"
                             @click='selected=@json($post)'>
-                            <img src="{{ asset($post->image) }}" alt="{{ $post->name }}" class="w-full h-40 object-cover">
-                            <div class="p-4">
+                            <img src="{{ asset($post->image) }}" alt="{{ $post->name }}" class="w-full h-44 object-cover">
+                            <div class="p-5">
+                                <h4 class="text-xl font-semibold text-green-700">{{ $post->name }}</h4>
+                                <p class="text-gray-600 text-sm mt-2">{!! Str::limit(strip_tags($post->intro), 80) !!}</p>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+
+        <!-- Mitra Kami -->
+        <section class="bg-amber-50 py-16">
+            <div class="max-w-7xl mx-auto px-6 md:px-20 text-center">
+                <h3 class="text-4xl font-extrabold text-amber-600 mb-4">Mitra Kami</h3>
+                <p class="text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed">
+                    Kami bangga bekerja sama dengan para mitra terbaik yang mendukung pertanian berkelanjutan dan membantu
+                    mewujudkan hasil panen yang berkualitas tinggi.
+                </p>
+
+                <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
+                    @foreach ($posts->where('type', 'mitra') as $post)
+                        <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all overflow-hidden cursor-pointer"
+                            @click='selected=@json($post)'>
+                            <img src="{{ asset($post->image) }}" alt="{{ $post->name }}" class="w-full h-44 object-cover">
+                            <div class="p-5">
+                                <h4 class="text-lg font-semibold text-amber-700">{{ $post->name }}</h4>
+                                <p class="text-gray-600 text-sm mt-2">{!! Str::limit(strip_tags($post->intro), 80) !!}</p>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+
+        <!-- Berita Kebun -->
+        <section class="bg-white py-16">
+            <div class="max-w-7xl mx-auto px-6 md:px-20 text-center">
+                <h3 class="text-4xl font-extrabold text-green-700 mb-4">Berita Kebun</h3>
+                <p class="text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed">
+                    Ikuti kabar terbaru dari kebun kami. Dapatkan informasi tentang pembukaan kebun, panen buah, hingga
+                    kegiatan bersama masyarakat sekitar.
+                </p>
+
+                <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
+                    @foreach ($posts->where('type', 'berita') as $post)
+                        <div class="bg-green-50 rounded-2xl shadow-md hover:shadow-xl transition transform hover:-translate-y-2 cursor-pointer overflow-hidden"
+                            @click='selected=@json($post)'>
+                            <img src="{{ asset($post->image) }}" alt="{{ $post->name }}"
+                                class="w-full h-44 object-cover">
+                            <div class="p-5">
                                 <h4 class="text-lg font-semibold text-green-700">{{ $post->name }}</h4>
                                 <p class="text-gray-600 text-sm mt-2">{!! Str::limit(strip_tags($post->intro), 80) !!}</p>
                             </div>
@@ -199,39 +250,31 @@
                     @endforeach
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Modal Detail Produk -->
+        <!-- Modal Detail -->
         <div x-show="selected" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" x-transition>
             <div
-                class="bg-white rounded-2xl shadow-xl w-full max-w-lg relative overflow-hidden max-h-[80vh] overflow-y-auto">
-                <!-- Tombol Close -->
+                class="bg-white rounded-3xl shadow-2xl w-full max-w-lg relative overflow-hidden max-h-[85vh] overflow-y-auto">
                 <button @click="selected=null"
                     class="absolute top-3 right-3 bg-gray-200 hover:bg-red-500 hover:text-white rounded-full w-8 h-8 flex items-center justify-center">
                     ✕
                 </button>
 
-                <!-- Gambar -->
-                <img :src="selected.image" :alt="selected.name" class="w-full h-48 object-cover">
+                <img :src="selected.image" :alt="selected.name" class="w-full h-56 object-cover">
 
-                <!-- Konten -->
                 <div class="p-6">
-                    <!-- Metadata -->
-                    <div class="text-xs text-gray-500 mb-2 flex items-center gap-2">
+                    <div class="text-xs text-gray-500 mb-3 flex items-center gap-2">
                         <span class="px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full"
                             x-text="selected.fruit_type ? selected.fruit_type.name : 'Umum'"></span>
                         <span>•</span>
                         <span x-text="selected.status === 'published' ? 'Dipublikasikan' : 'Draft'"></span>
                     </div>
 
-                    <!-- Headline -->
-                    <h2 class="text-2xl font-bold text-gray-800 leading-snug" x-text="selected.name"></h2>
-
-                    <!-- Tanggal -->
+                    <h2 class="text-2xl font-bold text-green-700 leading-snug" x-text="selected.name"></h2>
                     <p class="mt-1 text-sm text-gray-500 italic"
                         x-text="dayjs(selected.published_at).format('D MMMM YYYY')"></p>
 
-                    <!-- Isi berita -->
                     <div class="mt-4 text-gray-700 text-base leading-relaxed space-y-4" x-html="selected.content"></div>
                 </div>
             </div>
