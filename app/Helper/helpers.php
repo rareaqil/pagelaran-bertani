@@ -1,9 +1,10 @@
 <?php
 if (!function_exists('midtrans_config')) {
-    function midtrans_config($key, $default = null) {
+    function midtrans_config($key, $default = null)
+    {
         $value = null;
         try {
-            $value = \App\Models\Setting::getValue($key);
+            $value = \App\Models\Setting::getValue('midtrans_' . $key);
         } catch (\Exception $e) {
             // fallback ke .env jika DB belum siap
         }
