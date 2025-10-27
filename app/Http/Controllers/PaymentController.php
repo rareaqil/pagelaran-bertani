@@ -29,6 +29,14 @@ class PaymentController extends Controller
         $this->isSanitized = config('midtrans.is_sanitized');
         $this->is3ds = config('midtrans.is_3ds');
 
+        // Tambahkan log
+        Log::info('Midtrans Configuration:', [
+            'server_key' => $this->serverKey,
+            'is_production' => $this->isProduction,
+            'is_sanitized' => $this->isSanitized,
+            'is_3ds' => $this->is3ds,
+        ]);
+
         // ===> Ambil item detail dari order
         $items = $order->items
             ->map(function ($item) {
