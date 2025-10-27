@@ -15,79 +15,79 @@ use App\Services\MidtransService;
 
 class PaymentController extends Controller
 {
-    public function createSnapToken(Order $order)
-    {
-        // Config::$serverKey   = config('midtrans.server_key');
-        // Config::$isProduction = config('midtrans.production');
-        // // Config::$serverKey   = midtrans_config('midtrans_server_key');
-        // // Config::$isProduction = (bool) midtrans_config('midtrans_is_production');
-        // Config::$isSanitized  = config('midtrans.is_sanitized');
-        // Config::$is3ds        = config('midtrans.is_3ds');
+    // public function createSnapToken(Order $order)
+    // {
+    //     // Config::$serverKey   = config('midtrans.server_key');
+    //     // Config::$isProduction = config('midtrans.production');
+    //     // // Config::$serverKey   = midtrans_config('midtrans_server_key');
+    //     // // Config::$isProduction = (bool) midtrans_config('midtrans_is_production');
+    //     // Config::$isSanitized  = config('midtrans.is_sanitized');
+    //     // Config::$is3ds        = config('midtrans.is_3ds');
 
-        $this->serverKey = midtrans_config('server_key');
-        $this->isProduction = (bool) midtrans_config('is_production');
-        $this->isSanitized = config('midtrans.is_sanitized');
-        $this->is3ds = config('midtrans.is_3ds');
+    //     $this->serverKey = midtrans_config('server_key');
+    //     $this->isProduction = (bool) midtrans_config('is_production');
+    //     $this->isSanitized = config('midtrans.is_sanitized');
+    //     $this->is3ds = config('midtrans.is_3ds');
 
-        // Tambahkan log
-        dd('Midtrans Configuration:', [
-            'server_key' => $this->serverKey,
-            'is_production' => $this->isProduction,
-            'is_sanitized' => $this->isSanitized,
-            'is_3ds' => $this->is3ds,
-        ]);
+    //     // Tambahkan log
+    //     dd('Midtrans Configuration:', [
+    //         'server_key' => $this->serverKey,
+    //         'is_production' => $this->isProduction,
+    //         'is_sanitized' => $this->isSanitized,
+    //         'is_3ds' => $this->is3ds,
+    //     ]);
 
-        // ===> Ambil item detail dari order
-        $items = $order->items
-            ->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'price' => $item->price,
-                    'quantity' => $item->quantity,
-                    'name' => $item->product->name ?? $item->name,
-                ];
-            })
-            ->toArray();
+    //     // ===> Ambil item detail dari order
+    //     $items = $order->items
+    //         ->map(function ($item) {
+    //             return [
+    //                 'id' => $item->id,
+    //                 'price' => $item->price,
+    //                 'quantity' => $item->quantity,
+    //                 'name' => $item->product->name ?? $item->name,
+    //             ];
+    //         })
+    //         ->toArray();
 
-        // ===> Body request Snap
-        $params = [
-            'transaction_details' => [
-                'order_id' => $order->order_id, // gunakan order_id unik kita
-                'gross_amount' => $order->total,
-            ],
-            'item_details' => $items,
-            'customer_details' => [
-                'first_name' => $order->user->first_name,
-                'last_name' => $order->user->last_name,
-                'email' => $order->user->email,
-                'phone' => $order->user->phone,
-                'billing_address' => [
-                    'first_name' => $order->user->first_name,
-                    'last_name' => $order->user->last_name,
-                    'email' => $order->user->email,
-                    'phone' => $order->user->phone,
-                    'address' => $order->user->primaryAddress->address1 ?? '',
-                    'city' => $order->user->primaryAddress->city ?? '',
-                    'postal_code' => $order->user->primaryAddress->postal_code ?? '',
-                    'country_code' => 'IDN',
-                ],
-            ],
-            // contoh tambahan optional:
-            'enabled_payments' => ['gopay', 'bca_va', 'shopeepay'],
-            'expiry' => [
-                'unit' => 'hours',
-                'duration' => 2, // transaksi kadaluarsa 2 jam
-            ],
-            'custom_field1' => 'Order from Laravel App',
-        ];
+    //     // ===> Body request Snap
+    //     $params = [
+    //         'transaction_details' => [
+    //             'order_id' => $order->order_id, // gunakan order_id unik kita
+    //             'gross_amount' => $order->total,
+    //         ],
+    //         'item_details' => $items,
+    //         'customer_details' => [
+    //             'first_name' => $order->user->first_name,
+    //             'last_name' => $order->user->last_name,
+    //             'email' => $order->user->email,
+    //             'phone' => $order->user->phone,
+    //             'billing_address' => [
+    //                 'first_name' => $order->user->first_name,
+    //                 'last_name' => $order->user->last_name,
+    //                 'email' => $order->user->email,
+    //                 'phone' => $order->user->phone,
+    //                 'address' => $order->user->primaryAddress->address1 ?? '',
+    //                 'city' => $order->user->primaryAddress->city ?? '',
+    //                 'postal_code' => $order->user->primaryAddress->postal_code ?? '',
+    //                 'country_code' => 'IDN',
+    //             ],
+    //         ],
+    //         // contoh tambahan optional:
+    //         'enabled_payments' => ['gopay', 'bca_va', 'shopeepay'],
+    //         'expiry' => [
+    //             'unit' => 'hours',
+    //             'duration' => 2, // transaksi kadaluarsa 2 jam
+    //         ],
+    //         'custom_field1' => 'Order from Laravel App',
+    //     ];
 
-        $snapToken = Snap::getSnapToken($params);
+    //     $snapToken = Snap::getSnapToken($params);
 
-        $order->snap_token = $snapToken;
-        $order->save();
+    //     $order->snap_token = $snapToken;
+    //     $order->save();
 
-        return response()->json(['snap_token' => $snapToken]);
-    }
+    //     return response()->json(['snap_token' => $snapToken]);
+    // }
 
     public function index()
     {

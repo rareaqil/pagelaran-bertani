@@ -38,7 +38,7 @@ class MidtransService
         Config::$isSanitized = $this->isSanitized;
         Config::$is3ds = $this->is3ds;
 
-        dd('Midtrans config', [
+        Log::info('Midtrans config', [
             'server_key' => $this->serverKey,
             'is_production' => $this->isProduction ? 'true' : 'false',
             'is_sanitized' => $this->isSanitized ? 'true' : 'false',
