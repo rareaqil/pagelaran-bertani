@@ -30,7 +30,7 @@ class PaymentController extends Controller
         $this->is3ds = config('midtrans.is_3ds');
 
         // Tambahkan log
-        Log::info('Midtrans Configuration:', [
+        dd('Midtrans Configuration:', [
             'server_key' => $this->serverKey,
             'is_production' => $this->isProduction,
             'is_sanitized' => $this->isSanitized,
