@@ -28,11 +28,14 @@ class StockMovementController extends Controller
         $product = Product::findOrFail($request->product_id);
 
         if ($request->quantity > $product->available_stock) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Stok tidak cukup',
-                'available_stock' => $product->available_stock
-            ], 422);
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'Stok tidak cukup',
+                    'available_stock' => $product->available_stock,
+                ],
+                422,
+            );
         }
 
         $movement = StockMovement::create([
@@ -46,7 +49,7 @@ class StockMovementController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Stok di-hold',
-            'data' => $movement
+            'data' => $movement,
         ]);
     }
 
@@ -64,18 +67,18 @@ class StockMovementController extends Controller
         $product->decrement('stock', $hold->quantity);
 
         // Tambah stok Voucher digunakan
-         if ($hold->reference instanceof \App\Models\Order) {
-        $order = $hold->reference;
+        if ($hold->reference instanceof \App\Models\Order) {
+            $order = $hold->reference;
 
-        if ($order->voucher) {
-            $voucher = $order->voucher;
-            $voucher->increment('used_count');
+            if ($order->voucher) {
+                $voucher = $order->voucher;
+                $voucher->increment('used_count');
 
-            if (!is_null($voucher->max_usage) && $voucher->used_count >= $voucher->max_usage) {
-                $voucher->update(['is_active' => false]);
+                if (!is_null($voucher->max_usage) && $voucher->used_count >= $voucher->max_usage) {
+                    $voucher->update(['is_active' => false]);
+                }
             }
         }
-    }
 
         // Update movement jadi out
         $hold->update(['type' => 'out']);
@@ -121,7 +124,7 @@ class StockMovementController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Stok berhasil ditambahkan',
-            'data' => $movement
+            'data' => $movement,
         ]);
     }
 
@@ -150,7 +153,61 @@ class StockMovementController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Stok berhasil dikurangi',
-            'data' => $movement
+            'data' => $movement,
+        ]);
+    }
+
+    public function adjustStock(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'quantity' => 'required|integer|min:0', // stok baru minimal 0
+        ]);
+
+        $product = Product::findOrFail($request->product_id);
+
+        // Hitung total hold untuk produk ini
+        $totalHold = StockMovement::where('product_id', $product->id)->where('type', 'hold')->sum('quantity');
+
+        $newStock = $request->quantity;
+
+        // Validasi: stok baru >= total hold
+        if ($newStock < $totalHold) {
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => "Stok tidak boleh kurang dari stock yang di-hold ({$totalHold})",
+                ],
+                422,
+            );
+        }
+
+        $oldStock = $product->stock;
+
+        // Update stok langsung
+        $product->stock = $newStock;
+        $product->save();
+
+        // Log movement (optional)
+        $movementType = $newStock > $oldStock ? 'in' : ($newStock < $oldStock ? 'out' : 'none');
+        $movementQty = abs($newStock - $oldStock);
+
+        if ($movementType !== 'none') {
+            StockMovement::create([
+                'product_id' => $product->id,
+                'type' => $movementType,
+                'quantity' => $movementQty,
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Adjustment stok berhasil',
+            'data' => [
+                'old_stock' => $oldStock,
+                'new_stock' => $newStock,
+                'total_hold' => $totalHold,
+            ],
         ]);
     }
 }

@@ -1,14 +1,8 @@
-@props([
-    'data',
-    'columns',
-    'actions' => null,
-    'maxVisibleColumns' => null,
-    'detailColumns' => [],
-])
+@props(['data', 'columns', 'actions' => null, 'maxVisibleColumns' => null, 'detailColumns' => []])
 
 @php
     // Tentukan kolom utama dan kolom detail
-    if (! empty($detailColumns)) {
+    if (!empty($detailColumns)) {
         $mainColumns = array_diff_key($columns, array_flip($detailColumns));
     } elseif ($maxVisibleColumns) {
         $mainColumns = array_slice($columns, 0, $maxVisibleColumns, true);
@@ -25,21 +19,15 @@
     <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         {{-- Input Search --}}
         <div class="w-full sm:w-auto">
-            <input
-                type="text"
-                id="tableSearch"
-                placeholder="Search…"
-                class="w-full rounded-md border px-4 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 sm:w-64"
-            />
+            <input type="text" id="tableSearch" placeholder="Search…"
+                class="w-full rounded-md border px-4 py-2 text-sm shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 sm:w-64" />
         </div>
 
         {{-- Per Page Select --}}
         <div class="flex w-full items-center justify-between sm:w-auto sm:justify-end">
             <label for="perPage" class="mr-2 whitespace-nowrap text-sm text-gray-700">Tampilkan per halaman:</label>
-            <select
-                id="perPage"
-                class="w-24 rounded-md border px-2 py-1 text-sm shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
-            >
+            <select id="perPage"
+                class="w-24 rounded-md border px-2 py-1 text-sm shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500">
                 <option value="10" {{ request('perPage') == 10 ? 'selected' : '' }}>10</option>
                 <option value="20" {{ request('perPage') == 20 ? 'selected' : '' }}>20</option>
                 <option value="50" {{ request('perPage') == 50 ? 'selected' : '' }}>50</option>
@@ -60,10 +48,8 @@
                         @endphp
 
                         <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                            <a
-                                href="{{ request()->fullUrlWithQuery(['sort' => $field, 'direction' => $direction]) }}"
-                                class="flex items-center gap-1"
-                            >
+                            <a href="{{ request()->fullUrlWithQuery(['sort' => $field, 'direction' => $direction]) }}"
+                                class="flex items-center gap-1">
                                 {{ $label }}
                                 @if ($isSorted)
                                     @if (request()->query('direction') === 'asc')
@@ -78,8 +64,7 @@
 
                     @if ($actions)
                         <th
-                            class="w-32 px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500"
-                        >
+                            class="w-32 px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-gray-500">
                             Aksi
                         </th>
                     @endif
@@ -110,27 +95,17 @@
 
                                 @if ($field === 'image' && $value && $firstImage)
                                     {{-- Thumbnail pertama --}}
-                                    <a
-                                        href="{{ $firstImage }}"
-                                        class="glightbox"
-                                        data-gallery="gallery-{{ $item->id }}"
-                                    >
-                                        <img
-                                            src="{{ $firstImage }}"
-                                            alt="Gambar"
-                                            class="h-16 w-16 rounded object-cover"
-                                        />
+                                    <a href="{{ $firstImage }}" class="glightbox"
+                                        data-gallery="gallery-{{ $item->id }}">
+                                        <img src="{{ $firstImage }}" alt="Gambar"
+                                            class="h-16 w-16 rounded object-cover" />
                                     </a>
 
                                     {{-- Sisanya untuk lightbox --}}
                                     @foreach ($images as $key => $img)
                                         @if ($key > 0)
-                                            <a
-                                                href="{{ $img }}"
-                                                class="glightbox"
-                                                data-gallery="gallery-{{ $item->id }}"
-                                                style="display: none"
-                                            ></a>
+                                            <a href="{{ $img }}" class="glightbox"
+                                                data-gallery="gallery-{{ $item->id }}" style="display: none"></a>
                                         @endif
                                     @endforeach
                                 @elseif ($field === 'price' && $value)
@@ -140,14 +115,12 @@
                                     {{-- Badge status aktif / nonaktif --}}
                                     @if ($value)
                                         <span
-                                            class="inline-block rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-700"
-                                        >
+                                            class="inline-block rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-700">
                                             Aktif
                                         </span>
                                     @else
                                         <span
-                                            class="inline-block rounded-full bg-red-100 px-2 py-1 text-xs font-semibold text-red-700"
-                                        >
+                                            class="inline-block rounded-full bg-red-100 px-2 py-1 text-xs font-semibold text-red-700">
                                             Nonaktif
                                         </span>
                                     @endif
@@ -161,109 +134,57 @@
                         @if ($actions)
                             <td class="px-4 py-2 text-center">
                                 <div class="flex items-center justify-center gap-2">
-                                    @if (! empty($detailColumns) || isset($actions['detail']))
-                                        <button
-                                            type="button"
-                                            class="toggle-detail text-blue-600 hover:text-blue-900"
-                                            title="Lihat Detail"
-                                        >
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                class="h-5 w-5"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                            >
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M15 12H9m0 0l3-3m-3 3l3 3"
-                                                />
+                                    @if (!empty($detailColumns) || isset($actions['detail']))
+                                        <button type="button" class="toggle-detail text-blue-600 hover:text-blue-900"
+                                            title="Lihat Detail">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M15 12H9m0 0l3-3m-3 3l3 3" />
                                             </svg>
                                         </button>
                                     @endif
 
                                     @if (isset($actions['show']))
-                                        <a
-                                            href="{{ route($actions['show'], $item) }}"
-                                            class="text-green-600 hover:text-green-900"
-                                            title="Lihat Detail"
-                                            target="_blank"
-                                        >
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                class="h-5 w-5"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                            >
+                                        <a href="{{ route($actions['show'], $item) }}"
+                                            class="text-green-600 hover:text-green-900" title="Lihat Detail"
+                                            target="_blank">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
                                                 <!-- icon 'eye' -->
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                                                />
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M2.458 12C3.732 7.943 7.522 5 12 5
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.522 5 12 5
                                                     c4.478 0 8.268 2.943 9.542 7
                                                     -1.274 4.057-5.064 7-9.542 7
-                                                    -4.478 0-8.268-2.943-9.542-7z"
-                                                />
+                                                    -4.478 0-8.268-2.943-9.542-7z" />
                                             </svg>
                                         </a>
                                     @endif
 
                                     @if (isset($actions['edit']))
-                                        <a
-                                            href="{{ route($actions['edit'], $item) }}"
-                                            class="text-indigo-600 hover:text-indigo-900"
-                                            title="Edit"
-                                        >
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                class="h-5 w-5"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                            >
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M15.232 5.232l3.536 3.536M9 11l6-6 3 3-6 6H9v-3z"
-                                                />
+                                        <a href="{{ route($actions['edit'], $item) }}"
+                                            class="text-indigo-600 hover:text-indigo-900" title="Edit">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M15.232 5.232l3.536 3.536M9 11l6-6 3 3-6 6H9v-3z" />
                                             </svg>
                                         </a>
                                     @endif
 
                                     @if (isset($actions['delete']))
-                                        <form
-                                            action="{{ route($actions['delete'], $item) }}"
-                                            class="delete-form"
-                                            method="POST"
-                                            data-name="{{ $item->name }}"
-                                        >
+                                        <form action="{{ route($actions['delete'], $item) }}" class="delete-form"
+                                            method="POST" data-name="{{ $item->name }}">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-900" title="Hapus">
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    class="h-5 w-5"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    stroke="currentColor"
-                                                >
-                                                    <path
-                                                        stroke-linecap="round"
-                                                        stroke-linejoin="round"
+                                            <button type="submit" class="text-red-600 hover:text-red-900"
+                                                title="Hapus">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
                                                         stroke-width="2"
-                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 0a1 1 0 00-1 1v0a1 1 0 001 1h4a1 1 0 001-1v0a1 1 0 00-1-1m-4 0V3m0 0h4"
-                                                    />
+                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 0a1 1 0 00-1 1v0a1 1 0 001 1h4a1 1 0 001-1v0a1 1 0 00-1-1m-4 0V3m0 0h4" />
                                                 </svg>
                                             </button>
                                         </form>
@@ -271,27 +192,30 @@
                                 </div>
                                 <div class="flex items-center justify-center gap-2">
                                     @if (isset($actions['addStock']))
-                                        <button
-                                            type="button"
+                                        <button type="button"
                                             class="flex items-center gap-2 rounded bg-purple-100 px-3 py-1 text-sm text-purple-700 transition hover:bg-purple-200 hover:text-purple-900"
                                             title="Tambah Stock"
-                                            onclick="openStockModal({{ $item->id }}, '{{ $item->name }}')"
-                                        >
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                class="h-5 w-5"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                            >
-                                                <path
-                                                    stroke-linecap="round"
-                                                    stroke-linejoin="round"
-                                                    stroke-width="2"
-                                                    d="M12 4v16m8-8H4"
-                                                />
+                                            onclick="openStockModal({{ $item->id }}, '{{ $item->name }}')">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 4v16m8-8H4" />
                                             </svg>
                                             <span>Tambah Stok</span>
+                                        </button>
+                                    @endif
+                                    @if (isset($actions['adjustStock']))
+                                        <!-- tombol stock adjustment -->
+                                        <button type="button"
+                                            class="flex items-center gap-2 rounded bg-yellow-100 px-3 py-1 text-sm text-yellow-700 transition hover:bg-yellow-200 hover:text-yellow-900"
+                                            title="Stock Adjustment"
+                                            onclick="openAdjustStockModal({{ $item->id }}, '{{ $item->name }}', {{ $item->stock }})">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 8v8m4-4H8" />
+                                            </svg>
+                                            <span>Adjustment</span>
                                         </button>
                                     @endif
                                 </div>
@@ -300,14 +224,12 @@
                     </tr>
 
                     {{-- Detail row --}}
-                    @if (! empty($detailColumns) || isset($actions['detail']))
+                    @if (!empty($detailColumns) || isset($actions['detail']))
                         <tr class="detail-row hidden bg-gray-50">
-                            <td
-                                colspan="{{ count($mainColumns) + ($actions ? 1 : 0) }}"
-                                class="px-4 py-2 text-sm text-gray-700"
-                            >
+                            <td colspan="{{ count($mainColumns) + ($actions ? 1 : 0) }}"
+                                class="px-4 py-2 text-sm text-gray-700">
                                 @php
-                                    $cols = ! empty($detailColumns) ? $detailColumns : $columns;
+                                    $cols = !empty($detailColumns) ? $detailColumns : $columns;
                                 @endphp
 
                                 <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3">
@@ -330,10 +252,8 @@
                     @endif
                 @empty
                     <tr>
-                        <td
-                            colspan="{{ count($mainColumns) + ($actions ? 1 : 0) }}"
-                            class="px-4 py-2 text-center text-gray-400"
-                        >
+                        <td colspan="{{ count($mainColumns) + ($actions ? 1 : 0) }}"
+                            class="px-4 py-2 text-center text-gray-400">
                             Tidak ada data
                         </td>
                     </tr>
@@ -369,27 +289,17 @@
                             @if ($firstImage)
                                 <div class="mt-1 flex flex-row-reverse">
                                     {{-- Thumbnail pertama --}}
-                                    <a
-                                        href="{{ $firstImage }}"
-                                        class="glightbox shadow-md"
-                                        data-gallery="gallery-{{ $item->id }}"
-                                    >
-                                        <img
-                                            src="{{ $firstImage }}"
-                                            alt="Gambar"
-                                            class="h-16 w-16 rounded object-cover"
-                                        />
+                                    <a href="{{ $firstImage }}" class="glightbox shadow-md"
+                                        data-gallery="gallery-{{ $item->id }}">
+                                        <img src="{{ $firstImage }}" alt="Gambar"
+                                            class="h-16 w-16 rounded object-cover" />
                                     </a>
 
                                     {{-- Sisanya untuk lightbox, disembunyikan --}}
                                     @foreach ($images as $key => $img)
                                         @if ($key > 0)
-                                            <a
-                                                href="{{ $img }}"
-                                                class="glightbox"
-                                                data-gallery="gallery-{{ $item->id }}"
-                                                style="display: none"
-                                            ></a>
+                                            <a href="{{ $img }}" class="glightbox"
+                                                data-gallery="gallery-{{ $item->id }}" style="display: none"></a>
                                         @endif
                                     @endforeach
                                 </div>
@@ -401,14 +311,12 @@
                         @elseif ($field === 'status_active')
                             @if ($value)
                                 <span
-                                    class="inline-block rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-700"
-                                >
+                                    class="inline-block rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-700">
                                     Aktif
                                 </span>
                             @else
                                 <span
-                                    class="inline-block rounded-full bg-red-100 px-2 py-1 text-xs font-semibold text-red-700"
-                                >
+                                    class="inline-block rounded-full bg-red-100 px-2 py-1 text-xs font-semibold text-red-700">
                                     Nonaktif
                                 </span>
                             @endif
@@ -420,145 +328,95 @@
 
                 @if ($actions)
                     <div class="mt-2 flex items-center gap-2">
-                        @if (! empty($detailColumns) || isset($actions['detail']))
-                            <button
-                                type="button"
-                                class="toggle-detail text-blue-600 hover:text-blue-900"
-                                title="Lihat Detail"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    class="h-5 w-5"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M15 12H9m0 0l3-3m-3 3l3 3"
-                                    />
+                        @if (!empty($detailColumns) || isset($actions['detail']))
+                            <button type="button" class="toggle-detail text-blue-600 hover:text-blue-900"
+                                title="Lihat Detail">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12H9m0 0l3-3m-3 3l3 3" />
                                 </svg>
                             </button>
                         @endif
 
                         @if (isset($actions['show']))
-                            <a
-                                href="{{ route($actions['show'], $item) }}"
-                                class="text-green-600 hover:text-green-900"
-                                title="Lihat Detail"
-                                target="_blank"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    class="h-5 w-5"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
+                            <a href="{{ route($actions['show'], $item) }}"
+                                class="text-green-600 hover:text-green-900" title="Lihat Detail" target="_blank">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
                                     <!-- icon 'eye' -->
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                                    />
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M2.458 12C3.732 7.943 7.522 5 12 5
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.522 5 12 5
                             c4.478 0 8.268 2.943 9.542 7
                             -1.274 4.057-5.064 7-9.542 7
-                            -4.478 0-8.268-2.943-9.542-7z"
-                                    />
+                            -4.478 0-8.268-2.943-9.542-7z" />
                                 </svg>
                             </a>
                         @endif
 
                         @if (isset($actions['edit']))
-                            <a
-                                href="{{ route($actions['edit'], $item) }}"
-                                class="text-indigo-600 hover:text-indigo-900"
-                                title="Edit"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    class="h-5 w-5"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M15.232 5.232l3.536 3.536M9 11l6-6 3 3-6 6H9v-3z"
-                                    />
+                            <a href="{{ route($actions['edit'], $item) }}"
+                                class="text-indigo-600 hover:text-indigo-900" title="Edit">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15.232 5.232l3.536 3.536M9 11l6-6 3 3-6 6H9v-3z" />
                                 </svg>
                             </a>
                         @endif
 
                         @if (isset($actions['delete']))
-                            <form
-                                action="{{ route($actions['delete'], $item) }}"
-                                method="POST"
-                                data-name="{{ $item->name }}"
-                            >
+                            <form action="{{ route($actions['delete'], $item) }}" method="POST"
+                                data-name="{{ $item->name }}">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="text-red-600 hover:text-red-900" title="Hapus">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        class="h-5 w-5"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                    >
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 0a1 1 0 00-1 1v0a1 1 0 001 1h4a1 1 0 001-1v0a1 1 0 00-1-1m-4 0V3m0 0h4"
-                                        />
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 0a1 1 0 00-1 1v0a1 1 0 001 1h4a1 1 0 001-1v0a1 1 0 00-1-1m-4 0V3m0 0h4" />
                                     </svg>
                                 </button>
                             </form>
                         @endif
 
                         @if (isset($actions['addStock']))
-                            <button
-                                type="button"
+                            <button type="button"
                                 class="flex items-center gap-2 rounded bg-purple-100 px-3 py-1 text-purple-700 transition hover:bg-purple-200 hover:text-purple-900"
                                 title="Tambah Stock"
-                                onclick="openStockModal({{ $item->id }}, '{{ $item->name }}')"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    class="h-5 w-5"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M12 4v16m8-8H4"
-                                    />
+                                onclick="openStockModal({{ $item->id }}, '{{ $item->name }}')">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 4v16m8-8H4" />
                                 </svg>
                                 <span>Tambah Stok</span>
+                            </button>
+                        @endif
+
+                        @if (isset($actions['adjustStock']))
+                            <!-- tombol stock adjustment -->
+                            <button type="button"
+                                class="flex items-center gap-2 rounded bg-yellow-100 px-3 py-1 text-sm text-yellow-700 transition hover:bg-yellow-200 hover:text-yellow-900"
+                                title="Stock Adjustment"
+                                onclick="openAdjustStockModal({{ $item->id }}, '{{ $item->name }}', {{ $item->stock }})">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8v8m4-4H8" />
+                                </svg>
+                                <span>Adjustment</span>
                             </button>
                         @endif
                     </div>
                 @endif
 
                 {{-- Detail --}}
-                @if (! empty($detailColumns) || isset($actions['detail']))
+                @if (!empty($detailColumns) || isset($actions['detail']))
                     <div class="detail-row mt-2 hidden border-t pt-2 text-sm text-gray-700">
                         @php
-                            $cols = ! empty($detailColumns) ? $detailColumns : $columns;
+                            $cols = !empty($detailColumns) ? $detailColumns : $columns;
                         @endphp
 
                         @foreach ($cols as $field => $label)
@@ -591,11 +449,12 @@
 </div>
 
 <x-stock-modal />
+<x-adjustStock-modal />
 
 @push('scripts')
     <script type="module">
         const searchInput = document.getElementById('tableSearch');
-        searchInput?.addEventListener('keyup', function () {
+        searchInput?.addEventListener('keyup', function() {
             const value = this.value.toLowerCase();
             document.querySelectorAll('#flexibleTable tbody tr').forEach((row) => {
                 row.style.display = row.textContent.toLowerCase().includes(value) ? '' : 'none';
@@ -604,7 +463,7 @@
     </script>
     <script type="module">
         const perPageSelect = document.getElementById('perPage');
-        perPageSelect.addEventListener('change', function () {
+        perPageSelect.addEventListener('change', function() {
             const url = new URL(window.location.href);
             url.searchParams.set('perPage', this.value);
             window.location.href = url.toString();
@@ -613,10 +472,11 @@
     <script type="module">
         // Toggle detail row (desktop & mobile)
         document.querySelectorAll('.toggle-detail').forEach((btn) => {
-            btn.addEventListener('click', function () {
+            btn.addEventListener('click', function() {
                 const parentRow = this.closest('tr');
                 const parentCard = this.closest('div.border');
-                const detailRow = parentRow ? parentRow.nextElementSibling : parentCard?.querySelector('.detail-row');
+                const detailRow = parentRow ? parentRow.nextElementSibling : parentCard?.querySelector(
+                    '.detail-row');
                 if (detailRow) {
                     detailRow.classList.toggle('hidden');
                 }
@@ -626,7 +486,7 @@
         // Search universal
         const searchInput = document.getElementById('tableSearch');
 
-        searchInput.addEventListener('keyup', function () {
+        searchInput.addEventListener('keyup', function() {
             const searchValue = this.value.toLowerCase();
 
             // Desktop table
@@ -669,7 +529,7 @@
     </script>
     <script>
         document.querySelectorAll('.delete-form').forEach((form) => {
-            form.addEventListener('submit', function (e) {
+            form.addEventListener('submit', function(e) {
                 e.preventDefault();
                 const itemName = this.dataset.name || 'item ini';
                 Swal.fire({

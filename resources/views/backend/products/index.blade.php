@@ -43,6 +43,7 @@
                     'edit' => 'products.edit',
                     'delete' => 'products.destroy',
                     'addStock' => 'stock.add',
+                    'adjustStock' => 'stock.adjust',
                 ]" :maxVisibleColumns="5" />
             </div>
         </div>
