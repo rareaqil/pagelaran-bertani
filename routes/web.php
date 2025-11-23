@@ -56,6 +56,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/cancel-hold/{holdId}', [StockMovementController::class, 'cancelHold'])->name('cancelHold');
             Route::post('/add', [StockMovementController::class, 'addStock'])->name('add');
             Route::post('/min', [StockMovementController::class, 'minStock'])->name('min');
+            Route::post('/adjust', [StockMovementController::class, 'adjustStock'])->name('adjust');
         });
 
     // Cart
