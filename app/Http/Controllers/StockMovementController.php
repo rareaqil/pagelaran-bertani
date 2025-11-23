@@ -195,6 +195,7 @@ class StockMovementController extends Controller
         if ($movementType !== 'none') {
             StockMovement::create([
                 'product_id' => $product->id,
+                'reference_type' => 'Adjustment',
                 'type' => $movementType,
                 'quantity' => $movementQty,
             ]);
