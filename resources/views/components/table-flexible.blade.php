@@ -190,10 +190,10 @@
                                         </form>
                                     @endif
                                 </div>
-                                <div class="flex items-center justify-center gap-2">
+                                <div class="flex flex-wrap items-center justify-center gap-2">
                                     @if (isset($actions['addStock']))
                                         <button type="button"
-                                            class="flex items-center gap-2 rounded bg-purple-100 px-3 py-1 text-sm text-purple-700 transition hover:bg-purple-200 hover:text-purple-900"
+                                            class="flex items-center gap-2 rounded bg-purple-100 px-3 py-1 text-sm font-medium text-purple-700 transition hover:bg-purple-200 hover:text-purple-900"
                                             title="Tambah Stock"
                                             onclick="openStockModal({{ $item->id }}, '{{ $item->name }}')">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
@@ -204,21 +204,35 @@
                                             <span>Tambah Stok</span>
                                         </button>
                                     @endif
+
                                     @if (isset($actions['adjustStock']))
-                                        <!-- tombol stock adjustment -->
                                         <button type="button"
-                                            class="flex items-center gap-2 rounded bg-yellow-100 px-3 py-1 text-sm text-yellow-700 transition hover:bg-yellow-200 hover:text-yellow-900"
+                                            class="flex items-center gap-2 rounded bg-yellow-100 px-3 py-1 text-sm font-medium text-yellow-700 transition hover:bg-yellow-200 hover:text-yellow-900"
                                             title="Stock Adjustment"
                                             onclick="openAdjustStockModal({{ $item->id }}, '{{ $item->name }}', {{ $item->stock }})">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                                viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M12 8v8m4-4H8" />
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                                class="icon icon-tabler icons-tabler-outline icon-tabler-adjustments-code">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                                <path d="M4 10a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+                                                <path d="M6 4v4" />
+                                                <path d="M6 12v8" />
+                                                <path d="M13.557 14.745a2 2 0 1 0 -1.557 3.255" />
+                                                <path d="M12 4v10" />
+                                                <path d="M12 18v2" />
+                                                <path d="M16 7a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+                                                <path d="M18 4v1" />
+                                                <path d="M18 9v4" />
+                                                <path d="M20 21l2 -2l-2 -2" />
+                                                <path d="M17 17l-2 2l2 2" />
                                             </svg>
+
                                             <span>Adjustment</span>
                                         </button>
                                     @endif
                                 </div>
+
                             </td>
                         @endif
                     </tr>
@@ -383,7 +397,7 @@
 
                         @if (isset($actions['addStock']))
                             <button type="button"
-                                class="flex items-center gap-2 rounded bg-purple-100 px-3 py-1 text-purple-700 transition hover:bg-purple-200 hover:text-purple-900"
+                                class="flex items-center gap-2 rounded bg-purple-100 px-3 py-1 text-purple-700 transition hover:bg-purple-200 hover:text-purple-900 text-sm"
                                 title="Tambah Stock"
                                 onclick="openStockModal({{ $item->id }}, '{{ $item->name }}')">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
@@ -396,19 +410,31 @@
                         @endif
 
                         @if (isset($actions['adjustStock']))
-                            <!-- tombol stock adjustment -->
                             <button type="button"
-                                class="flex items-center gap-2 rounded bg-yellow-100 px-3 py-1 text-sm text-yellow-700 transition hover:bg-yellow-200 hover:text-yellow-900"
+                                class="flex items-center gap-2 rounded bg-yellow-100 px-3 py-1 text-yellow-700 transition hover:bg-yellow-200 hover:text-yellow-900 text-sm"
                                 title="Stock Adjustment"
                                 onclick="openAdjustStockModal({{ $item->id }}, '{{ $item->name }}', {{ $item->stock }})">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 8v8m4-4H8" />
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round"
+                                    class="icon icon-tabler icons-tabler-outline icon-tabler-adjustments-code">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                    <path d="M4 10a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+                                    <path d="M6 4v4" />
+                                    <path d="M6 12v8" />
+                                    <path d="M13.557 14.745a2 2 0 1 0 -1.557 3.255" />
+                                    <path d="M12 4v10" />
+                                    <path d="M12 18v2" />
+                                    <path d="M16 7a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+                                    <path d="M18 4v1" />
+                                    <path d="M18 9v4" />
+                                    <path d="M20 21l2 -2l-2 -2" />
+                                    <path d="M17 17l-2 2l2 2" />
                                 </svg>
                                 <span>Adjustment</span>
                             </button>
                         @endif
+
                     </div>
                 @endif
 
