@@ -190,7 +190,7 @@
                                         </form>
                                     @endif
                                 </div>
-                                <div class="flex flex-wrap items-center justify-center gap-2">
+                                <div class="flex flex-wrap items-center justify-center gap-2 ">
                                     @if (isset($actions['addStock']))
                                         <button type="button"
                                             class="flex items-center gap-2 rounded bg-purple-100 px-3 py-1 text-sm font-medium text-purple-700 transition hover:bg-purple-200 hover:text-purple-900"
@@ -394,6 +394,8 @@
                                 </button>
                             </form>
                         @endif
+                    </div>
+                    <div class="mt-2 flex items-center gap-2">
 
                         @if (isset($actions['addStock']))
                             <button type="button"
