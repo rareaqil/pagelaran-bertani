@@ -44,8 +44,7 @@ class MidtransService
             'is_sanitized' => $this->isSanitized ? 'true' : 'false',
             'is_3ds' => $this->is3ds ? 'true' : 'false',
             'm_server_key' => midtrans_config('server_key') == $this->serverKey ? 'match' : 'mismatch',
-            'm_is_production' =>
-                (bool) midtrans_config('midtrans_is_production') == $this->isProduction ? 'match' : 'mismatch',
+            'm_is_production' => (bool) midtrans_config('is_production') == $this->isProduction ? 'match' : 'mismatch',
         ]);
     }
 
