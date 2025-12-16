@@ -26,8 +26,8 @@ class MidtransService
         // Ambil setting Midtrans runtime (fallback ke config jika DB belum siap)
         // $this->serverKey   = config('midtrans.server_key');
         // $this->isProduction = config('midtrans.is_production');
-        $this->serverKey   = midtrans_config('server_key');
-        $this->isProduction = (bool)midtrans_config('is_production');
+        $this->serverKey = midtrans_config('server_key');
+        $this->isProduction = (bool) midtrans_config('is_production');
         $this->isSanitized = config('midtrans.is_sanitized');
         $this->is3ds = config('midtrans.is_3ds');
         // $this->is3ds = config('midtrans.is_3ds');
@@ -38,14 +38,14 @@ class MidtransService
         Config::$isSanitized = $this->isSanitized;
         Config::$is3ds = $this->is3ds;
 
-        // dd('Midtrans config', [
-        //     'server_key'   => $this->serverKey ,
-        //     'is_production'=> $this->isProduction ? 'true' : 'false',
-        //     'is_sanitized' => $this->isSanitized ? 'true' : 'false',
-        //     'is_3ds'       => $this->is3ds ? 'true' : 'false',
-        //     'm_server_key'   => midtrans_config('server_key') == $this->serverKey ? 'match' : 'mismatch',
-        //     'm_is_production'=> (bool)midtrans_config('midtrans_is_production') == $this->isProduction ? 'match' : 'mismatch',
-        // ]);
+        Log::info('Midtrans config', [
+            'server_key' => $this->serverKey,
+            'is_production' => $this->isProduction ? 'true' : 'false',
+            'is_sanitized' => $this->isSanitized ? 'true' : 'false',
+            'is_3ds' => $this->is3ds ? 'true' : 'false',
+            'm_server_key' => midtrans_config('server_key') == $this->serverKey ? 'match' : 'mismatch',
+            'm_is_production' => (bool) midtrans_config('is_production') == $this->isProduction ? 'match' : 'mismatch',
+        ]);
     }
 
     public function notification(): Notification
@@ -55,13 +55,9 @@ class MidtransService
 
     public function isSignatureValid(Notification $n): bool
     {
-
-
-        $localKey = hash('sha512',
-            $n->order_id.$n->status_code.$n->gross_amount.$this->serverKey
-        );
-         Log::info('Signature debug', [
-            'concat'   => $n->order_id.$n->status_code.$n->gross_amount.$this->serverKey,
+        $localKey = hash('sha512', $n->order_id . $n->status_code . $n->gross_amount . $this->serverKey);
+        Log::info('Signature debug', [
+            'concat' => $n->order_id . $n->status_code . $n->gross_amount . $this->serverKey,
             'expected' => $localKey,
             'provided' => $n->signature_key,
         ]);
@@ -71,17 +67,17 @@ class MidtransService
     public function mapStatus(Notification $n): string
     {
         return match ($n->transaction_status) {
-            'capture'    => ($n->fraud_status === 'accept') ? 'success' : 'pending',
+            'capture' => $n->fraud_status === 'accept' ? 'success' : 'pending',
             'settlement' => 'success',
-            'pending'    => 'pending',
-            'deny'       => 'failed',
-            'cancel'     => 'cancel',
-            'expire'     => 'expire',
-            'failure'    => 'failed',
-            'refund'     => 'refund',
+            'pending' => 'pending',
+            'deny' => 'failed',
+            'cancel' => 'cancel',
+            'expire' => 'expire',
+            'failure' => 'failed',
+            'refund' => 'refund',
             'partial_refund' => 'partial_refund',
-            'authorize'  => 'authorize',
-            default      => 'unknown',
+            'authorize' => 'authorize',
+            default => 'unknown',
         };
     }
 
@@ -109,14 +105,14 @@ class MidtransService
         // dd($params);
 
         try {
-        // Membuat snap token
-        $snapToken = Snap::getSnapToken($params);
+            // Membuat snap token
+            $snapToken = Snap::getSnapToken($params);
 
-        // Kembalikan token dan params (untuk debug / frontend)
-        return [
-            'snap_token' => $snapToken,
-            'params' => $params,
-        ];
+            // Kembalikan token dan params (untuk debug / frontend)
+            return [
+                'snap_token' => $snapToken,
+                'params' => $params,
+            ];
         } catch (Exception $e) {
             // Menangani error jika gagal mendapatkan snap token
             throw new Exception($e->getMessage());
@@ -133,9 +129,10 @@ class MidtransService
         $notification = new Notification();
 
         // Membuat signature key lokal dari data notifikasi
-        $localSignatureKey = hash('sha512',
-            $notification->order_id . $notification->status_code .
-            $notification->gross_amount . $this->serverKey);
+        $localSignatureKey = hash(
+            'sha512',
+            $notification->order_id . $notification->status_code . $notification->gross_amount . $this->serverKey,
+        );
 
         // Memeriksa apakah signature key valid
         return $localSignatureKey === $notification->signature_key;
@@ -166,7 +163,7 @@ class MidtransService
         $fraudStatus = $notification->fraud_status;
 
         return match ($transactionStatus) {
-            'capture' => ($fraudStatus == 'accept') ? 'success' : 'pending',
+            'capture' => $fraudStatus == 'accept' ? 'success' : 'pending',
             'settlement' => 'success',
             'deny' => 'failed',
             'cancel' => 'cancel',
@@ -178,13 +175,11 @@ class MidtransService
 
     public function getTotalAmount(Order $order, int $adminFee = 2000): int
     {
-         // Hitung subtotal
+        // Hitung subtotal
         $subtotal = $order->items->sum(fn($item) => $item->price * $item->quantity);
 
         // Pakai method voucher yang sudah aman
-        $discount = $order->voucher
-            ? $order->voucher->getDiscount($subtotal)
-            : 0;
+        $discount = $order->voucher ? $order->voucher->getDiscount($subtotal) : 0;
 
         // Pastikan total minimal 0 + admin fee
         $total = max(0, $subtotal - $discount) + $adminFee;
@@ -200,14 +195,18 @@ class MidtransService
      */
     protected function mapItemsToDetails(Order $order): array
     {
-        $items = $order->items()->get()->map(function ($item) {
-        return [
-                'id' => $item->product->id,          // ID produk
-                'price' => (int) $item->price,       // Pastikan integer
-                'quantity' => $item->quantity,
-                'name' => $item->product->name ?? 'Produk #' . $item->product_id, // Nama produk
-            ];
-        })->toArray();
+        $items = $order
+            ->items()
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->product->id, // ID produk
+                    'price' => (int) $item->price, // Pastikan integer
+                    'quantity' => $item->quantity,
+                    'name' => $item->product->name ?? 'Produk #' . $item->product_id, // Nama produk
+                ];
+            })
+            ->toArray();
 
         // Tambahkan voucher sebagai item diskon (jika ada)
         if ($order->voucher) {
@@ -217,10 +216,10 @@ class MidtransService
 
             if ($discountAmount > 0) {
                 $items[] = [
-                    'id' => 'voucher-'.$order->voucher->id,
+                    'id' => 'voucher-' . $order->voucher->id,
                     'price' => -$discountAmount,
                     'quantity' => 1,
-                    'name' => 'Voucher: '.$order->voucher->code,
+                    'name' => 'Voucher: ' . $order->voucher->code,
                 ];
             }
         }
@@ -228,14 +227,13 @@ class MidtransService
         // Tambahkan biaya admin 2000
         $items[] = [
             'id' => 'admin-fee',
-            'price' => $order->admin_fee??2000,
+            'price' => $order->admin_fee ?? 2000,
             'quantity' => 1,
             'name' => 'Biaya Admin',
         ];
 
         return $items;
     }
-
 
     /**
      * Mendapatkan informasi customer dari order.
@@ -255,28 +253,27 @@ class MidtransService
     // }
 
     /**
- * Mendapatkan data customer dari order untuk Midtrans
- *
- * @param Order $order
- * @return array
- */
-protected function getCustomerDetails(Order $order): array
-{
-    return [
-        'first_name' => $order->user->first_name ?? 'Customer',
-        'last_name'  => $order->user->last_name ?? '',
-        'email'      => $order->user->email ?? 'customer@example.com',
-        'phone'      => $order->user->phone ?? '081234567890',
-        'billing_address' => [
+     * Mendapatkan data customer dari order untuk Midtrans
+     *
+     * @param Order $order
+     * @return array
+     */
+    protected function getCustomerDetails(Order $order): array
+    {
+        return [
             'first_name' => $order->user->first_name ?? 'Customer',
-            'last_name'  => $order->user->last_name ?? '',
-            'address'    => $order->user->primaryAddress->address1 ?? '-',
-            'city'       => $order->user->primaryAddress->city ?? '-',
-            'postal_code'=> $order->user->primaryAddress->postal_code ?? '00000',
-            'phone'      => $order->user->phone ?? '081234567890',
-            'country_code'=> 'IDN',
-        ],
-    ];
-}
-
+            'last_name' => $order->user->last_name ?? '',
+            'email' => $order->user->email ?? 'customer@example.com',
+            'phone' => $order->user->phone ?? '081234567890',
+            'billing_address' => [
+                'first_name' => $order->user->first_name ?? 'Customer',
+                'last_name' => $order->user->last_name ?? '',
+                'address' => $order->user->primaryAddress->address1 ?? '-',
+                'city' => $order->user->primaryAddress->city ?? '-',
+                'postal_code' => $order->user->primaryAddress->postal_code ?? '00000',
+                'phone' => $order->user->phone ?? '081234567890',
+                'country_code' => 'IDN',
+            ],
+        ];
+    }
 }

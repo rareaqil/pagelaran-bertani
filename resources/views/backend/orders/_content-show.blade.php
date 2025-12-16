@@ -421,8 +421,15 @@
         }
     </script>
     {{-- Midtrans Snap JS --}}
-    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ midtrans_config('client_key') }}">
-    </script>
+    @php
+        $isProduction = midtrans_config('is_production');
+        $snapUrl = $isProduction
+            ? 'https://app.midtrans.com/snap/snap.js'
+            : 'https://app.sandbox.midtrans.com/snap/snap.js';
+    @endphp
+
+    <script src="{{ $snapUrl }}" data-client-key="{{ midtrans_config('client_key') }}"></script>
+
     <script type="module">
         let snapOpen = false;
 
