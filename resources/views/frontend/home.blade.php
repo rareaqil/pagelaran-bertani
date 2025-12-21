@@ -133,7 +133,7 @@
                         <h3 class="text-2xl font-bold text-green-700" x-text="product.name"></h3>
                         <p class="text-gray-600 mt-2" x-text="'SKU: ' + product.sku"></p>
                         <p class="text-gray-600" x-text="'Stock: ' + product.stock"></p>
-                        <p class="mt-2 text-lg font-semibold text-amber-600" x-text="'Rp ' + product.price + '/kg'"></p>
+                        <p class="mt-2 text-lg font-semibold text-amber-600" x-text="'Rp ' + product.price + '/Buah'"></p>
                         <p class="mt-4 text-gray-700 leading-relaxed" x-text="product.description"></p>
                         <p class="mt-2 text-sm text-gray-500" x-text="'Berat: ' + product.weight + ' kg'"></p>
 
