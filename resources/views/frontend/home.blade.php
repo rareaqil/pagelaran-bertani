@@ -85,7 +85,7 @@
                     class="bg-white rounded-lg shadow-md hover:shadow-2xl transition transform hover:-translate-y-2 hover:scale-105 p-4 cursor-pointer">
                     <img src="{{ $firstImage }}" alt="{{ $product->name }}" class="w-full h-48 object-cover rounded-md">
                     <h3 class="mt-4 text-lg font-semibold text-gray-800">{{ $product->name }}</h3>
-                    <p class="text-gray-600">Rp {{ number_format($product->price, 0, ',', '.') }}/kg</p>
+                    <p class="text-gray-600">Rp {{ number_format($product->price, 0, ',', '.') }}/Buah</p>
                 </div>
             @empty
                 <p class="text-white">Belum ada produk tersedia.</p>
