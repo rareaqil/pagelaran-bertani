@@ -136,7 +136,7 @@
                         <p class="text-gray-600" x-text="'Stock: ' + product.stock"></p>
                         <p class="mt-2 text-lg font-semibold text-amber-600" x-text="'Rp ' + product.price + '/Buah'"></p>
                         <p class="mt-4 text-gray-700 leading-relaxed" x-text="product.description"></p>
-                        <p class="mt-2 text-sm text-gray-500" x-text="'Berat: ' + product.weight + ' kg'"></p>
+
 
                         <a href="/order-product"
                             class="mt-6 inline-block bg-amber-500 text-white px-5 py-2 rounded shadow hover:bg-amber-600 transition">
