@@ -12,8 +12,8 @@
                 <h3 class="mb-2 font-bold">Search Product</h3>
                 <select id="product-search" class="mb-4 w-full rounded border p-2"></select>
 
-                {{-- Add Product --}}
-                <h3 class="mb-2 font-bold">Add Product</h3>
+                {{-- Add Product (DITUTUP SEMENTARA SUPAYA TIDAK BIAS) --}}
+                {{-- <h3 class="mb-2 font-bold">Add Product</h3>
                 <div class="mb-4 grid grid-cols-1 gap-2 md:grid-cols-2">
                     @foreach ($products as $product)
                         <div class="flex items-center gap-2 rounded border p-2">
@@ -36,7 +36,7 @@
                             </button>
                         </div>
                     @endforeach
-                </div>
+                </div> --}}
 
                 {{-- Cart Table --}}
                 <table class="w-full table-auto border-collapse">

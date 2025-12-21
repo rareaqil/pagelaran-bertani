@@ -58,7 +58,7 @@
                         <div>
                             <h4 class="font-semibold text-base sm:text-lg truncate" x-text="product.name"></h4>
                             <p class="text-xs sm:text-sm mt-1">
-                                Rp <span x-text="Number(product.price).toLocaleString('id-ID')"></span> /Kg
+                                Rp <span x-text="Number(product.price).toLocaleString('id-ID')"></span> /Buah
                             </p>
                         </div>
 
