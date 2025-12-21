@@ -167,7 +167,7 @@ class CartController extends Controller
     {
         $total = 0;
         foreach ($items as $item) {
-            $price = $item->itemable->getPrice() ?? 0;
+            $price = $item->itemable?->getPrice() ?? 0;
             $qty = $item->quantity ?? 1;
             $discount = $item->discount ?? 0;
             $total += $price * $qty * (1 - $discount);
