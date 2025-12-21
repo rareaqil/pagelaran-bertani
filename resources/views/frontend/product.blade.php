@@ -163,9 +163,9 @@
                         <p><span class="font-semibold">Stok:</span>
                             <span x-text="selectedProduct?.stock"></span>
                         </p>
-                        <p><span class="font-semibold">Berat:</span>
+                        {{-- <p><span class="font-semibold">Berat:</span>
                             <span x-text="selectedProduct?.weight ? selectedProduct.weight + ' kg' : '-'"></span>
-                        </p>
+                        </p> --}}
                         <p><span class="font-semibold">SKU:</span>
                             <span x-text="selectedProduct?.sku ?? '-'"></span>
                         </p>
