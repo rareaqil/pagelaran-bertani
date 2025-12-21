@@ -71,17 +71,18 @@
                     $firstImage = trim($images[0] ?? '');
                 @endphp
 
-                <div @click="openModal = true;
-                        product = {
-                            name: '{{ $product->name }}',
-                            description: '{{ $product->description }}',
-                            price: '{{ number_format($product->price, 0, ',', '.') }}',
-                            weight: '{{ $product->weight }}',
-                            sku: '{{ $product->sku }}',
-                            stock: '{{ $product->stock }}'
-                        };
-                        images = @js($images);
-                "
+                <div @click="
+                            openModal = true;
+                            product = @js([
+    'name' => $product->name,
+    'description' => $product->description,
+    'price' => number_format($product->price, 0, ',', '.'),
+    'weight' => $product->weight,
+    'sku' => $product->sku,
+    'stock' => $product->stock,
+]);
+                            images = @js($images);
+                        "
                     class="bg-white rounded-lg shadow-md hover:shadow-2xl transition transform hover:-translate-y-2 hover:scale-105 p-4 cursor-pointer">
                     <img src="{{ $firstImage }}" alt="{{ $product->name }}" class="w-full h-48 object-cover rounded-md">
                     <h3 class="mt-4 text-lg font-semibold text-gray-800">{{ $product->name }}</h3>
