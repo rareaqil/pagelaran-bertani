@@ -154,7 +154,7 @@
 
     {{-- ============= SCRIPTS ============= --}}
     @push('scripts')
-        <script type="module">
+        <script>
             $(function() {
                 function initSelect2(selector, placeholder, ajaxUrl = null) {
                     let config = {
