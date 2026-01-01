@@ -93,7 +93,7 @@
             </div>
         </div> --}}
 
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div>
                 <x-input-label for="province_id" :value="__('Provinsi')" />
                 <select id="province_id" name="province_id"
@@ -335,38 +335,45 @@
                 });
 
                 // ===== PREFILL =====
-                if (address.province_id) {
-                    province.addOption({
-                        id: address.province_id,
-                        name: address.province_name
-                    });
-                    province.setValue(address.province_id);
-                    if (address.regency_id) {
-                        regency.addOption({
-                            id: address.regency_id,
-                            name: address.regency_name
-                        });
-                        regency.setValue(address.regency_id);
-                        if (address.district_id) {
-                            district.addOption({
-                                id: address.district_id,
-                                name: address.district_name
-                            });
-                            district.setValue(address.district_id);
-                            if (address.village_id) {
-                                village.addOption({
-                                    id: address.village_id,
-                                    name: address.village_name
+                // Manual load semua provinsi supaya dropdown muncul
+                fetch('{{ url('/api/provinces') }}')
+                    .then(res => res.json())
+                    .then(data => {
+                        province.addOption(data);
+                        if (address.province_id) {
+                            province.setValue(address.province_id);
+
+                            // Prefill Regencies
+                            if (address.regency_id) {
+                                regency.addOption({
+                                    id: address.regency_id,
+                                    name: address.regency_name
                                 });
-                                village.setValue(address.village_id);
+                                regency.setValue(address.regency_id);
+
+                                if (address.district_id) {
+                                    district.addOption({
+                                        id: address.district_id,
+                                        name: address.district_name
+                                    });
+                                    district.setValue(address.district_id);
+
+                                    if (address.village_id) {
+                                        village.addOption({
+                                            id: address.village_id,
+                                            name: address.village_name
+                                        });
+                                        village.setValue(address.village_id);
+                                    }
+                                }
                             }
                         }
-                    }
-                }
+                    });
 
             });
         </script>
     @endpush
+
 
 
 
