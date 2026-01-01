@@ -1,45 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Pagelaran Bertani</title>
 
-        {{-- Font Awesome --}}
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pagelaran Bertani</title>
 
-        {{-- Vite CSS + JS (bukan hanya CSS saja) --}}
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- Font Awesome --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-        {{-- CSRF Token (supaya form & AJAX jalan) --}}
-        <meta name="csrf-token" content="{{ csrf_token() }}" />
+    {{-- Vite CSS + JS (bukan hanya CSS saja) --}}
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-        {{-- Styles tambahan dari child --}}
-        @yield('styles')
+    {{-- CSRF Token (supaya form & AJAX jalan) --}}
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
 
-        {{-- SweetAlert (opsional) --}}
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    {{-- Styles tambahan dari child --}}
+    @yield('styles')
 
-        {{-- Alpine.js (untuk x-data, x-show, dll) --}}
-        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    </head>
+    {{-- SweetAlert (opsional) --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <body class="bg-white text-gray-800">
-        {{-- Navbar --}}
-        @include('frontend.partials.navbar')
+    {{-- Alpine.js (untuk x-data, x-show, dll) --}}
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-        {{-- Main Content --}}
-        <main>
-            @yield('content')
-        </main>
+    <!-- JQUERY dulu -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-        {{-- Footer --}}
-        @include('frontend.partials.footer')
+    <!-- SELECT2 CSS & JS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
+</head>
 
-        {{-- Stack script tambahan (dari @push) --}}
-        @stack('scripts')
+<body class="bg-white text-gray-800">
+    {{-- Navbar --}}
+    @include('frontend.partials.navbar')
 
-        {{-- Yield script biasa --}}
-        @yield('scripts')
-    </body>
+    {{-- Main Content --}}
+    <main>
+        @yield('content')
+    </main>
+
+    {{-- Footer --}}
+    @include('frontend.partials.footer')
+
+    {{-- Stack script tambahan (dari @push) --}}
+    @stack('scripts')
+
+    {{-- Yield script biasa --}}
+    @yield('scripts')
+</body>
+
 </html>
