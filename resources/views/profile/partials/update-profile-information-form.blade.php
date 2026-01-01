@@ -252,7 +252,7 @@
     @endpush --}}
 
     @push('scripts')
-        <script>
+        <script type="module">
             document.addEventListener('DOMContentLoaded', function() {
 
                 const address = {
@@ -266,105 +266,108 @@
                     village_name: '{{ optional($address)->village_name }}',
                 };
 
-                // ===== INIT SELECTS =====
-                const province = new TomSelect('#province_id', {
-                    valueField: 'id',
-                    labelField: 'name',
-                    searchField: 'name',
-                    placeholder: 'Select Province',
-                    load: function(query, callback) {
-                        fetch('{{ url('/api/provinces') }}')
-                            .then(res => res.json())
-                            .then(data => callback(data))
-                            .catch(() => callback());
-                    },
-                    onChange: function(value) {
-                        regency.clearOptions();
-                        district.clearOptions();
-                        village.clearOptions();
-                        if (value) regency.loadOptions(value);
-                    }
+                function createTomSelect(selector, placeholder, loadFn) {
+                    return new TomSelect(selector, {
+                        valueField: 'id',
+                        labelField: 'name',
+                        searchField: 'name',
+                        placeholder: placeholder,
+                        persist: false,
+                        load: loadFn,
+                    });
+                }
+
+                // ===== INIT TOM SELECTS =====
+                const province = createTomSelect('#province_id', 'Select Province', function(query, callback) {
+                    fetch('{{ url('/api/provinces') }}')
+                        .then(res => res.json())
+                        .then(data => callback(data))
+                        .catch(() => callback());
                 });
 
-                const regency = new TomSelect('#regency_id', {
-                    valueField: 'id',
-                    labelField: 'name',
-                    searchField: 'name',
-                    placeholder: 'Select Regency',
-                    load: function(provinceId, callback) {
-                        if (!provinceId) return callback();
-                        fetch('{{ url('/api/regencies') }}/' + provinceId)
-                            .then(res => res.json())
-                            .then(data => callback(data))
-                            .catch(() => callback());
-                    },
-                    onChange: function(value) {
-                        district.clearOptions();
-                        village.clearOptions();
-                        if (value) district.loadOptions(value);
-                    }
+                const regency = createTomSelect('#regency_id', 'Select Regency', function(provinceId, callback) {
+                    if (!provinceId) return callback();
+                    fetch('{{ url('/api/regencies') }}/' + provinceId)
+                        .then(res => res.json())
+                        .then(data => callback(data))
+                        .catch(() => callback());
                 });
 
-                const district = new TomSelect('#district_id', {
-                    valueField: 'id',
-                    labelField: 'name',
-                    searchField: 'name',
-                    placeholder: 'Select District',
-                    load: function(regencyId, callback) {
-                        if (!regencyId) return callback();
-                        fetch('{{ url('/api/districts') }}/' + regencyId)
-                            .then(res => res.json())
-                            .then(data => callback(data))
-                            .catch(() => callback());
-                    },
-                    onChange: function(value) {
-                        village.clearOptions();
-                        if (value) village.loadOptions(value);
-                    }
+                const district = createTomSelect('#district_id', 'Select District', function(regencyId, callback) {
+                    if (!regencyId) return callback();
+                    fetch('{{ url('/api/districts') }}/' + regencyId)
+                        .then(res => res.json())
+                        .then(data => callback(data))
+                        .catch(() => callback());
                 });
 
-                const village = new TomSelect('#village_id', {
-                    valueField: 'id',
-                    labelField: 'name',
-                    searchField: 'name',
-                    placeholder: 'Select Village',
-                    load: function(districtId, callback) {
-                        if (!districtId) return callback();
-                        fetch('{{ url('/api/villages') }}/' + districtId)
-                            .then(res => res.json())
-                            .then(data => callback(data))
-                            .catch(() => callback());
-                    }
+                const village = createTomSelect('#village_id', 'Select Village', function(districtId, callback) {
+                    if (!districtId) return callback();
+                    fetch('{{ url('/api/villages') }}/' + districtId)
+                        .then(res => res.json())
+                        .then(data => callback(data))
+                        .catch(() => callback());
+                });
+
+                // ===== CASCADE =====
+                province.on('change', value => {
+                    regency.clearOptions();
+                    regency.clear(true);
+                    district.clearOptions();
+                    district.clear(true);
+                    village.clearOptions();
+                    village.clear(true);
+                    if (value) regency.load(value);
+                });
+
+                regency.on('change', value => {
+                    district.clearOptions();
+                    district.clear(true);
+                    village.clearOptions();
+                    village.clear(true);
+                    if (value) district.load(value);
+                });
+
+                district.on('change', value => {
+                    village.clearOptions();
+                    village.clear(true);
+                    if (value) village.load(value);
                 });
 
                 // ===== PREFILL =====
-                if (address.province_id) province.addOption({
-                    id: address.province_id,
-                    name: address.province_name
-                });
-                if (address.province_id) province.setValue(address.province_id);
-
-                if (address.regency_id) regency.addOption({
-                    id: address.regency_id,
-                    name: address.regency_name
-                });
-                if (address.regency_id) regency.setValue(address.regency_id);
-
-                if (address.district_id) district.addOption({
-                    id: address.district_id,
-                    name: address.district_name
-                });
-                if (address.district_id) district.setValue(address.district_id);
-
-                if (address.village_id) village.addOption({
-                    id: address.village_id,
-                    name: address.village_name
-                });
-                if (address.village_id) village.setValue(address.village_id);
+                if (address.province_id) {
+                    province.addOption({
+                        id: address.province_id,
+                        name: address.province_name
+                    });
+                    province.setValue(address.province_id);
+                    if (address.regency_id) {
+                        regency.addOption({
+                            id: address.regency_id,
+                            name: address.regency_name
+                        });
+                        regency.setValue(address.regency_id);
+                        if (address.district_id) {
+                            district.addOption({
+                                id: address.district_id,
+                                name: address.district_name
+                            });
+                            district.setValue(address.district_id);
+                            if (address.village_id) {
+                                village.addOption({
+                                    id: address.village_id,
+                                    name: address.village_name
+                                });
+                                village.setValue(address.village_id);
+                            }
+                        }
+                    }
+                }
 
             });
         </script>
     @endpush
+
 
 
 
