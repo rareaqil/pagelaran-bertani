@@ -63,7 +63,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
+        {{-- <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
             <div>
                 <x-input-label for="province_id" :value="__('Provinsi')" />
                 <select id="province_id" name="province_id"
@@ -91,7 +91,46 @@
                     class="js-select2 w-full rounded-md border border-gray-300 bg-white text-sm shadow-sm"></select>
                 <x-input-error class="mt-2" :messages="$errors->get('village_id')" />
             </div>
+        </div> --}}
+
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
+            <div>
+                <x-input-label for="province_id" :value="__('Provinsi')" />
+                <select id="province_id" name="province_id"
+                    class="js-select2 w-full rounded-md border border-gray-300 bg-white text-sm shadow-sm">
+                    <option value=""></option>
+                </select>
+                <x-input-error class="mt-2" :messages="$errors->get('province_id')" />
+            </div>
+
+            <div>
+                <x-input-label for="regency_id" :value="__('Kab / Kota')" />
+                <select id="regency_id" name="regency_id"
+                    class="js-select2 w-full rounded-md border border-gray-300 bg-white text-sm shadow-sm">
+                    <option value=""></option>
+                </select>
+                <x-input-error class="mt-2" :messages="$errors->get('regency_id')" />
+            </div>
+
+            <div>
+                <x-input-label for="district_id" :value="__('Kecamatan')" />
+                <select id="district_id" name="district_id"
+                    class="js-select2 w-full rounded-md border border-gray-300 bg-white text-sm shadow-sm">
+                    <option value=""></option>
+                </select>
+                <x-input-error class="mt-2" :messages="$errors->get('district_id')" />
+            </div>
+
+            <div>
+                <x-input-label for="village_id" :value="__('Kelurahan')" />
+                <select id="village_id" name="village_id"
+                    class="js-select2 w-full rounded-md border border-gray-300 bg-white text-sm shadow-sm">
+                    <option value=""></option>
+                </select>
+                <x-input-error class="mt-2" :messages="$errors->get('village_id')" />
+            </div>
         </div>
+
 
         <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
@@ -115,13 +154,13 @@
 
     {{-- ============= SCRIPTS ============= --}}
     @push('scripts')
-        <script type="module">
+        {{-- <script type="module">
             $(function() {
                 function initSelect2(selector, placeholder, ajaxUrl = null) {
                     let config = {
                         placeholder,
                         allowClear: true,
-                        width: '100%'
+                        width: '100%',
                     };
                     if (ajaxUrl && ajaxUrl !== '#') {
                         config.ajax = {
@@ -192,7 +231,7 @@
                     const pid = $(this).val();
                     $('#regency_id,#district_id,#village_id').val(null).trigger('change');
                     if (pid) initSelect2('#regency_id', 'Select Regency', '{{ url('/api/regencies') }}/' +
-                    pid);
+                        pid);
                 });
 
                 $('#regency_id').on('change', function() {
@@ -207,6 +246,104 @@
                     $('#village_id').val(null).trigger('change');
                     if (did) initSelect2('#village_id', 'Select Village', '{{ url('/api/villages') }}/' + did);
                 });
+            });
+        </script> --}}
+
+        <script>
+            $(document).ready(function() {
+
+                function initSelect2(selector, placeholder, ajaxUrl = null) {
+                    $(selector).select2({
+                        placeholder: placeholder,
+                        allowClear: true,
+                        width: '100%',
+                        dropdownParent: $('body'), // ⬅️ iOS FIX
+                        ajax: ajaxUrl ? {
+                            url: ajaxUrl,
+                            dataType: 'json',
+                            delay: 250,
+                            processResults: data => ({
+                                results: data.map(i => ({
+                                    id: i.id,
+                                    text: i.name
+                                }))
+                            })
+                        } : null
+                    });
+                }
+
+                function setValue(selector, id, text) {
+                    if (!id || !text) return;
+                    const option = new Option(text, id, true, true);
+                    $(selector).append(option).trigger('change');
+                }
+
+                function resetSelect(selector) {
+                    $(selector).val(null).trigger('change');
+                }
+
+                const address = {
+                    province_id: '{{ optional($address)->province_id }}',
+                    province_name: '{{ optional($address)->province_name }}',
+                    regency_id: '{{ optional($address)->regency_id }}',
+                    regency_name: '{{ optional($address)->regency_name }}',
+                    district_id: '{{ optional($address)->district_id }}',
+                    district_name: '{{ optional($address)->district_name }}',
+                    village_id: '{{ optional($address)->village_id }}',
+                    village_name: '{{ optional($address)->village_name }}',
+                };
+
+                // ===== INIT =====
+                initSelect2('#province_id', 'Select Province', '{{ url('/api/provinces') }}');
+                setValue('#province_id', address.province_id, address.province_name);
+
+                if (address.province_id) {
+                    initSelect2('#regency_id', 'Select Regency', '{{ url('/api/regencies') }}/' + address.province_id);
+                    setValue('#regency_id', address.regency_id, address.regency_name);
+                }
+
+                if (address.regency_id) {
+                    initSelect2('#district_id', 'Select District', '{{ url('/api/districts') }}/' + address
+                    .regency_id);
+                    setValue('#district_id', address.district_id, address.district_name);
+                }
+
+                if (address.district_id) {
+                    initSelect2('#village_id', 'Select Village', '{{ url('/api/villages') }}/' + address.district_id);
+                    setValue('#village_id', address.village_id, address.village_name);
+                }
+
+                // ===== CASCADE =====
+                $('#province_id').on('change', function() {
+                    resetSelect('#regency_id');
+                    resetSelect('#district_id');
+                    resetSelect('#village_id');
+
+                    if (this.value) {
+                        initSelect2('#regency_id', 'Select Regency', '{{ url('/api/regencies') }}/' + this
+                            .value);
+                    }
+                });
+
+                $('#regency_id').on('change', function() {
+                    resetSelect('#district_id');
+                    resetSelect('#village_id');
+
+                    if (this.value) {
+                        initSelect2('#district_id', 'Select District', '{{ url('/api/districts') }}/' + this
+                            .value);
+                    }
+                });
+
+                $('#district_id').on('change', function() {
+                    resetSelect('#village_id');
+
+                    if (this.value) {
+                        initSelect2('#village_id', 'Select Village', '{{ url('/api/villages') }}/' + this
+                            .value);
+                    }
+                });
+
             });
         </script>
     @endpush
