@@ -39,50 +39,53 @@
                 </div> --}}
 
                 {{-- Cart Table --}}
-                <table class="w-full table-auto border-collapse">
-                    <thead>
-                        <tr>
-                            <th class="border px-4 py-2">Product</th>
-                            <th class="border px-4 py-2">Price</th>
-                            <th class="border px-4 py-2">Qty</th>
-                            <th class="border px-4 py-2">Subtotal</th>
-                            <th class="border px-4 py-2">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="cart-items">
-                        @foreach ($items as $item)
-                            <tr id="cart-item-{{ $item->id }}">
-                                <td class="border px-4 py-2">{{ $item->itemable->name }}</td>
-                                <td class="border px-4 py-2">
-                                    {{ number_format($item->itemable->getPrice(), 0, ',', '.') }}
-                                </td>
-                                <td class="flex items-center gap-2 border px-4 py-2">
-                                    <button type="button" class="btn-decrease rounded bg-gray-300 px-2 py-1"
-                                        data-id="{{ $item->id }}">
-                                        -
-                                    </button>
-                                    <input type="number" value="{{ $item->quantity }}" min="1"
-                                        class="qty-input w-16 rounded border text-center" data-id="{{ $item->id }}"
-                                        data-available-stock="{{ $item->itemable->available_stock }}" readonly />
-                                    <button type="button" class="btn-increase rounded bg-gray-300 px-2 py-1"
-                                        data-id="{{ $item->id }}">
-                                        +
-                                    </button>
-                                </td>
-                                <td class="border px-4 py-2">
-                                    {{ number_format($item->itemable->getPrice() * $item->quantity * (1 - $item->discount), 0, ',', '.') }}
-                                </td>
-                                <td class="border px-4 py-2">
-                                    <button class="remove-item rounded bg-red-500 px-2 py-1 text-white"
-                                        data-id="{{ $item->id }}">
-                                        Remove
-                                    </button>
-                                </td>
+                <div class="overflow-x-auto md:hidden">
+                    <table class="w-full table-auto border-collapse">
+                        <thead>
+                            <tr>
+                                <th class="border px-4 py-2">Product</th>
+                                <th class="border px-4 py-2">Price</th>
+                                <th class="border px-4 py-2">Qty</th>
+                                <th class="border px-4 py-2">Subtotal</th>
+                                <th class="border px-4 py-2">Action</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody id="cart-items">
+                            @foreach ($items as $item)
+                                <tr id="cart-item-{{ $item->id }}">
+                                    <td class="border px-4 py-2">{{ $item->itemable->name }}</td>
+                                    <td class="border px-4 py-2">
+                                        {{ number_format($item->itemable->getPrice(), 0, ',', '.') }}
+                                    </td>
+                                    <td class="flex items-center gap-2 border px-4 py-2">
+                                        <button type="button" class="btn-decrease rounded bg-gray-300 px-2 py-1"
+                                            data-id="{{ $item->id }}">
+                                            -
+                                        </button>
+                                        <input type="number" value="{{ $item->quantity }}" min="1"
+                                            class="qty-input w-16 rounded border text-center" data-id="{{ $item->id }}"
+                                            data-available-stock="{{ $item->itemable->available_stock }}" readonly />
+                                        <button type="button" class="btn-increase rounded bg-gray-300 px-2 py-1"
+                                            data-id="{{ $item->id }}">
+                                            +
+                                        </button>
+                                    </td>
+                                    <td class="border px-4 py-2">
+                                        {{ number_format($item->itemable->getPrice() * $item->quantity * (1 - $item->discount), 0, ',', '.') }}
+                                    </td>
+                                    <td class="border px-4 py-2">
+                                        <button class="remove-item rounded bg-red-500 px-2 py-1 text-white"
+                                            data-id="{{ $item->id }}">
+                                            Remove
+                                        </button>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
 
+                {{-- Cart Summary --}}
                 <div class="mt-4 text-right font-bold" id="cart-summary">
                     <div>
                         Subtotal:
@@ -497,3 +500,27 @@
         });
     });
 </script>
+
+<style>
+    /* Tambahan styling khusus untuk cart page */
+    @media (max-width: 767px) {
+        #cart-items tr {
+            display: block;
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+        }
+
+        #cart-items td {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.25rem 0;
+            border: none;
+        }
+
+        #cart-items td:last-child {
+            text-align: right;
+        }
+    }
+</style>
