@@ -63,7 +63,7 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
+        {{-- <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
             <div>
                 <x-input-label for="province_id" :value="__('Provinsi')" />
                 <select id="province_id" name="province_id"
@@ -91,7 +91,46 @@
                     class="js-select2 w-full rounded-md border border-gray-300 bg-white text-sm shadow-sm"></select>
                 <x-input-error class="mt-2" :messages="$errors->get('village_id')" />
             </div>
+        </div> --}}
+
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
+            <div>
+                <x-input-label for="province_id" :value="__('Provinsi')" />
+                <select id="province_id" name="province_id"
+                    class="js-select2 w-full rounded-md border border-gray-300 bg-white text-sm shadow-sm">
+                    <option value=""></option>
+                </select>
+                <x-input-error class="mt-2" :messages="$errors->get('province_id')" />
+            </div>
+
+            <div>
+                <x-input-label for="regency_id" :value="__('Kab / Kota')" />
+                <select id="regency_id" name="regency_id"
+                    class="js-select2 w-full rounded-md border border-gray-300 bg-white text-sm shadow-sm">
+                    <option value=""></option>
+                </select>
+                <x-input-error class="mt-2" :messages="$errors->get('regency_id')" />
+            </div>
+
+            <div>
+                <x-input-label for="district_id" :value="__('Kecamatan')" />
+                <select id="district_id" name="district_id"
+                    class="js-select2 w-full rounded-md border border-gray-300 bg-white text-sm shadow-sm">
+                    <option value=""></option>
+                </select>
+                <x-input-error class="mt-2" :messages="$errors->get('district_id')" />
+            </div>
+
+            <div>
+                <x-input-label for="village_id" :value="__('Kelurahan')" />
+                <select id="village_id" name="village_id"
+                    class="js-select2 w-full rounded-md border border-gray-300 bg-white text-sm shadow-sm">
+                    <option value=""></option>
+                </select>
+                <x-input-error class="mt-2" :messages="$errors->get('village_id')" />
+            </div>
         </div>
+
 
         <div class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
@@ -115,13 +154,13 @@
 
     {{-- ============= SCRIPTS ============= --}}
     @push('scripts')
-        <script type="module">
+        {{-- <script type="module">
             $(function() {
                 function initSelect2(selector, placeholder, ajaxUrl = null) {
                     let config = {
                         placeholder,
                         allowClear: true,
-                        width: '100%'
+                        width: '100%',
                     };
                     if (ajaxUrl && ajaxUrl !== '#') {
                         config.ajax = {
@@ -192,7 +231,7 @@
                     const pid = $(this).val();
                     $('#regency_id,#district_id,#village_id').val(null).trigger('change');
                     if (pid) initSelect2('#regency_id', 'Select Regency', '{{ url('/api/regencies') }}/' +
-                    pid);
+                        pid);
                 });
 
                 $('#regency_id').on('change', function() {
@@ -208,6 +247,8 @@
                     if (did) initSelect2('#village_id', 'Select Village', '{{ url('/api/villages') }}/' + did);
                 });
             });
-        </script>
+        </script> --}}
+
+        <script></script>
     @endpush
 </section>
