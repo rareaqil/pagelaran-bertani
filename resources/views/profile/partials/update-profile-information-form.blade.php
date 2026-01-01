@@ -253,9 +253,8 @@
 
     @push('scripts')
         <script>
-            $(document).ready(function() {
+            $(function() {
 
-                // Prefill address dari Blade
                 const address = {
                     province_id: '{{ optional($address)->province_id }}',
                     province_name: '{{ optional($address)->province_name }}',
@@ -267,25 +266,23 @@
                     village_name: '{{ optional($address)->village_name }}',
                 };
 
-                // Init Select2 dengan optional AJAX
                 function initSelect2(selector, placeholder, ajaxUrl = null) {
+                    $(selector).select2('destroy'); // iOS-safe destroy
                     $(selector).select2({
                         placeholder: placeholder,
                         allowClear: true,
                         width: '100%',
-                        dropdownParent: $('body'), // iOS fix
+                        dropdownParent: $('body'),
                         ajax: ajaxUrl ? {
                             url: ajaxUrl,
                             dataType: 'json',
                             delay: 250,
                             processResults: function(data) {
                                 return {
-                                    results: data.map(function(item) {
-                                        return {
-                                            id: item.id,
-                                            text: item.name
-                                        };
-                                    })
+                                    results: data.map(item => ({
+                                        id: item.id,
+                                        text: item.name
+                                    }))
                                 };
                             }
                         } : null
@@ -295,12 +292,13 @@
                 function setValue(selector, id, text) {
                     if (id && text) {
                         const option = new Option(text, id, true, true);
-                        $(selector).append(option).trigger('change');
+                        $(selector).append(option).trigger('change.select2');
+                        setTimeout(() => $(selector).trigger('change.select2'), 50); // force redraw iOS
                     }
                 }
 
                 function resetSelect(selector) {
-                    $(selector).val(null).trigger('change');
+                    $(selector).val(null).trigger('change.select2');
                 }
 
                 // ===== INIT PREFILL =====
@@ -328,7 +326,6 @@
                     resetSelect('#regency_id');
                     resetSelect('#district_id');
                     resetSelect('#village_id');
-
                     if (this.value) {
                         initSelect2('#regency_id', 'Select Regency', '{{ url('/api/regencies') }}/' + this
                             .value);
@@ -338,7 +335,6 @@
                 $('#regency_id').on('change', function() {
                     resetSelect('#district_id');
                     resetSelect('#village_id');
-
                     if (this.value) {
                         initSelect2('#district_id', 'Select District', '{{ url('/api/districts') }}/' + this
                             .value);
@@ -347,7 +343,6 @@
 
                 $('#district_id').on('change', function() {
                     resetSelect('#village_id');
-
                     if (this.value) {
                         initSelect2('#village_id', 'Select Village', '{{ url('/api/villages') }}/' + this
                             .value);
@@ -357,5 +352,6 @@
             });
         </script>
     @endpush
+
 
 </section>
