@@ -153,7 +153,7 @@
     </form>
 
     {{-- ============= SCRIPTS ============= --}}
-    @push('scripts')
+    {{-- @push('scripts')
         <script >
             $(function() {
                 function initSelect2(selector, placeholder, ajaxUrl = null) {
@@ -249,5 +249,113 @@
                 });
             });
         </script>
+    @endpush --}}
+
+    @push('scripts')
+        <script>
+            $(document).ready(function() {
+
+                // Prefill address dari Blade
+                const address = {
+                    province_id: '{{ optional($address)->province_id }}',
+                    province_name: '{{ optional($address)->province_name }}',
+                    regency_id: '{{ optional($address)->regency_id }}',
+                    regency_name: '{{ optional($address)->regency_name }}',
+                    district_id: '{{ optional($address)->district_id }}',
+                    district_name: '{{ optional($address)->district_name }}',
+                    village_id: '{{ optional($address)->village_id }}',
+                    village_name: '{{ optional($address)->village_name }}',
+                };
+
+                // Init Select2 dengan optional AJAX
+                function initSelect2(selector, placeholder, ajaxUrl = null) {
+                    $(selector).select2({
+                        placeholder: placeholder,
+                        allowClear: true,
+                        width: '100%',
+                        dropdownParent: $('body'), // iOS fix
+                        ajax: ajaxUrl ? {
+                            url: ajaxUrl,
+                            dataType: 'json',
+                            delay: 250,
+                            processResults: function(data) {
+                                return {
+                                    results: data.map(function(item) {
+                                        return {
+                                            id: item.id,
+                                            text: item.name
+                                        };
+                                    })
+                                };
+                            }
+                        } : null
+                    });
+                }
+
+                function setValue(selector, id, text) {
+                    if (id && text) {
+                        const option = new Option(text, id, true, true);
+                        $(selector).append(option).trigger('change');
+                    }
+                }
+
+                function resetSelect(selector) {
+                    $(selector).val(null).trigger('change');
+                }
+
+                // ===== INIT PREFILL =====
+                initSelect2('#province_id', 'Select Province', '{{ url('/api/provinces') }}');
+                setValue('#province_id', address.province_id, address.province_name);
+
+                if (address.province_id) {
+                    initSelect2('#regency_id', 'Select Regency', '{{ url('/api/regencies') }}/' + address.province_id);
+                    setValue('#regency_id', address.regency_id, address.regency_name);
+                }
+
+                if (address.regency_id) {
+                    initSelect2('#district_id', 'Select District', '{{ url('/api/districts') }}/' + address
+                    .regency_id);
+                    setValue('#district_id', address.district_id, address.district_name);
+                }
+
+                if (address.district_id) {
+                    initSelect2('#village_id', 'Select Village', '{{ url('/api/villages') }}/' + address.district_id);
+                    setValue('#village_id', address.village_id, address.village_name);
+                }
+
+                // ===== CASCADE =====
+                $('#province_id').on('change', function() {
+                    resetSelect('#regency_id');
+                    resetSelect('#district_id');
+                    resetSelect('#village_id');
+
+                    if (this.value) {
+                        initSelect2('#regency_id', 'Select Regency', '{{ url('/api/regencies') }}/' + this
+                            .value);
+                    }
+                });
+
+                $('#regency_id').on('change', function() {
+                    resetSelect('#district_id');
+                    resetSelect('#village_id');
+
+                    if (this.value) {
+                        initSelect2('#district_id', 'Select District', '{{ url('/api/districts') }}/' + this
+                            .value);
+                    }
+                });
+
+                $('#district_id').on('change', function() {
+                    resetSelect('#village_id');
+
+                    if (this.value) {
+                        initSelect2('#village_id', 'Select Village', '{{ url('/api/villages') }}/' + this
+                            .value);
+                    }
+                });
+
+            });
+        </script>
     @endpush
+
 </section>
