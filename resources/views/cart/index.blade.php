@@ -39,7 +39,7 @@
                 </div> --}}
 
                 {{-- Cart Table --}}
-                <div class="overflow-x-auto hidden md:block">
+                <div class="overflow-x-auto ">
                     <table class="w-full table-auto border-collapse">
                         <thead>
                             <tr>
@@ -85,39 +85,6 @@
                     </table>
                 </div>
 
-                {{-- Cart Mobile --}}
-                <div class="flex flex-col gap-4 md:hidden" id="cart-items-card">
-                    @foreach ($items as $item)
-                        <div class="cart-card p-4 border rounded shadow" id="cart-card-{{ $item->id }}">
-                            <div class="flex justify-between font-semibold mb-1">
-                                <span>Product</span>
-                                <span>{{ $item->itemable->name }}</span>
-                            </div>
-                            <div class="flex justify-between mb-1">
-                                <span>Price</span>
-                                <span>{{ number_format($item->itemable->getPrice(), 0, ',', '.') }}</span>
-                            </div>
-                            <div class="flex justify-between items-center mb-1">
-                                <span>Qty</span>
-                                <div class="flex items-center gap-2">
-                                    <button type="button" class="btn-decrease rounded bg-gray-300 px-2 py-1"
-                                        data-id="{{ $item->id }}">-</button>
-                                    <input type="number" value="{{ $item->quantity }}" min="1"
-                                        class="qty-input w-16 rounded border text-center" data-id="{{ $item->id }}"
-                                        data-available-stock="{{ $item->itemable->available_stock }}" readonly />
-                                    <button type="button" class="btn-increase rounded bg-gray-300 px-2 py-1"
-                                        data-id="{{ $item->id }}">+</button>
-                                </div>
-                            </div>
-                            <div class="flex justify-between mb-2">
-                                <span>Subtotal</span>
-                                <span>{{ number_format($item->itemable->getPrice() * $item->quantity * (1 - $item->discount), 0, ',', '.') }}</span>
-                            </div>
-                            <button class="remove-item rounded bg-red-500 px-2 py-1 text-white w-full"
-                                data-id="{{ $item->id }}">Remove</button>
-                        </div>
-                    @endforeach
-                </div>
 
                 {{-- Cart Summary --}}
                 <div class="mt-4 text-right font-bold" id="cart-summary">
@@ -228,35 +195,7 @@
                     </td>
                 </tr>
             `);
-
-                // Card mobile
-                $('#cart-items-card').append(`
-                <div class="cart-card p-4 border rounded shadow" id="cart-card-${item.id}">
-                    <div class="flex justify-between font-semibold mb-1">
-                        <span>Product</span>
-                        <span>${item.name}</span>
-                    </div>
-                    <div class="flex justify-between mb-1">
-                        <span>Price</span>
-                        <span>${item.price.toLocaleString()}</span>
-                    </div>
-                    <div class="flex justify-between items-center mb-1">
-                        <span>Qty</span>
-                        <div class="flex items-center gap-2">
-                            <button type="button" class="btn-decrease rounded bg-gray-300 px-2 py-1" data-id="${item.id}">-</button>
-                            <input type="number" value="${item.quantity}" min="1" class="qty-input w-16 rounded border text-center" data-id="${item.id}" data-available-stock="${item.available_stock ?? 9999}" readonly/>
-                            <button type="button" class="btn-increase rounded bg-gray-300 px-2 py-1" data-id="${item.id}">+</button>
-                        </div>
-                    </div>
-                    <div class="flex justify-between mb-2">
-                        <span>Subtotal</span>
-                        <span>${itemSubtotal.toLocaleString()}</span>
-                    </div>
-                    <button class="remove-item rounded bg-red-500 px-2 py-1 text-white w-full" data-id="${item.id}">Remove</button>
-                </div>
-            `);
             });
-
 
             // Update subtotal
             $('#cart-subtotal').text(subtotal.toLocaleString());
