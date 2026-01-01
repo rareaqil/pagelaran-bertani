@@ -27,9 +27,9 @@
     <!-- JQUERY dulu -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-    <!-- SELECT2 CSS & JS -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+
 </head>
 
 <body class="bg-white text-gray-800">
