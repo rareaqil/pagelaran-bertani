@@ -503,5 +503,17 @@
 </script>
 
 <style>
-    /* Tambahan styling khusus untuk cart page */
+    button {
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        /* hilangkan highlight default */
+        touch-action: manipulation;
+        /* pastikan tap langsung trigger click */
+    }
+
+    /* Kadang flex td bisa ganggu, paksa tombol clickable */
+    td button {
+        display: inline-block;
+        position: relative;
+        z-index: 1;
+    }
 </style>
