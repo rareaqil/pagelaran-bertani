@@ -487,7 +487,21 @@
         }
 
         // Clear cart
-        $('#clear-cart').click(function() {
+        // $('#clear-cart').click(function() {
+        //     $.ajax({
+        //         url: '{{ route('cart.clear') }}',
+        //         type: 'DELETE',
+        //         headers: {
+        //             'X-CSRF-TOKEN': '{{ csrf_token() }}',
+        //         },
+        //         success: function(res) {
+        //             if (res.success) autoApplyVoucher(res.cart);
+        //         },
+        //     });
+        // });
+
+        $(document).on('touchstart click', '#clear-cart', function(e) {
+            e.preventDefault(); // cegah ghost click
             $.ajax({
                 url: '{{ route('cart.clear') }}',
                 type: 'DELETE',
@@ -503,6 +517,12 @@
 </script>
 
 <style>
+    #clear-cart {
+        cursor: pointer;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+    }
+
     button {
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
         /* hilangkan highlight default */
